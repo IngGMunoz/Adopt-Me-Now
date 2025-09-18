@@ -1,64 +1,145 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
-    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
-    <link href="../../static/css/main.css" rel="stylesheet" />
-    <title>Document</title>
-</head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <title>Adopt Me - Fundaciones</title>
+    <style>
+        :root {
+            --brand:#BD6A0B;
+            --brand-700:#a55e0a;
+            --text:#1a202c;
+            --muted:#4a5568;
+            --border:#e2e8f0;
+            --bg:#ffffff;
+        }
+        *{ box-sizing: border-box; }
+        html,body{ margin:0; padding:0; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #fff; color: var(--text); }
+        a{ color: inherit; text-decoration: none; }
 
+        /* Topbar */
+        .topbar{
+            background: var(--brand);
+            color:#fff;
+        }
+        .topbar-inner{
+            max-width: 1100px; margin: 0 auto; padding: 12px 20px; display:flex; align-items:center; justify-content:space-between;
+        }
+        .brand{ font-weight:700; letter-spacing:.2px; }
+        .nav{ display:flex; gap:24px; align-items:center; }
+        .nav a{ opacity:.95; }
+        .nav a:hover{ opacity:1; text-decoration: underline; }
+        .user{ background:#fff; color:var(--brand-700); border-radius: 999px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; }
+
+        /* Toolbar (Ordenar por) */
+        .toolbar{
+            max-width:1100px; margin: 14px auto 0 auto; padding: 0 20px; display:flex; justify-content:flex-end; align-items:center;
+        }
+        .sort-btn{ background:#fff; border:1px solid var(--border); color:#2d3748; font-weight:600; padding:8px 14px; border-radius:10px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+
+        /* Content */
+        .content{ max-width:1100px; margin: 18px auto 40px auto; padding: 0 20px; }
+        .card{ display:grid; grid-template-columns: 180px 1fr; gap:24px; align-items:start; padding: 22px 0; border-bottom:1px solid var(--border); }
+        .card:last-child{ border-bottom:none; }
+        .card img{ width: 180px; height: 180px; object-fit: cover; border-radius: 6px; border:1px solid var(--border); }
+        .card .title{ font-size:28px; font-weight:700; margin: 0 0 6px 0; }
+        .card .by{ color:#718096; font-size:14px; margin-bottom: 12px; display:block; }
+        .card p{ color:#2d3748; line-height:1.6; margin:0 0 16px 0; }
+        .card .cta{ background: #d7b07e; color:#000; border:none; padding:10px 18px; border-radius: 18px; font-weight:600; box-shadow: 0 4px 10px rgba(0,0,0,.06); cursor:pointer; }
+        .card .cta:hover{ background:#e1be92; }
+
+        /* Footer */
+        .footer{ border-top:1px solid var(--border); margin-top: 40px; }
+        .footer-inner{ max-width:1100px; margin: 0 auto; padding: 14px 20px 24px 20px; }
+        .footer-brand{ padding: 12px 0; font-weight:600; }
+        .footer-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 18px; padding-top: 10px; }
+        .footer h4{ margin:0 0 10px 0; font-size:14px; color:#2d3748; }
+        .footer a{ display:block; color:#4a5568; font-size:14px; margin: 4px 0; }
+        @media (max-width: 720px){
+            .card{ grid-template-columns: 1fr; }
+            .card img{ width: 100%; height: 220px; }
+            .footer-grid{ grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
 <body>
-    <div class="v5_25">
-        <div class="v5_83"></div>
-        <div class="v5_101"></div>
-        <div class="v5_27"><span class="v5_28">About</span><span class="v5_29">creado por user@</span><span
-                class="v5_30">En nombre de Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos
-                fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes
-                más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</span></div>
-        <div class="v5_91"><span class="v5_92">About</span><span class="v5_93">creado por user@</span><span
-                class="v5_94">En nombre de Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos
-                fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes
-                más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</span></div>
-        <div class="v5_31">
-            <div class="v5_32"><span class="v5_34">Mascotas</span><span class="v5_35">Fundaciones</span></div><span
-                class="v5_33">Inicio</span><span class="v5_38">Adopt Me</span>
-            <div class="v34_20"></div>
+    <!-- Header -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">Adopt Me</div>
+            <nav class="nav" aria-label="Navegación principal">
+                <a href="/">Inicio</a>
+                <a href="/adopcion">Mascotas</a>
+                <a href="/fundaciones">Fundaciones</a>
+            </nav>
+            <div class="user" title="Perfil">
+                <i class="fa-regular fa-user"></i>
+            </div>
         </div>
-        <div class="v5_39">
-            <div class="v5_40"><span class="v5_41">Contáctanos</span><span class="v5_42">Page</span><span
-                    class="v5_43">Page</span><span class="v5_44">Page</span></div>
-            <div class="v5_45"><span class="v5_46">Topic</span><span class="v5_47">Page</span><span
-                    class="v5_48">Page</span><span class="v5_49">Page</span></div>
-            <div class="v5_50"><span class="v5_51">Topic</span><span class="v5_52">Page</span><span
-                    class="v5_53">Page</span><span class="v5_54">Page</span></div><span class="v5_55">Adopt Me</span>
-            <div class="v5_56">
-                <div class="v5_57">
-                    <div class="v5_58">
-                        <div class="name"></div>
-                    </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button class="sort-btn">Ordenar por</button>
+    </div>
+
+    <main class="content">
+        <!-- Card 1 -->
+        <section class="card">
+            <img src="../../static/images/v5_3.png" alt="Perrito" />
+            <div>
+                <h2 class="title">About</h2>
+                <span class="by">creado por @Daniel</span>
+                <p>En nombre de Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</p>
+                <button class="cta">Contactar</button>
+            </div>
+        </section>
+
+        <!-- Card 2 -->
+        <section class="card">
+            <img src="../../static/images/v5_101.png" alt="Logo Fundación FUNCUAN" style="object-fit: contain;" />
+            <div>
+                <h2 class="title">About</h2>
+                <span class="by">creado por @Daniel</span>
+                <p>En nombre de Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</p>
+                <button class="cta">Contactar</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">Adopt Me</div>
+            <div class="footer-grid">
+                <div>
+                    <h4>Contáctanos</h4>
+                    <a href="#">Page</a>
+                    <a href="#">Page</a>
+                    <a href="#">Page</a>
                 </div>
-                <div class="v5_62">
-                    <div class="v5_63">
-                        <div class="name"></div>
-                    </div>
+                <div>
+                    <h4>Topic</h4>
+                    <a href="#">Page</a>
+                    <a href="#">Page</a>
+                    <a href="#">Page</a>
                 </div>
-                <div class="v5_67">
-                    <div class="v5_68">
-                        <div class="name"></div>
-                    </div>
+                <div>
+                    <h4>Topic</h4>
+                    <a href="#">Page</a>
+                    <a href="#">Page</a>
+                    <a href="#">Page</a>
                 </div>
-                <div class="v5_72">
-                    <div class="v5_73">
-                        <div class="name"></div>
-                    </div>
+                <div>
+                    <h4>Topic</h4>
+                    <a href="#">Page</a>
+                    <a href="#">Page</a>
+                    <a href="#">Page</a>
                 </div>
             </div>
-            <div class="name"></div>
         </div>
-        <div class="v5_79"></div>
-        <div class="v5_98"></div><span class="v5_85">Contactar</span><span class="v5_96">Contactar</span>
-        <div class="v11_246"></div><span class="v11_247">Ordenar por</span>
-    </div>
+    </footer>
 </body>
-
 </html>

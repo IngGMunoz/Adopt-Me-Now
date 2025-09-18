@@ -34,6 +34,16 @@ def Registro_Administrador():
         return redirect("/iniciar-sesion")
     return render_template("Registro_Administrador.html")
 
+# Listado de adopción / Mascotas
+@app.route("/adopcion")
+def Pagina_Adopcion():
+    return render_template("Pagina1_Adopcion.html")
+
+# Alias para compatibilidad: /mascotas -> /adopcion
+@app.route("/mascotas")
+def Mascotas_Alias():
+    return redirect("/adopcion")
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5100, host="0.0.0.0")
