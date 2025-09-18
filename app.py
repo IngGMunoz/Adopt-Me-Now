@@ -2,6 +2,12 @@
 from flask import Flask, request, jsonify, redirect, render_template, url_for
 from Config.db import app
 
+# Página de detalle de cachorro
+@app.route("/cachorro")
+def Pagina2_Cachorro():
+    return render_template("Pagina2_Cachorro.html")
+
+
 
 # Home
 @app.route("/")
