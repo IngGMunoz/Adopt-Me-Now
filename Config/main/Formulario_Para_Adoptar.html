@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <title>Formulario de Adopción</title>
+    <style>
+        :root{ --brand:#BD6A0B; --brand-700:#a55e0a; --text:#1a202c; --muted:#4a5568; --border:#e2e8f0; --bg:#ffffff; }
+        *{ box-sizing: border-box; }
+        html,body{ margin:0; padding:0; font-family:'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color:var(--text); background:#fff; }
+        a{ color:inherit; text-decoration:none; }
+        /* Header */
+        .main-header{ background:var(--brand); color:#fff; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+        .main-header-inner{ max-width:1200px; margin:0 auto; height:64px; padding:0 32px; display:flex; align-items:center; justify-content:space-between; }
+        .brand{ font-size:1.7rem; font-weight:700; letter-spacing:.5px; }
+        .main-header nav{ display:flex; gap:32px; align-items:center; }
+        .main-header nav a{ color:#fff; font-weight:500; font-size:1.05rem; opacity:.93; padding:2px 0; }
+        .main-header nav a:hover{ opacity:1; text-decoration:underline; }
+        .user-btn{ background:#fff; color:var(--brand); border:none; border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; font-size:1.25rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.07); }
+        .user-btn:hover{ background:#ffe3c2; color:var(--brand-700); }
+        /* Layout */
+        .content{ max-width:860px; margin:40px auto; padding:0 20px; }
+        .card{ border:1px solid var(--border); border-radius:12px; padding:28px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+        .card h1{ margin:0 0 14px 0; font-size:28px; }
+        .card p.lead{ margin:0 0 22px 0; color:var(--muted); }
+        form{ display:grid; grid-template-columns:1fr 1fr; gap:18px 22px; }
+        .full{ grid-column:1 / -1; }
+        label{ display:block; font-size:.95rem; font-weight:600; margin-bottom:8px; }
+        input, textarea{ width:100%; border:1px solid var(--border); border-radius:10px; padding:12px 14px; font-size:1rem; background:#fff; }
+        textarea{ min-height:120px; resize:vertical; }
+        .actions{ display:flex; gap:12px; justify-content:flex-end; margin-top:8px; }
+        .btn{ border:0; cursor:pointer; padding:10px 18px; border-radius:20px; font-weight:600; }
+        .btn-primary{ background:#d7b07e; color:#000; }
+        .btn-primary:hover{ background:#e1be92; }
+        .btn-ghost{ background:transparent; color:var(--muted); border:1px solid var(--border); }
+        .btn-ghost:hover{ color:#111; }
+        /* Marcado visual tras intento fallido */
+        form.was-validated input:invalid,
+        form.was-validated textarea:invalid{ border-color:#e53e3e; }
+        @media (max-width:720px){ form{ grid-template-columns:1fr; } }
+    </style>
+    <script>
+        // Mejora UX: si llegamos desde una tarjeta con ?pet=..., mostrarla en el título
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const pet = params.get('pet');
+            if (pet){
+                const title = document.getElementById('form-title');
+                if (title) title.textContent = `Formulario de Adopción – ${pet}`;
+            }
+
+            // Validación: impedir envío si hay campos inválidos y resaltar
+            const form = document.querySelector('form');
+            if (form){
+                form.addEventListener('submit', (e) => {
+                    if (!form.checkValidity()){
+                        e.preventDefault();
+                        form.classList.add('was-validated');
+                        form.reportValidity();
+                    }
+                });
+            }
+        });
+    </script>
+    <meta name="color-scheme" content="light dark" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="Formulario para postularte a adoptar una mascota." />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="icon" href="../../static/images/v5_3.png" />
+    <meta name="theme-color" content="#BD6A0B" />
+    <style> @media (prefers-color-scheme: dark){ body{ background:#0b0b0b; color:#eaeaea; } .card{ border-color:#333; background:#111; } input,textarea{ background:#0f0f0f; border-color:#333; color:#eaeaea; } .btn-ghost{ border-color:#333; color:#cfcfcf; } .user-btn{ box-shadow:none; } } </style>
+    <!-- Preconnects para performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+    <header class="main-header">
+        <div class="main-header-inner">
+            <div class="brand">Adopt Me</div>
+            <nav aria-label="Navegación principal">
+                <a href="/">Inicio</a>
+                <a href="/adopcion">Mascotas</a>
+                <a href="/fundaciones">Fundaciones</a>
+            </nav>
+            <button class="user-btn" title="Perfil"><i class="fa-regular fa-user"></i></button>
+        </div>
+    </header>
+
+    <main class="content">
+        <section class="card">
+            <h1 id="form-title">Formulario de Adopción</h1>
+            <p class="lead">Déjanos tus datos y el motivo por el que deseas adoptar. Te contactaremos a la brevedad.</p>
+            <form method="POST" action="/formulario">
+                <div class="full">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellidos" minlength="3" required />
+                </div>
+                <div>
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required />
+                </div>
+                <div>
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" placeholder="(+57) 300 000 0000" inputmode="tel" pattern="\+?\d[\d\s-]{7,15}" title="Ingresa un teléfono válido (8 a 16 dígitos, puede incluir +, espacios o guiones)" required />
+                </div>
+                <div class="full">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" name="direccion" placeholder="Calle 123 #45-67, Barrio, Ciudad" minlength="5" required />
+                </div>
+                <div class="full">
+                    <label for="motivo">¿Por qué deseas adoptar?</label>
+                    <textarea id="motivo" name="motivo" placeholder="Cuéntanos brevemente sobre tu hogar, tu tiempo disponible, y por qué te gustaría adoptar." minlength="10" required></textarea>
+                </div>
+                        <div class="actions full">
+                            <a class="btn btn-ghost" href="/cachorro">Volver</a>
+                    <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
