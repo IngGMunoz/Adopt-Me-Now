@@ -59,6 +59,11 @@ def Pagina_Adopcion():
 def Mascotas_Alias():
     return redirect("/adopcion")
 
+# Fundaciones
+@app.route("/fundaciones")
+def Pagina_Fundacion():
+    return render_template("Pagina_Fundacion.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5100, host="0.0.0.0")
