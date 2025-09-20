@@ -7,6 +7,15 @@ from Config.db import app
 def Pagina2_Cachorro():
     return render_template("Pagina2_Cachorro.html")
 
+# Formulario de adopción
+@app.route("/formulario", methods=["GET", "POST"])
+def Formulario_Para_Adoptar():
+    if request.method == "POST":
+        # Aquí podrías procesar y guardar la solicitud de adopción.
+        # Por ahora, redirigimos a la página del cachorro como confirmación sencilla.
+        return redirect("/cachorro")
+    return render_template("Formulario_Para_Adoptar.html")
+
 
 
 # Home
