@@ -6,7 +6,7 @@ from flask_marshmallow import Marshmallow
 # Configure absolute paths
 BASE_DIR = os.path.dirname(__file__)  # .../Config
 PROJECT_ROOT = os.path.dirname(BASE_DIR)  # repo root
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'main')  # HTML templates live in Config/main
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'Templates', 'main')  # HTML templates live in Config/Templates/main
 STATIC_DIR = os.path.join(PROJECT_ROOT, 'static')  # serve static from repo-level /static
 
 app = Flask(

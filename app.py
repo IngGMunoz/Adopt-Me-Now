@@ -64,6 +64,20 @@ def Mascotas_Alias():
 def Pagina_Fundacion():
     return render_template("Pagina_Fundacion.html")
 
+# Página específica de la fundación Funcuan
+@app.route("/funcuan")
+def Pagina_Funcuan():
+    # reutilizamos la plantilla de fundación por ahora; si luego hay varias, podemos parametrizar
+    return render_template("Pagina_Fundacion.html")
+
+# Página para postular mascotas
+@app.route("/postular", methods=["GET", "POST"])
+def Postular_Mascotas():
+    if request.method == "POST":
+        # Aquí podrías procesar y guardar la postulación de mascota
+        return redirect("/adopcion")
+    return render_template("Postular_Mascotas.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5100, host="0.0.0.0")

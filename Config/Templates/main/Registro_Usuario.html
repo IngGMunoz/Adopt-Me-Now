@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <title>Iniciar Sesión</title>
+    <title>Registro Usuario</title>
     <style>
         * {
             margin: 0;
@@ -46,6 +46,18 @@
                 center 50% center 20%;
             opacity: .06;
             z-index: -2;
+        }
+
+        @keyframes backgroundShift {
+
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            50% {
+                transform: scale(1.1) rotate(1deg);
+            }
         }
 
         /* Partículas flotantes */
@@ -121,7 +133,7 @@
         }
 
         /* Contenedor principal centrado */
-        .login-container {
+        .register-container {
             position: relative;
             margin: 40px auto 32px auto;
             width: 100%;
@@ -143,7 +155,7 @@
         }
 
         /* Tarjeta del formulario con estilo PAWS */
-        .login-card {
+        .register-card {
             background: rgba(255, 255, 255, .92);
             backdrop-filter: saturate(1.05) blur(2px);
             border: 1px solid rgba(189, 106, 11, 0.08);
@@ -154,10 +166,11 @@
                 0 8px 16px rgba(0, 0, 0, .08);
             position: relative;
             z-index: 1;
+            /* por encima de las patas decorativas */
             overflow: hidden;
         }
 
-        .login-card::before {
+        .register-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -168,7 +181,7 @@
         }
 
         /* Título */
-        .login-title {
+        .register-title {
             text-align: center;
             margin-bottom: 32px;
             color: #1a202c;
@@ -177,7 +190,7 @@
             position: relative;
         }
 
-        .login-title::after {
+        .register-title::after {
             content: '';
             position: absolute;
             bottom: -12px;
@@ -193,28 +206,6 @@
         .form-group {
             margin-bottom: 24px;
             position: relative;
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .form-group:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .form-group:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .form-group:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .form-label {
@@ -241,7 +232,9 @@
         .form-input:focus {
             outline: none;
             border-color: #e08c2b;
+            /* Anaranjado */
             box-shadow: 0 0 0 4px rgba(231, 37, 3, 0.2);
+            /* Sombra anaranjada */
             transform: translateY(-1px);
         }
 
@@ -266,8 +259,8 @@
             color: #e08c2b;
         }
 
-        /* Botón de login */
-        .login-btn {
+        /* Botón de registro */
+        .register-btn {
             width: 100%;
             padding: 16px;
             background: linear-gradient(135deg, #eabc66 0%, #f5cd4c 100%);
@@ -284,7 +277,7 @@
             margin-top: 8px;
         }
 
-        .login-btn::before {
+        .register-btn::before {
             content: '';
             position: absolute;
             top: 0;
@@ -295,28 +288,28 @@
             transition: left 0.5s ease;
         }
 
-        .login-btn:hover {
+        .register-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 24px rgba(248, 198, 104, 0.993);
         }
 
-        .login-btn:hover::before {
+        .register-btn:hover::before {
             left: 100%;
         }
 
-        .login-btn:active {
+        .register-btn:active {
             transform: translateY(0);
         }
 
-        /* Link de registro */
-        .register-link {
+        /* Link de login */
+        .login-link {
             text-align: center;
             margin-top: 24px;
             padding-top: 24px;
             border-top: 1px solid #e2e8f0;
         }
 
-        .register-link a {
+        .login-link a {
             color: #667eea;
             text-decoration: none;
             font-weight: 500;
@@ -324,9 +317,107 @@
             transition: color 0.2s ease;
         }
 
-        .register-link a:hover {
+        .login-link a:hover {
             color: #764ba2;
             text-decoration: underline;
+        }
+
+        /* Indicador de fortaleza de contraseña */
+        .password-strength {
+            margin-top: 8px;
+            height: 3px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .password-strength.show {
+            opacity: 1;
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #f56565, #ed8936, #38a169);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Validación visual */
+        .form-input.valid {
+            border-color: #38a169;
+        }
+
+        .form-input.invalid {
+            border-color: #e53e3e;
+        }
+
+        .validation-message {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #e53e3e;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all 0.2s ease;
+        }
+
+        .validation-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 16px;
+            }
+
+            .register-card {
+                padding: 32px 24px;
+            }
+
+            .register-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Efectos adicionales */
+        .form-group {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .form-group:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .form-group:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .form-group:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .form-group:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .form-group:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            transform: translateY(20px);
         }
 
         /* Loading spinner para el botón */
@@ -351,21 +442,6 @@
             }
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 16px;
-            }
-
-            .login-card {
-                padding: 32px 24px;
-            }
-
-            .login-title {
-                font-size: 24px;
-            }
-        }
-
         /* Patas decorativas alrededor de la tarjeta */
         .paws {
             position: fixed;
@@ -387,35 +463,35 @@
         .paw.tl {
             top: 70px;
             left: calc(50% - 280px);
-            background-image: url('../../static/images/v16_26.png');
+            background-image: url("{{ url_for('static', filename='images/v16_26.png') }}");
             transform: rotate(-18deg);
         }
 
         .paw.tr {
             top: 70px;
             left: calc(50% + 220px);
-            background-image: url('../../static/images/v16_27.png');
+            background-image: url("{{ url_for('static', filename='images/v16_27.png') }}");
             transform: rotate(12deg);
         }
 
         .paw.bl {
             bottom: 90px;
             left: calc(50% - 280px);
-            background-image: url('../../static/images/v16_29.png');
+            background-image: url("{{ url_for('static', filename='images/v16_29.png') }}");
             transform: rotate(10deg);
         }
 
         .paw.br {
             bottom: 90px;
             left: calc(50% + 220px);
-            background-image: url('../../static/images/v16_28.png');
+            background-image: url("{{ url_for('static', filename='images/v16_28.png') }}");
             transform: rotate(-10deg);
         }
 
         .paw.mr {
             top: 50%;
             left: calc(50% + 240px);
-            background-image: url('../../static/images/v16_40.png');
+            background-image: url("{{ url_for('static', filename='images/v16_40.png') }}");
             transform: translateY(-50%) rotate(6deg);
         }
 
@@ -473,16 +549,40 @@
         <i class="paw bl"></i>
     </div>
 
-    <div class="login-container">
-        <div class="login-card">
+    <div class="register-container">
+        <div class="register-card">
             <div style="text-align:center; margin-bottom:18px;">
                 <img src="../../static/images/favicon.svg" alt="Adopt Me"
                     class="auth-logo" />
             </div>
 
-            <h1 class="login-title">Iniciar Sesión</h1>
 
-            <form method="post" action="/iniciar-sesion" id="loginForm">
+            <h1 class="register-title">Crear Cuenta</h1>
+
+                        <form method="POST" action="{{ url_for('Registro_Usuario') }}">
+                <div class="form-group">
+                    <label for="user" class="form-label">Usuario</label>
+                    <div style="position: relative;">
+                        <input type="text" id="user" name="user" class="form-input"
+                            placeholder="Ingresa tu nombre de usuario" autocomplete="username" required minlength="3" />
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                    <div class="validation-message" id="userValidation"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" name="password" class="form-input"
+                            placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                    <div class="password-strength">
+                        <div class="password-strength-fill"></div>
+                    </div>
+                    <div class="validation-message" id="passwordValidation"></div>
+                </div>
+
                 <div class="form-group">
                     <label for="email" class="form-label">Correo Electrónico</label>
                     <div style="position: relative;">
@@ -490,50 +590,182 @@
                             autocomplete="email" required />
                         <i class="fas fa-envelope input-icon"></i>
                     </div>
+                    <div class="validation-message" id="emailValidation"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="password" class="form-label">Contraseña</label>
+                    <label for="email2" class="form-label">Confirmar Correo</label>
                     <div style="position: relative;">
-                        <input type="password" id="password" name="password" class="form-input"
-                            placeholder="Ingresa tu contraseña" autocomplete="current-password" required />
-                        <i class="fas fa-lock input-icon"></i>
+                        <input type="email" id="email2" name="email2" class="form-input"
+                            placeholder="Repite tu correo electrónico" autocomplete="email" required />
+                        <i class="fas fa-envelope-circle-check input-icon"></i>
                     </div>
+                    <div class="validation-message" id="email2Validation"></div>
                 </div>
 
-                <button type="submit" class="login-btn" id="submitBtn">
+                <button type="submit" class="register-btn" id="submitBtn">
                     <div class="loading-spinner" id="loadingSpinner"></div>
-                    <span id="btnText">Iniciar Sesión</span>
+                    <span id="btnText">Crear Cuenta</span>
                 </button>
             </form>
 
-            <div class="register-link">
-                <a href="/registro">¿No tienes cuenta? Crear cuenta</a>
+            <div class="login-link">
+                <a href="{{ url_for('Iniciar_Sesion') }}">¿Ya tienes cuenta? Inicia sesión</a>
+                <div style="margin-top:12px; font-size:14px;">
+                    ¿O eres administrador? <a href="{{ url_for('Registro_Administrador') }}" style="color:#e08c2b; text-decoration:underline; font-weight:600;">Regístrate</a>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         (function () {
-            const form = document.getElementById('loginForm');
+            const form = document.getElementById('registerForm');
             const inputs = form.querySelectorAll('.form-input');
             const submitBtn = document.getElementById('submitBtn');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const btnText = document.getElementById('btnText');
+
+            // Elementos de validación
+            const userInput = document.getElementById('user');
+            const passwordInput = document.getElementById('password');
+            const emailInput = document.getElementById('email');
+            const email2Input = document.getElementById('email2');
+            const passwordStrength = document.querySelector('.password-strength');
+            const passwordStrengthFill = document.querySelector('.password-strength-fill');
+
+            // Funciones de validación
+            function validateUser() {
+                const value = userInput.value;
+                const validation = document.getElementById('userValidation');
+
+                if (value.length < 3 && value.length > 0) {
+                    userInput.classList.add('invalid');
+                    userInput.classList.remove('valid');
+                    validation.textContent = 'El usuario debe tener al menos 3 caracteres';
+                    validation.classList.add('show');
+                    return false;
+                } else if (value.length >= 3) {
+                    userInput.classList.add('valid');
+                    userInput.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    return true;
+                } else {
+                    userInput.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+            }
+
+            function validatePassword() {
+                const value = passwordInput.value;
+                const validation = document.getElementById('passwordValidation');
+
+                if (value.length === 0) {
+                    passwordStrength.classList.remove('show');
+                    passwordInput.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+
+                passwordStrength.classList.add('show');
+
+                // Calcular fortaleza
+                let strength = 0;
+                if (value.length >= 6) strength += 25;
+                if (value.length >= 8) strength += 25;
+                if (/[A-Z]/.test(value)) strength += 25;
+                if (/[0-9]/.test(value)) strength += 25;
+
+                passwordStrengthFill.style.width = strength + '%';
+
+                if (value.length < 6) {
+                    passwordInput.classList.add('invalid');
+                    passwordInput.classList.remove('valid');
+                    validation.textContent = 'La contraseña debe tener al menos 6 caracteres';
+                    validation.classList.add('show');
+                    return false;
+                } else {
+                    passwordInput.classList.add('valid');
+                    passwordInput.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    return true;
+                }
+            }
+            function validateEmail() {
+                const value = emailInput.value;
+                const validation = document.getElementById('emailValidation');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (value.length === 0) {
+                    emailInput.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+
+                if (!emailRegex.test(value)) {
+                    emailInput.classList.add('invalid');
+                    emailInput.classList.remove('valid');
+                    validation.textContent = 'Ingresa un correo electrónico válido';
+                    validation.classList.add('show');
+                    return false;
+                } else {
+                    emailInput.classList.add('valid');
+                    emailInput.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    return true;
+                }
+            }
+
+            function validateEmailConfirmation() {
+                const email = emailInput.value;
+                const email2 = email2Input.value;
+                const validation = document.getElementById('email2Validation');
+
+                if (email2.length === 0) {
+                    email2Input.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+
+                if (email !== email2) {
+                    email2Input.classList.add('invalid');
+                    email2Input.classList.remove('valid');
+                    validation.textContent = 'Los correos electrónicos no coinciden';
+                    validation.classList.add('show');
+                    email2Input.setCustomValidity('Los correos no coinciden');
+                    return false;
+                } else {
+                    email2Input.classList.add('valid');
+                    email2Input.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    email2Input.setCustomValidity('');
+                    return true;
+                }
+            }
+
+            // Event listeners
+            userInput.addEventListener('input', validateUser);
+            passwordInput.addEventListener('input', validatePassword);
+            emailInput.addEventListener('input', () => {
+                validateEmail();
+                validateEmailConfirmation();
+            });
+            email2Input.addEventListener('input', validateEmailConfirmation);
 
             // Efectos de focus para los iconos
             inputs.forEach(input => {
                 input.addEventListener('focus', () => {
                     const icon = input.nextElementSibling;
                     if (icon && icon.classList.contains('input-icon')) {
-                        icon.style.color = '#e08c2b';
+                        icon.style.color = '#667eea';
                     }
                 });
 
                 input.addEventListener('blur', () => {
                     const icon = input.nextElementSibling;
                     if (icon && icon.classList.contains('input-icon') && !input.value) {
-                        icon.style.color = '#eeb807';
+                        icon.style.color = '#a0aec0';
                     }
                 });
             });
@@ -542,28 +774,33 @@
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
 
-                // Validar que ambos campos tengan contenido
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value.trim();
+                // Validar todos los campos
+                const isUserValid = validateUser();
+                const isPasswordValid = validatePassword();
+                const isEmailValid = validateEmail();
+                const isEmail2Valid = validateEmailConfirmation();
 
-                if (!email || !password) {
-                    alert('Por favor, completa todos los campos');
-                    return;
+                if (isUserValid && isPasswordValid && isEmailValid && isEmail2Valid) {
+                    // Mostrar loading
+                    submitBtn.disabled = true;
+                    loadingSpinner.style.display = 'inline-block';
+                    btnText.textContent = 'Creando cuenta...';
+
+                    // Simular envío (en producción aquí iría el envío real)
+                    setTimeout(() => {
+                        form.submit(); // Envío real del formulario
+                    }, 1000);
+                } else {
+                    // Enfocar el primer campo inválido
+                    const firstInvalid = form.querySelector('.form-input.invalid');
+                    if (firstInvalid) {
+                        firstInvalid.focus();
+                    }
                 }
-
-                // Mostrar loading
-                submitBtn.disabled = true;
-                loadingSpinner.style.display = 'inline-block';
-                btnText.textContent = 'Iniciando sesión...';
-
-                // Simular proceso de login y redirigir a la página principal
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 1500);
             });
 
             // Efecto de escritura en el título
-            const title = document.querySelector('.login-title');
+            const title = document.querySelector('.register-title');
             const titleText = title.textContent;
             title.textContent = '';
 
@@ -580,6 +817,8 @@
             }, 800);
         })();
     </script>
+
+
 </body>
 
 </html>

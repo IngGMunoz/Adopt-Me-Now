@@ -69,11 +69,11 @@
         @media (max-width: 480px) { .register-container { padding: 16px; } .register-card { padding: 32px 24px; } .register-title { font-size: 24px; } }
         .paws { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
         .paw { position: absolute; width: 72px; height: 72px; background-size: contain; background-repeat: no-repeat; filter: drop-shadow(0 2px 2px rgba(0,0,0,.08)); opacity: .95; }
-        .paw.tl { top: 70px; left: calc(50% - 280px); background-image: url('../../static/images/v16_26.png'); transform: rotate(-18deg); }
-        .paw.tr { top: 70px; left: calc(50% + 220px); background-image: url('../../static/images/v16_27.png'); transform: rotate(12deg); }
-        .paw.bl { bottom: 90px; left: calc(50% - 280px); background-image: url('../../static/images/v16_29.png'); transform: rotate(10deg); }
-        .paw.br { bottom: 90px; left: calc(50% + 220px); background-image: url('../../static/images/v16_28.png'); transform: rotate(-10deg); }
-        .paw.mr { top: 50%; left: calc(50% + 240px); background-image: url('../../static/images/v16_40.png'); transform: translateY(-50%) rotate(6deg); }
+        .paw.tl { top: 70px; left: calc(50% - 280px); background-image: url("{{ url_for('static', filename='images/v16_26.png') }}"); transform: rotate(-18deg); }
+        .paw.tr { top: 70px; left: calc(50% + 220px); background-image: url("{{ url_for('static', filename='images/v16_27.png') }}"); transform: rotate(12deg); }
+        .paw.bl { bottom: 90px; left: calc(50% - 280px); background-image: url("{{ url_for('static', filename='images/v16_29.png') }}"); transform: rotate(10deg); }
+        .paw.br { bottom: 90px; left: calc(50% + 220px); background-image: url("{{ url_for('static', filename='images/v16_28.png') }}"); transform: rotate(-10deg); }
+        .paw.mr { top: 50%; left: calc(50% + 240px); background-image: url("{{ url_for('static', filename='images/v16_40.png') }}"); transform: translateY(-50%) rotate(6deg); }
         @media (max-width: 560px) { .paw { opacity: .75; width: 56px; height: 56px; } .paw.tl { left: 16px; top: 24px; } .paw.tr { right: 16px; left: auto; top: 24px; } .paw.bl { left: 16px; bottom: 24px; } .paw.br { right: 16px; left: auto; bottom: 24px; } .paw.mr { display: none; } }
     </style>
 </head>
@@ -98,7 +98,7 @@
                 <img src="../../static/images/favicon.svg" alt="Adopt Me" class="auth-logo" />
             </div>
             <h1 class="register-title">Registro Administrador</h1>
-            <form method="post" action="/registro-administrador" autocomplete="off">
+            <form method="post" action="{{ url_for('Registro_Administrador') }}" autocomplete="off">
                 <div class="form-group">
                     <label for="user" class="form-label">Usuario</label>
                     <div style="position: relative;">
