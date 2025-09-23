@@ -1,42 +1,30 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "layouts/base.html" %}
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="/static/css/registro-administrador.css" rel="stylesheet" />
-    <title>Registro Administrador</title>
-</head>
+{% block title %}Registro Administrador - Adopt Me{% endblock %}
 
-<body>
-    <div class="particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
+{% block stylesheets %}
+<link href="{{ url_for('static', filename='css/registro-administrador.css') }}" rel="stylesheet" />
+{% endblock %}
 
-    <!-- Patas decorativas con variante azul -->
-    <div class="admin-paws" aria-hidden="true">
-        <i class="admin-paw tl"></i>
-        <i class="admin-paw tr"></i>
-        <i class="admin-paw mr"></i>
-        <i class="admin-paw br"></i>
-        <i class="admin-paw bl"></i>
-    </div>
+{% block navbar %}
+<!-- No navbar en registro -->
+{% endblock %}
 
-    <div class="admin-register-container">
-        <div class="admin-register-card">
-            <div class="admin-badge">Administrador</div>
-            
-            <div style="text-align:center; margin-bottom:18px;">
-                <img src="../../static/images/favicon.svg" alt="Adopt Me"
-                    class="auth-logo" />
-            </div>
+{% block footer %}
+<!-- No footer en registro -->
+{% endblock %}
+
+{% block background_effects %}
+{% include 'components/particles.html' %}
+{% include 'components/admin_paws.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="admin-register-container">
+    <div class="admin-register-card">
+        <div class="admin-badge">Administrador</div>
+        
+        {% include 'components/university_logo.html' %}
 
             <h1 class="admin-register-title">Registro Administrativo</h1>
 
@@ -108,8 +96,11 @@
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script>
+{% block scripts %}
+<script>
         (function () {
             const form = document.getElementById('adminRegisterForm');
             const inputs = form.querySelectorAll('.admin-form-input');
@@ -334,7 +325,5 @@
                 typeWriter();
             }, 800);
         })();
-    </script>
-</body>
-
-</html>
+</script>
+{% endblock %}

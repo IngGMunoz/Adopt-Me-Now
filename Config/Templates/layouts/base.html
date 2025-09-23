@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" {% if page_class %}class="{{ page_class }}"{% endif %}>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Adopt Me{% endblock %}</title>
+    
+    <!-- Fuentes base -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- CSS específico por página -->
+    {% block stylesheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/principal.css') }}">
+    {% endblock %}
+</head>
+<body>
+    <!-- Efectos de fondo si son necesarios -->
+    {% block background_effects %}{% endblock %}
+    
+    <!-- Navegación -->
+    {% block navbar %}
+    {% include 'components/navbar.html' %}
+    {% endblock %}
+    
+    <!-- Contenido principal -->
+    <main {% if main_class %}class="{{ main_class }}"{% endif %}>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    {% block footer %}
+    {% include 'components/footer.html' %}
+    {% endblock %}
+    
+    <!-- Scripts base -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

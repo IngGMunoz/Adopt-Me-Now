@@ -1,37 +1,26 @@
-<!DOCTYPE html>
-<html lang="es" class="login-page">
+{% extends "layouts/base.html" %}
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/principal.css') }}">
-<body>
-    <div class="particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
+{% block title %}Iniciar Sesión - Adopt Me{% endblock %}
 
-    <!-- Patas decorativas -->
-    <div class="paws" aria-hidden="true">
-        <i class="paw tl"></i>
-        <i class="paw tr"></i>
-        <i class="paw mr"></i>
-        <i class="paw br"></i>
-        <i class="paw bl"></i>
-    </div>
+{% set page_class = "login-page" %}
 
-    <div class="login-container">
-        <div class="login-card">
-            <div style="text-align:center; margin-bottom:18px;">
-                <img src="/static/images/favicon.svg" alt="Adopt Me"
-                    style="width: 60px; height: auto;" />
-            </div>
+{% block background_effects %}
+{% include 'components/particles.html' %}
+{% include 'components/paws.html' %}
+{% endblock %}
+
+{% block navbar %}
+<!-- No navbar en login -->
+{% endblock %}
+
+{% block footer %}
+<!-- No footer en login -->
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        {% include 'components/university_logo.html' %}
 
             <h1 class="login-title">Iniciar Sesión</h1>
 
@@ -65,74 +54,75 @@
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script>
-        (function () {
-            const form = document.getElementById('loginForm');
-            const inputs = form.querySelectorAll('.form-input');
-            const submitBtn = document.getElementById('submitBtn');
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            const btnText = document.getElementById('btnText');
+{% block scripts %}
+<script>
+(function () {
+    const form = document.getElementById('loginForm');
+    const inputs = form.querySelectorAll('.form-input');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const btnText = document.getElementById('btnText');
 
-            // Efectos de focus para los iconos
-            inputs.forEach(input => {
-                input.addEventListener('focus', () => {
-                    const icon = input.nextElementSibling;
-                    if (icon && icon.classList.contains('input-icon')) {
-                        icon.style.color = '#e08c2b';
-                    }
-                });
+    // Efectos de focus para los iconos
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            const icon = input.nextElementSibling;
+            if (icon && icon.classList.contains('input-icon')) {
+                icon.style.color = '#e08c2b';
+            }
+        });
 
-                input.addEventListener('blur', () => {
-                    const icon = input.nextElementSibling;
-                    if (icon && icon.classList.contains('input-icon') && !input.value) {
-                        icon.style.color = '#eeb807';
-                    }
-                });
-            });
+        input.addEventListener('blur', () => {
+            const icon = input.nextElementSibling;
+            if (icon && icon.classList.contains('input-icon') && !input.value) {
+                icon.style.color = '#eeb807';
+            }
+        });
+    });
 
-            // Submit del formulario
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
+    // Submit del formulario
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-                // Validar que ambos campos tengan contenido
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value.trim();
+        // Validar que ambos campos tengan contenido
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
 
-                if (!email || !password) {
-                    alert('Por favor, completa todos los campos');
-                    return;
-                }
+        if (!email || !password) {
+            alert('Por favor, completa todos los campos');
+            return;
+        }
 
-                // Mostrar loading
-                submitBtn.disabled = true;
-                loadingSpinner.style.display = 'inline-block';
-                btnText.textContent = 'Iniciando sesión...';
+        // Mostrar loading
+        submitBtn.disabled = true;
+        loadingSpinner.style.display = 'inline-block';
+        btnText.textContent = 'Iniciando sesión...';
 
-                // Simular proceso de login y redirigir a la página principal
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 1500);
-            });
+        // Simular proceso de login y redirigir a la página principal
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 1500);
+    });
 
-            // Efecto de escritura en el título
-            const title = document.querySelector('.login-title');
-            const titleText = title.textContent;
-            title.textContent = '';
+    // Efecto de escritura en el título
+    const title = document.querySelector('.login-title');
+    const titleText = title.textContent;
+    title.textContent = '';
 
-            setTimeout(() => {
-                let i = 0;
-                const typeWriter = () => {
-                    if (i < titleText.length) {
-                        title.textContent += titleText.charAt(i);
-                        i++;
-                        setTimeout(typeWriter, 100);
-                    }
-                };
-                typeWriter();
-            }, 800);
-        })();
-    </script>
-</body>
-
-</html>
+    setTimeout(() => {
+        let i = 0;
+        const typeWriter = () => {
+            if (i < titleText.length) {
+                title.textContent += titleText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        };
+        typeWriter();
+    }, 800);
+})();
+</script>
+{% endblock %}

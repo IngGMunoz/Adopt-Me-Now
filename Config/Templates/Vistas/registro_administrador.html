@@ -1,0 +1,328 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Registro Administrador - Adopt Me{% endblock %}
+
+{% block stylesheets %}
+<link href="{{ url_for('static', filename='css/registro-administrador.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block navbar %}
+<!-- No navbar en registro -->
+{% endblock %}
+
+{% block footer %}
+<!-- No footer en registro -->
+{% endblock %}
+
+{% block background_effects %}
+{% include 'components/particles.html' %}
+{% include 'components/admin_paws.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="admin-register-container">
+    <div class="admin-register-card">
+        <div class="admin-badge">Administrador</div>
+        
+        {% include 'components/university_logo.html' %}
+
+        <h1 class="admin-register-title">Registro Administrativo</h1>
+
+        <form method="POST" action="{{ url_for('Registro_Administrador') }}" id="adminRegisterForm">
+            <div class="admin-form-group">
+                <label for="admin_user" class="admin-form-label">Usuario Administrador</label>
+                <div style="position: relative;">
+                    <input type="text" id="admin_user" name="admin_user" class="admin-form-input"
+                           placeholder="Ingresa tu nombre de usuario administrativo" autocomplete="username" required minlength="3" />
+                    <i class="fas fa-user-shield admin-input-icon"></i>
+                </div>
+                <div class="admin-validation-message" id="adminUserValidation"></div>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="admin_password" class="admin-form-label">Contraseña Administrativa</label>
+                <div style="position: relative;">
+                    <input type="password" id="admin_password" name="admin_password" class="admin-form-input"
+                           placeholder="Mínimo 8 caracteres para administradores" autocomplete="new-password" required minlength="8" />
+                    <i class="fas fa-shield-halved admin-input-icon"></i>
+                </div>
+                <div class="admin-password-strength">
+                    <div class="admin-password-strength-fill"></div>
+                </div>
+                <div class="admin-validation-message" id="adminPasswordValidation"></div>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="admin_email" class="admin-form-label">Correo Institucional</label>
+                <div style="position: relative;">
+                    <input type="email" id="admin_email" name="admin_email" class="admin-form-input" 
+                           placeholder="admin@institucion.edu" autocomplete="email" required />
+                    <i class="fas fa-envelope-circle-check admin-input-icon"></i>
+                </div>
+                <div class="admin-validation-message" id="adminEmailValidation"></div>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="admin_email2" class="admin-form-label">Confirmar Correo</label>
+                <div style="position: relative;">
+                    <input type="email" id="admin_email2" name="admin_email2" class="admin-form-input"
+                           placeholder="Repite tu correo institucional" autocomplete="email" required />
+                    <i class="fas fa-envelope-check admin-input-icon"></i>
+                </div>
+                <div class="admin-validation-message" id="adminEmail2Validation"></div>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="admin_nit" class="admin-form-label">N.I.T. Institucional</label>
+                <div style="position: relative;">
+                    <input type="text" id="admin_nit" name="admin_nit" class="admin-form-input"
+                           placeholder="NIT de la institución" required minlength="5" />
+                    <i class="fas fa-id-card admin-input-icon"></i>
+                </div>
+                <div class="admin-validation-message" id="adminNitValidation"></div>
+            </div>
+
+            <button type="submit" class="admin-register-btn" id="adminSubmitBtn">
+                <div class="admin-loading-spinner" id="adminLoadingSpinner"></div>
+                <span id="adminBtnText">🛡️ Crear Cuenta Administrativa</span>
+            </button>
+        </form>
+
+        <div class="admin-login-link">
+            <a href="{{ url_for('Iniciar_Sesion') }}">¿Ya tienes cuenta? Inicia sesión</a>
+            <div style="margin-top:12px; font-size:14px;">
+                ¿Usuario regular? <a href="{{ url_for('Registro_Usuario') }}" style="color:#4299e1; text-decoration:underline; font-weight:600;">Regístrate aquí</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        const form = document.getElementById('adminRegisterForm');
+        const inputs = form.querySelectorAll('.admin-form-input');
+        const submitBtn = document.getElementById('adminSubmitBtn');
+        const loadingSpinner = document.getElementById('adminLoadingSpinner');
+        const btnText = document.getElementById('adminBtnText');
+
+        // Elementos de validación
+        const userInput = document.getElementById('admin_user');
+        const passwordInput = document.getElementById('admin_password');
+        const emailInput = document.getElementById('admin_email');
+        const email2Input = document.getElementById('admin_email2');
+        const nitInput = document.getElementById('admin_nit');
+        const passwordStrength = document.querySelector('.admin-password-strength');
+        const passwordStrengthFill = document.querySelector('.admin-password-strength-fill');
+
+        // Funciones de validación
+        function validateUser() {
+            const value = userInput.value;
+            const validation = document.getElementById('adminUserValidation');
+
+            if (value.length < 3 && value.length > 0) {
+                userInput.classList.add('invalid');
+                userInput.classList.remove('valid');
+                validation.textContent = 'El usuario administrativo debe tener al menos 3 caracteres';
+                validation.classList.add('show');
+                return false;
+            } else if (value.length >= 3) {
+                userInput.classList.add('valid');
+                userInput.classList.remove('invalid');
+                validation.classList.remove('show');
+                return true;
+            } else {
+                userInput.classList.remove('valid', 'invalid');
+                validation.classList.remove('show');
+                return false;
+            }
+        }
+
+        function validatePassword() {
+            const value = passwordInput.value;
+            const validation = document.getElementById('adminPasswordValidation');
+
+            if (value.length === 0) {
+                passwordStrength.classList.remove('show');
+                passwordInput.classList.remove('valid', 'invalid');
+                validation.classList.remove('show');
+                return false;
+            }
+
+            passwordStrength.classList.add('show');
+
+            // Calcular fortaleza (más estricto para administradores)
+            let strength = 0;
+            if (value.length >= 8) strength += 20;
+            if (value.length >= 12) strength += 20;
+            if (/[A-Z]/.test(value)) strength += 20;
+            if (/[0-9]/.test(value)) strength += 20;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) strength += 20;
+
+            passwordStrengthFill.style.width = strength + '%';
+
+            if (value.length < 8) {
+                passwordInput.classList.add('invalid');
+                passwordInput.classList.remove('valid');
+                validation.textContent = 'La contraseña administrativa debe tener al menos 8 caracteres';
+                validation.classList.add('show');
+                return false;
+            } else {
+                passwordInput.classList.add('valid');
+                passwordInput.classList.remove('invalid');
+                validation.classList.remove('show');
+                return true;
+            }
+        }
+
+        function validateEmail() {
+            const value = emailInput.value;
+            const validation = document.getElementById('adminEmailValidation');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (value.length === 0) {
+                emailInput.classList.remove('valid', 'invalid');
+                validation.classList.remove('show');
+                return false;
+            }
+
+            if (!emailRegex.test(value)) {
+                emailInput.classList.add('invalid');
+                emailInput.classList.remove('valid');
+                validation.textContent = 'Ingresa un correo institucional válido';
+                validation.classList.add('show');
+                return false;
+            } else {
+                emailInput.classList.add('valid');
+                emailInput.classList.remove('invalid');
+                validation.classList.remove('show');
+                return true;
+            }
+        }
+
+        function validateEmailConfirmation() {
+            const email = emailInput.value;
+            const email2 = email2Input.value;
+            const validation = document.getElementById('adminEmail2Validation');
+
+            if (email2.length === 0) {
+                email2Input.classList.remove('valid', 'invalid');
+                validation.classList.remove('show');
+                return false;
+            }
+
+            if (email !== email2) {
+                email2Input.classList.add('invalid');
+                email2Input.classList.remove('valid');
+                validation.textContent = 'Los correos institucionales no coinciden';
+                validation.classList.add('show');
+                email2Input.setCustomValidity('Los correos no coinciden');
+                return false;
+            } else {
+                email2Input.classList.add('valid');
+                email2Input.classList.remove('invalid');
+                validation.classList.remove('show');
+                email2Input.setCustomValidity('');
+                return true;
+            }
+        }
+
+        function validateNit() {
+            const value = nitInput.value;
+            const validation = document.getElementById('adminNitValidation');
+
+            if (value.length < 5 && value.length > 0) {
+                nitInput.classList.add('invalid');
+                nitInput.classList.remove('valid');
+                validation.textContent = 'El NIT debe tener al menos 5 caracteres';
+                validation.classList.add('show');
+                return false;
+            } else if (value.length >= 5) {
+                nitInput.classList.add('valid');
+                nitInput.classList.remove('invalid');
+                validation.classList.remove('show');
+                return true;
+            } else {
+                nitInput.classList.remove('valid', 'invalid');
+                validation.classList.remove('show');
+                return false;
+            }
+        }
+
+        // Event listeners
+        userInput.addEventListener('input', validateUser);
+        passwordInput.addEventListener('input', validatePassword);
+        emailInput.addEventListener('input', () => {
+            validateEmail();
+            validateEmailConfirmation();
+        });
+        email2Input.addEventListener('input', validateEmailConfirmation);
+        nitInput.addEventListener('input', validateNit);
+
+        // Efectos de focus para los iconos
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                const icon = input.nextElementSibling;
+                if (icon && icon.classList.contains('admin-input-icon')) {
+                    icon.style.color = '#3182ce';
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                const icon = input.nextElementSibling;
+                if (icon && icon.classList.contains('admin-input-icon') && !input.value) {
+                    icon.style.color = '#4299e1';
+                }
+            });
+        });
+
+        // Submit del formulario
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Validar todos los campos
+            const isUserValid = validateUser();
+            const isPasswordValid = validatePassword();
+            const isEmailValid = validateEmail();
+            const isEmail2Valid = validateEmailConfirmation();
+            const isNitValid = validateNit();
+
+            if (isUserValid && isPasswordValid && isEmailValid && isEmail2Valid && isNitValid) {
+                // Mostrar loading
+                submitBtn.disabled = true;
+                loadingSpinner.style.display = 'inline-block';
+                btnText.textContent = 'Creando cuenta administrativa...';
+
+                // Simular envío (en producción aquí iría el envío real)
+                setTimeout(() => {
+                    form.submit(); // Envío real del formulario
+                }, 1000);
+            } else {
+                // Enfocar el primer campo inválido
+                const firstInvalid = form.querySelector('.admin-form-input.invalid');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                }
+            }
+        });
+
+        // Efecto de escritura en el título
+        const title = document.querySelector('.admin-register-title');
+        const titleText = title.textContent;
+        title.textContent = '';
+
+        setTimeout(() => {
+            let i = 0;
+            const typeWriter = () => {
+                if (i < titleText.length) {
+                    title.textContent += titleText.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 100);
+                }
+            };
+            typeWriter();
+        }, 800);
+    })();
+</script>
+{% endblock %}

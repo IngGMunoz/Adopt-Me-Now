@@ -1,0 +1,19 @@
+<nav class="navbar">
+    <div class="navbar__container">
+        <a href="{{ url_for('Pagina_Principal') }}" class="navbar__logo">Adopt Me</a>
+        
+        <ul class="navbar__menu">
+            <li><a href="{{ url_for('Mascotas_Alias') }}" class="navbar__link">Mascotas</a></li>
+            <li><a href="{{ url_for('Pagina_Fundacion') }}" class="navbar__link">Fundaciones</a></li>
+        </ul>
+
+        <div class="navbar__auth-buttons">
+            <a href="{{ url_for('Iniciar_Sesion') }}" class="navbar__btn navbar__btn--login">Iniciar sesión</a>
+            <a href="{{ url_for('Registro_Usuario') }}" class="navbar__btn navbar__btn--register">Registro</a>
+        </div>
+
+        <a href="#" class="navbar__profile">
+            <span class="navbar__icon">&#128100;</span>
+        </a>
+    </div>
+</nav>

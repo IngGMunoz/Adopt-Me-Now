@@ -1,40 +1,28 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "layouts/base.html" %}
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="/static/css/registro-usuario.css" rel="stylesheet" />
-    <title>Registro Usuario</title>
-</head>
+{% block title %}Registro Usuario - Adopt Me{% endblock %}
 
-<body>
-    <div class="particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
+{% block stylesheets %}
+<link href="{{ url_for('static', filename='css/registro-usuario.css') }}" rel="stylesheet" />
+{% endblock %}
 
-    <!-- Patas decorativas -->
-    <div class="paws" aria-hidden="true">
-        <i class="paw tl"></i>
-        <i class="paw tr"></i>
-        <i class="paw mr"></i>
-        <i class="paw br"></i>
-        <i class="paw bl"></i>
-    </div>
+{% block navbar %}
+<!-- No navbar en registro -->
+{% endblock %}
 
-    <div class="register-container">
-        <div class="register-card">
-            <div style="text-align:center; margin-bottom:18px;">
-                <img src="../../static/images/favicon.svg" alt="Adopt Me"
-                    class="auth-logo" />
-            </div>
+{% block footer %}
+<!-- No footer en registro -->
+{% endblock %}
+
+{% block background_effects %}
+{% include 'components/particles.html' %}
+{% include 'components/paws.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-card">
+        {% include 'components/university_logo.html' %}
 
 
             <h1 class="register-title">Crear Cuenta</h1>
@@ -97,8 +85,11 @@
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script>
+{% block scripts %}
+<script>
         (function () {
             const form = document.getElementById('registerForm');
             const inputs = form.querySelectorAll('.form-input');
@@ -296,9 +287,5 @@
                 typeWriter();
             }, 800);
         })();
-    </script>
-
-
-</body>
-
-</html>
+</script>
+{% endblock %}

@@ -1,32 +1,32 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <title>Adopt Me - Fundaciones</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Adopcion.css') }}">
-</head>
-<body>
-    <!-- Header -->
-    <header class="topbar">
-        <div class="topbar-inner">
-            <div class="brand">
-                <i class="fa-solid fa-paw"></i> Adopt Me
-            </div>
-            <nav class="nav" aria-label="Navegación principal">
-                <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
-                <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
-                <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
-            </nav>
-            <div class="user" title="Perfil">
-                <i class="fa-regular fa-user"></i>
-            </div>
-        </div>
-    </header>
+{% extends "layouts/base.html" %}
 
-    <!--Ordenar Por-->
+{% block title %}Adopt Me - Mascotas en Adopción{% endblock %}
+
+{% block stylesheets %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Adopcion.css') }}">
+{% endblock %}
+
+{% block navbar %}
+<!-- Header personalizado para página de adopción -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <i class="fa-solid fa-paw"></i> Adopt Me
+        </div>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
+            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+        </nav>
+        <div class="user" title="Perfil">
+            <i class="fa-regular fa-user"></i>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
     <div class="toolbar">
         <label for="sortSelect" class="visually-hidden">Ordenar por</label>
         <select id="sortSelect" class="sort-btn" aria-label="Ordenar por">
@@ -60,7 +60,7 @@
         </section>
     </main>
 
-    <!-- Footer -->
+    <!-- Footer local (nota: el layout ya agrega uno global mediante el bloque footer) -->
     <footer class="footer">
         <div class="footer-inner">
             <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
@@ -92,6 +92,9 @@
             </div>
         </div>
     </footer>
+{% endblock %}
+
+{% block scripts %}
     <script>
         (function(){
             const select = document.getElementById('sortSelect');
@@ -138,5 +141,4 @@
             select.addEventListener('change', (e)=> applySort(e.target.value));
         })();
     </script>
-</body>
-</html>
+{% endblock %}
