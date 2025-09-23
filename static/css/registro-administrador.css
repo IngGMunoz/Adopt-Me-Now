@@ -1,0 +1,539 @@
+/* ===================================
+   ESTILOS PARA REGISTRO DE ADMINISTRADOR
+   =================================== */
+
+/* Reset y base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    background:
+        radial-gradient(1200px 700px at 15% -10%, #e8f4f8 0%, transparent 60%),
+        radial-gradient(900px 600px at 100% 110%, #ddf0f5 0%, transparent 58%),
+        linear-gradient(#ffffff, #f0f8fb);
+}
+
+/* Fondo con iconos de paws como marca de agua - variante azul para admin */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%233182ce" stroke-width="1" opacity="0.08"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7C14.4 7 14 7.4 14 8S14.4 9 15 9H21ZM9 7L3 7V9H9C9.6 9 10 8.6 10 8S9.6 7 9 7ZM11 10C8.8 10 7 11.8 7 14S8.8 18 11 18H13C15.2 18 17 16.2 17 14S15.2 10 13 10H11Z"/></svg>');
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 144px 144px, 120px 120px, 100px 100px, 130px 130px, 110px 110px;
+    background-position:
+        left 8% top 6%,
+        right 8% top 7%,
+        left 10% bottom 9%,
+        right 14% bottom 12%,
+        center 50% center 20%;
+    opacity: .06;
+    z-index: -2;
+}
+
+@keyframes backgroundShift {
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.1) rotate(1deg);
+    }
+}
+
+/* Partículas flotantes - variante azul */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(49, 130, 206, 0.1);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.particle:nth-child(1) {
+    width: 8px;
+    height: 8px;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+    width: 12px;
+    height: 12px;
+    left: 50%;
+    animation-delay: 2s;
+}
+
+.particle:nth-child(3) {
+    width: 6px;
+    height: 6px;
+    left: 80%;
+    animation-delay: 4s;
+}
+
+.particle:nth-child(4) {
+    width: 10px;
+    height: 10px;
+    left: 35%;
+    animation-delay: 1s;
+}
+
+.particle:nth-child(5) {
+    width: 14px;
+    height: 14px;
+    left: 65%;
+    animation-delay: 3s;
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+
+    10%,
+    90% {
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-10vh) rotate(180deg);
+        opacity: 1;
+    }
+}
+
+/* Contenedor principal centrado */
+.admin-register-container {
+    position: relative;
+    margin: 40px auto 32px auto;
+    width: 100%;
+    max-width: 420px;
+    padding: 20px 0 32px 0;
+    animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tarjeta del formulario con estilo administrativo */
+.admin-register-card {
+    background: rgba(255, 255, 255, .95);
+    backdrop-filter: saturate(1.05) blur(2px);
+    border: 1px solid rgba(49, 130, 206, 0.15);
+    border-radius: 14px;
+    padding: 48px 40px;
+    box-shadow:
+        0 16px 32px rgba(49, 130, 206, .15),
+        0 8px 16px rgba(0, 0, 0, .08);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.admin-register-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(49, 130, 206, 0.4), transparent);
+}
+
+/* Badge de administrador */
+.admin-badge {
+    position: absolute;
+    top: -12px;
+    right: 24px;
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 0 0 12px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 8px rgba(49, 130, 206, 0.3);
+}
+
+.admin-badge::before {
+    content: '👑';
+    margin-right: 4px;
+}
+
+/* Título */
+.admin-register-title {
+    text-align: center;
+    margin-bottom: 32px;
+    color: #2d3748;
+    font-size: 28px;
+    font-weight: 700;
+    position: relative;
+}
+
+.admin-register-title::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    border-radius: 2px;
+}
+
+/* Grupos de input */
+.admin-form-group {
+    margin-bottom: 24px;
+    position: relative;
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.admin-form-group:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.admin-form-group:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.admin-form-group:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.admin-form-group:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.admin-form-group:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.admin-form-input {
+    width: 100%;
+    padding: 16px 20px 16px 50px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.admin-form-input:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.2);
+    transform: translateY(-1px);
+}
+
+.admin-form-input::placeholder {
+    color: #a0aec0;
+}
+
+/* Iconos en inputs - variante azul */
+.admin-input-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4299e1;
+    font-size: 16px;
+    transition: color 0.2s ease;
+    z-index: 1;
+}
+
+.admin-form-input:focus+.admin-input-icon,
+.admin-form-input:not(:placeholder-shown)+.admin-input-icon {
+    color: #3182ce;
+}
+
+/* Botón de registro administrativo */
+.admin-register-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.admin-register-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.admin-register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(66, 153, 225, 0.4);
+}
+
+.admin-register-btn:hover::before {
+    left: 100%;
+}
+
+.admin-register-btn:active {
+    transform: translateY(0);
+}
+
+/* Link de login */
+.admin-login-link {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.admin-login-link a {
+    color: #4299e1;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.admin-login-link a:hover {
+    color: #3182ce;
+    text-decoration: underline;
+}
+
+/* Indicador de fortaleza de contraseña - variante azul */
+.admin-password-strength {
+    margin-top: 8px;
+    height: 3px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.admin-password-strength.show {
+    opacity: 1;
+}
+
+.admin-password-strength-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #f56565, #ed8936, #4299e1);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Validación visual */
+.admin-form-input.valid {
+    border-color: #48bb78;
+}
+
+.admin-form-input.invalid {
+    border-color: #e53e3e;
+}
+
+.admin-validation-message {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #e53e3e;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.2s ease;
+}
+
+.admin-validation-message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Loading spinner para el botón */
+.admin-loading-spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Patas decorativas alrededor de la tarjeta - variante azul */
+.admin-paws {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.admin-paw {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    filter: drop-shadow(0 2px 2px rgba(49, 130, 206, .12)) hue-rotate(200deg) brightness(1.1);
+    opacity: .8;
+}
+
+.admin-paw.tl {
+    top: 70px;
+    left: calc(50% - 280px);
+    background-image: url('/static/images/v16_26.png');
+    transform: rotate(-18deg);
+}
+
+.admin-paw.tr {
+    top: 70px;
+    left: calc(50% + 220px);
+    background-image: url('/static/images/v16_27.png');
+    transform: rotate(12deg);
+}
+
+.admin-paw.bl {
+    bottom: 90px;
+    left: calc(50% - 280px);
+    background-image: url('/static/images/v16_29.png');
+    transform: rotate(10deg);
+}
+
+.admin-paw.br {
+    bottom: 90px;
+    left: calc(50% + 220px);
+    background-image: url('/static/images/v16_28.png');
+    transform: rotate(-10deg);
+}
+
+.admin-paw.mr {
+    top: 50%;
+    left: calc(50% + 240px);
+    background-image: url('/static/images/v16_40.png');
+    transform: translateY(-50%) rotate(6deg);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .admin-register-container {
+        padding: 16px;
+    }
+
+    .admin-register-card {
+        padding: 32px 24px;
+    }
+
+    .admin-register-title {
+        font-size: 24px;
+    }
+
+    .admin-badge {
+        right: 16px;
+        font-size: 11px;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 560px) {
+    .admin-paw {
+        opacity: .6;
+        width: 56px;
+        height: 56px;
+    }
+
+    .admin-paw.tl {
+        left: 16px;
+        top: 24px;
+    }
+
+    .admin-paw.tr {
+        right: 16px;
+        left: auto;
+        top: 24px;
+    }
+
+    .admin-paw.bl {
+        left: 16px;
+        bottom: 24px;
+    }
+
+    .admin-paw.br {
+        right: 16px;
+        left: auto;
+        bottom: 24px;
+    }
+
+    .admin-paw.mr {
+        display: none;
+    }
+}

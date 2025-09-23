@@ -1,82 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="/static/css/registro-administrador.css" rel="stylesheet" />
     <title>Registro Administrador</title>
-    <style>
-        /* Copiado de Registro_Usuario.html, solo visual */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-            background:
-                radial-gradient(1200px 700px at 15% -10%, #fff4e6 0%, transparent 60%),
-                radial-gradient(900px 600px at 100% 110%, #fff0dc 0%, transparent 58%),
-                linear-gradient(#ffffff, #fff9f2);
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image:
-                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23bd6a0b" stroke-width="1" opacity="0.08"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7C14.4 7 14 7.4 14 8S14.4 9 15 9H21ZM9 7L3 7V9H9C9.6 9 10 8.6 10 8S9.6 7 9 7ZM11 10C8.8 10 7 11.8 7 14S8.8 18 11 18H13C15.2 18 17 16.2 17 14S15.2 10 13 10H11Z"/></svg>');
-            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
-            background-size: 144px 144px, 120px 120px, 100px 100px, 130px 130px, 110px 110px;
-            background-position:
-                left 8% top 6%,
-                right 8% top 7%,
-                left 10% bottom 9%,
-                right 14% bottom 12%,
-                center 50% center 20%;
-            opacity: .06;
-            z-index: -2;
-        }
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
-        .particle { position: absolute; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 6s ease-in-out infinite; }
-        .particle:nth-child(1) { width: 8px; height: 8px; left: 20%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 12px; height: 12px; left: 50%; animation-delay: 2s; }
-        .particle:nth-child(3) { width: 6px; height: 6px; left: 80%; animation-delay: 4s; }
-        .particle:nth-child(4) { width: 10px; height: 10px; left: 35%; animation-delay: 1s; }
-        .particle:nth-child(5) { width: 14px; height: 14px; left: 65%; animation-delay: 3s; }
-        @keyframes float {
-            0%,100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10%,90% { opacity: 1; }
-            50% { transform: translateY(-10vh) rotate(180deg); opacity: 1; }
-        }
-        .register-container { position: relative; margin: 40px auto 32px auto; width: 100%; max-width: 420px; padding: 20px 0 32px 0; animation: slideUp 0.8s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        .register-card { background: rgba(255,255,255,.92); backdrop-filter: saturate(1.05) blur(2px); border: 1px solid rgba(189,106,11,0.08); border-radius: 14px; padding: 48px 40px; box-shadow: 0 16px 32px rgba(189,106,11,.12), 0 8px 16px rgba(0,0,0,.08); position: relative; z-index: 1; overflow: hidden; }
-        .register-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(189,106,11,0.3), transparent); }
-        .register-title { text-align: center; margin-bottom: 32px; color: #1a202c; font-size: 28px; font-weight: 700; position: relative; }
-        .register-title::after { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: linear-gradient(135deg, #ebc445, #eecf78); border-radius: 2px; }
-        .form-group { margin-bottom: 24px; position: relative; }
-        .form-label { display: block; margin-bottom: 8px; color: #4a5568; font-size: 14px; font-weight: 600; transition: color 0.2s ease; }
-        .form-input { width: 100%; padding: 16px 20px 16px 50px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; font-family: inherit; background: #ffffff; transition: all 0.3s ease; position: relative; }
-        .form-input:focus { outline: none; border-color: #e08c2b; box-shadow: 0 0 0 4px rgba(231,37,3,0.2); transform: translateY(-1px); }
-        .form-input::placeholder { color: #c0b5a0; }
-        .input-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #eeb807; font-size: 16px; transition: color 0.2s ease; z-index: 1; }
-        .register-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #eabc66 0%, #f5cd4c 100%); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; margin-top: 8px; }
-        .register-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(248,198,104,0.993); }
-        .register-btn:active { transform: translateY(0); }
-        .login-link { text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
-        .login-link a { color: #667eea; text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s ease; }
-        .login-link a:hover { color: #764ba2; text-decoration: underline; }
-        @media (max-width: 480px) { .register-container { padding: 16px; } .register-card { padding: 32px 24px; } .register-title { font-size: 24px; } }
-        .paws { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-        .paw { position: absolute; width: 72px; height: 72px; background-size: contain; background-repeat: no-repeat; filter: drop-shadow(0 2px 2px rgba(0,0,0,.08)); opacity: .95; }
-        .paw.tl { top: 70px; left: calc(50% - 280px); background-image: url("{{ url_for('static', filename='images/v16_26.png') }}"); transform: rotate(-18deg); }
-        .paw.tr { top: 70px; left: calc(50% + 220px); background-image: url("{{ url_for('static', filename='images/v16_27.png') }}"); transform: rotate(12deg); }
-        .paw.bl { bottom: 90px; left: calc(50% - 280px); background-image: url("{{ url_for('static', filename='images/v16_29.png') }}"); transform: rotate(10deg); }
-        .paw.br { bottom: 90px; left: calc(50% + 220px); background-image: url("{{ url_for('static', filename='images/v16_28.png') }}"); transform: rotate(-10deg); }
-        .paw.mr { top: 50%; left: calc(50% + 240px); background-image: url("{{ url_for('static', filename='images/v16_40.png') }}"); transform: translateY(-50%) rotate(6deg); }
-        @media (max-width: 560px) { .paw { opacity: .75; width: 56px; height: 56px; } .paw.tl { left: 16px; top: 24px; } .paw.tr { right: 16px; left: auto; top: 24px; } .paw.bl { left: 16px; bottom: 24px; } .paw.br { right: 16px; left: auto; bottom: 24px; } .paw.mr { display: none; } }
-    </style>
 </head>
+
 <body>
     <div class="particles">
         <div class="particle"></div>
@@ -85,64 +19,322 @@
         <div class="particle"></div>
         <div class="particle"></div>
     </div>
-    <div class="paws" aria-hidden="true">
-        <i class="paw tl"></i>
-        <i class="paw tr"></i>
-        <i class="paw mr"></i>
-        <i class="paw br"></i>
-        <i class="paw bl"></i>
+
+    <!-- Patas decorativas con variante azul -->
+    <div class="admin-paws" aria-hidden="true">
+        <i class="admin-paw tl"></i>
+        <i class="admin-paw tr"></i>
+        <i class="admin-paw mr"></i>
+        <i class="admin-paw br"></i>
+        <i class="admin-paw bl"></i>
     </div>
-    <div class="register-container">
-        <div class="register-card">
+
+    <div class="admin-register-container">
+        <div class="admin-register-card">
+            <div class="admin-badge">Administrador</div>
+            
             <div style="text-align:center; margin-bottom:18px;">
-                <img src="../../static/images/favicon.svg" alt="Adopt Me" class="auth-logo" />
+                <img src="../../static/images/favicon.svg" alt="Adopt Me"
+                    class="auth-logo" />
             </div>
-            <h1 class="register-title">Registro Administrador</h1>
-            <form method="post" action="{{ url_for('Registro_Administrador') }}" autocomplete="off">
-                <div class="form-group">
-                    <label for="user" class="form-label">Usuario</label>
+
+            <h1 class="admin-register-title">Registro Administrativo</h1>
+
+            <form method="POST" action="{{ url_for('Registro_Administrador') }}" id="adminRegisterForm">
+                <div class="admin-form-group">
+                    <label for="admin_user" class="admin-form-label">Usuario Administrador</label>
                     <div style="position: relative;">
-                        <input type="text" id="user" name="user" class="form-input" placeholder="Nombre de usuario" autocomplete="username" required minlength="3" />
-                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="admin_user" name="admin_user" class="admin-form-input"
+                            placeholder="Ingresa tu nombre de usuario administrativo" autocomplete="username" required minlength="3" />
+                        <i class="fas fa-user-shield admin-input-icon"></i>
                     </div>
+                    <div class="admin-validation-message" id="adminUserValidation"></div>
                 </div>
-                <div class="form-group">
-                    <label for="password" class="form-label">Contraseña</label>
+
+                <div class="admin-form-group">
+                    <label for="admin_password" class="admin-form-label">Contraseña Administrativa</label>
                     <div style="position: relative;">
-                        <input type="password" id="password" name="password" class="form-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
-                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="admin_password" name="admin_password" class="admin-form-input"
+                            placeholder="Mínimo 8 caracteres para administradores" autocomplete="new-password" required minlength="8" />
+                        <i class="fas fa-shield-halved admin-input-icon"></i>
                     </div>
+                    <div class="admin-password-strength">
+                        <div class="admin-password-strength-fill"></div>
+                    </div>
+                    <div class="admin-validation-message" id="adminPasswordValidation"></div>
                 </div>
-                <div class="form-group">
-                    <label for="email" class="form-label">Correo Electrónico</label>
+
+                <div class="admin-form-group">
+                    <label for="admin_email" class="admin-form-label">Correo Institucional</label>
                     <div style="position: relative;">
-                        <input type="email" id="email" name="email" class="form-input" placeholder="ejemplo@correo.com" autocomplete="email" required />
-                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="admin_email" name="admin_email" class="admin-form-input" placeholder="admin@institucion.edu"
+                            autocomplete="email" required />
+                        <i class="fas fa-envelope-circle-check admin-input-icon"></i>
                     </div>
+                    <div class="admin-validation-message" id="adminEmailValidation"></div>
                 </div>
-                <div class="form-group">
-                    <label for="email2" class="form-label">Confirmar Correo</label>
+
+                <div class="admin-form-group">
+                    <label for="admin_email2" class="admin-form-label">Confirmar Correo</label>
                     <div style="position: relative;">
-                        <input type="email" id="email2" name="email2" class="form-input" placeholder="Repite tu correo electrónico" autocomplete="email" required />
-                        <i class="fas fa-envelope-circle-check input-icon"></i>
+                        <input type="email" id="admin_email2" name="admin_email2" class="admin-form-input"
+                            placeholder="Repite tu correo institucional" autocomplete="email" required />
+                        <i class="fas fa-envelope-check admin-input-icon"></i>
                     </div>
+                    <div class="admin-validation-message" id="adminEmail2Validation"></div>
                 </div>
-                <div class="form-group">
-                    <label for="nit" class="form-label">N.I.T.</label>
+
+                <div class="admin-form-group">
+                    <label for="admin_nit" class="admin-form-label">N.I.T. Institucional</label>
                     <div style="position: relative;">
-                        <input type="text" id="nit" name="nit" class="form-input" placeholder="NIT de la fundación" required minlength="5" />
-                        <i class="fas fa-id-card input-icon"></i>
+                        <input type="text" id="admin_nit" name="admin_nit" class="admin-form-input"
+                            placeholder="NIT de la institución" required minlength="5" />
+                        <i class="fas fa-id-card admin-input-icon"></i>
                     </div>
+                    <div class="admin-validation-message" id="adminNitValidation"></div>
                 </div>
-                <button type="submit" class="register-btn">Registrarse</button>
+
+                <button type="submit" class="admin-register-btn" id="adminSubmitBtn">
+                    <div class="admin-loading-spinner" id="adminLoadingSpinner"></div>
+                    <span id="adminBtnText">🛡️ Crear Cuenta Administrativa</span>
+                </button>
             </form>
-            <div class="login-link">
-                <a href="/iniciar-sesion">¿Ya tienes cuenta? Inicia sesión</a>
+
+            <div class="admin-login-link">
+                <a href="{{ url_for('Iniciar_Sesion') }}">¿Ya tienes cuenta? Inicia sesión</a>
                 <div style="margin-top:12px; font-size:14px;">
-                    ¿Eres usuario? <a href="/registro" style="color:#e08c2b; text-decoration:underline; font-weight:600;">Regístrate aquí</a>
+                    ¿Usuario regular? <a href="{{ url_for('Registro_Usuario') }}" style="color:#4299e1; text-decoration:underline; font-weight:600;">Regístrate aquí</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const form = document.getElementById('adminRegisterForm');
+            const inputs = form.querySelectorAll('.admin-form-input');
+            const submitBtn = document.getElementById('adminSubmitBtn');
+            const loadingSpinner = document.getElementById('adminLoadingSpinner');
+            const btnText = document.getElementById('adminBtnText');
+
+            // Elementos de validación
+            const userInput = document.getElementById('admin_user');
+            const passwordInput = document.getElementById('admin_password');
+            const emailInput = document.getElementById('admin_email');
+            const email2Input = document.getElementById('admin_email2');
+            const nitInput = document.getElementById('admin_nit');
+            const passwordStrength = document.querySelector('.admin-password-strength');
+            const passwordStrengthFill = document.querySelector('.admin-password-strength-fill');
+
+            // Funciones de validación
+            function validateUser() {
+                const value = userInput.value;
+                const validation = document.getElementById('adminUserValidation');
+
+                if (value.length < 3 && value.length > 0) {
+                    userInput.classList.add('invalid');
+                    userInput.classList.remove('valid');
+                    validation.textContent = 'El usuario administrativo debe tener al menos 3 caracteres';
+                    validation.classList.add('show');
+                    return false;
+                } else if (value.length >= 3) {
+                    userInput.classList.add('valid');
+                    userInput.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    return true;
+                } else {
+                    userInput.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+            }
+
+            function validatePassword() {
+                const value = passwordInput.value;
+                const validation = document.getElementById('adminPasswordValidation');
+
+                if (value.length === 0) {
+                    passwordStrength.classList.remove('show');
+                    passwordInput.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+
+                passwordStrength.classList.add('show');
+
+                // Calcular fortaleza (más estricto para administradores)
+                let strength = 0;
+                if (value.length >= 8) strength += 20;
+                if (value.length >= 12) strength += 20;
+                if (/[A-Z]/.test(value)) strength += 20;
+                if (/[0-9]/.test(value)) strength += 20;
+                if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) strength += 20;
+
+                passwordStrengthFill.style.width = strength + '%';
+
+                if (value.length < 8) {
+                    passwordInput.classList.add('invalid');
+                    passwordInput.classList.remove('valid');
+                    validation.textContent = 'La contraseña administrativa debe tener al menos 8 caracteres';
+                    validation.classList.add('show');
+                    return false;
+                } else {
+                    passwordInput.classList.add('valid');
+                    passwordInput.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    return true;
+                }
+            }
+
+            function validateEmail() {
+                const value = emailInput.value;
+                const validation = document.getElementById('adminEmailValidation');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (value.length === 0) {
+                    emailInput.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+
+                if (!emailRegex.test(value)) {
+                    emailInput.classList.add('invalid');
+                    emailInput.classList.remove('valid');
+                    validation.textContent = 'Ingresa un correo institucional válido';
+                    validation.classList.add('show');
+                    return false;
+                } else {
+                    emailInput.classList.add('valid');
+                    emailInput.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    return true;
+                }
+            }
+
+            function validateEmailConfirmation() {
+                const email = emailInput.value;
+                const email2 = email2Input.value;
+                const validation = document.getElementById('adminEmail2Validation');
+
+                if (email2.length === 0) {
+                    email2Input.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+
+                if (email !== email2) {
+                    email2Input.classList.add('invalid');
+                    email2Input.classList.remove('valid');
+                    validation.textContent = 'Los correos institucionales no coinciden';
+                    validation.classList.add('show');
+                    email2Input.setCustomValidity('Los correos no coinciden');
+                    return false;
+                } else {
+                    email2Input.classList.add('valid');
+                    email2Input.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    email2Input.setCustomValidity('');
+                    return true;
+                }
+            }
+
+            function validateNit() {
+                const value = nitInput.value;
+                const validation = document.getElementById('adminNitValidation');
+
+                if (value.length < 5 && value.length > 0) {
+                    nitInput.classList.add('invalid');
+                    nitInput.classList.remove('valid');
+                    validation.textContent = 'El NIT debe tener al menos 5 caracteres';
+                    validation.classList.add('show');
+                    return false;
+                } else if (value.length >= 5) {
+                    nitInput.classList.add('valid');
+                    nitInput.classList.remove('invalid');
+                    validation.classList.remove('show');
+                    return true;
+                } else {
+                    nitInput.classList.remove('valid', 'invalid');
+                    validation.classList.remove('show');
+                    return false;
+                }
+            }
+
+            // Event listeners
+            userInput.addEventListener('input', validateUser);
+            passwordInput.addEventListener('input', validatePassword);
+            emailInput.addEventListener('input', () => {
+                validateEmail();
+                validateEmailConfirmation();
+            });
+            email2Input.addEventListener('input', validateEmailConfirmation);
+            nitInput.addEventListener('input', validateNit);
+
+            // Efectos de focus para los iconos
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    const icon = input.nextElementSibling;
+                    if (icon && icon.classList.contains('admin-input-icon')) {
+                        icon.style.color = '#3182ce';
+                    }
+                });
+
+                input.addEventListener('blur', () => {
+                    const icon = input.nextElementSibling;
+                    if (icon && icon.classList.contains('admin-input-icon') && !input.value) {
+                        icon.style.color = '#4299e1';
+                    }
+                });
+            });
+
+            // Submit del formulario
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // Validar todos los campos
+                const isUserValid = validateUser();
+                const isPasswordValid = validatePassword();
+                const isEmailValid = validateEmail();
+                const isEmail2Valid = validateEmailConfirmation();
+                const isNitValid = validateNit();
+
+                if (isUserValid && isPasswordValid && isEmailValid && isEmail2Valid && isNitValid) {
+                    // Mostrar loading
+                    submitBtn.disabled = true;
+                    loadingSpinner.style.display = 'inline-block';
+                    btnText.textContent = 'Creando cuenta administrativa...';
+
+                    // Simular envío (en producción aquí iría el envío real)
+                    setTimeout(() => {
+                        form.submit(); // Envío real del formulario
+                    }, 1000);
+                } else {
+                    // Enfocar el primer campo inválido
+                    const firstInvalid = form.querySelector('.admin-form-input.invalid');
+                    if (firstInvalid) {
+                        firstInvalid.focus();
+                    }
+                }
+            });
+
+            // Efecto de escritura en el título
+            const title = document.querySelector('.admin-register-title');
+            const titleText = title.textContent;
+            title.textContent = '';
+
+            setTimeout(() => {
+                let i = 0;
+                const typeWriter = () => {
+                    if (i < titleText.length) {
+                        title.textContent += titleText.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 100);
+                    }
+                };
+                typeWriter();
+            }, 800);
+        })();
+    </script>
 </body>
+
 </html>
