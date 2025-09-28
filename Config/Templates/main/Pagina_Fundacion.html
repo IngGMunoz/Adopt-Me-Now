@@ -3,101 +3,102 @@
 {% block title %}Fundación - Adopt Me{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/fundacion.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/fundacion.css') }}">
 {% endblock %}
 
 {% block navbar %}
-    <!-- Header personalizado para página de fundación -->
-    <header class="topbar">
-        <div class="topbar-inner">
-            <div class="brand">
-                <i class="fa-solid fa-paw"></i> Adopt Me
-            </div>
-            <nav class="nav" aria-label="Navegación principal">
-                <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
-                <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
-                <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
-            </nav>
-            <div class="user" title="Perfil">
-                <i class="fa-regular fa-user"></i>
-            </div>
+<!-- Header personalizado para página de fundación -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <i class="fa-solid fa-paw"></i> Adopt Me
         </div>
-    </header>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
+            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+        </nav>
+        <div class="user" title="Perfil">
+            <i class="fa-regular fa-user"></i>
+        </div>
+    </div>
+</header>
 {% endblock %}
 
 {% block content %}
 
-    <main class="content">
-        <!-- Encabezado de la fundación -->
-        <section class="hero">
-            <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo Fundación FUNCUAN" />
-            <div class="hero-info">
-                <h1>Funcuan</h1>
-                <span class="by"><i class="fa-solid fa-user"></i> Creado por user@</span>
-                <p>
-                    Fundación Cuidado Animal. Somos una entidad sin ánimo de lucro, de fondos privados que decidió tomar partido
-                    contra el maltrato animal apoyando a la comunidad para el desarrollo de ciudadanos confiables en la tenencia
-                    responsable de animales.
-                </p>
-                <a class="cta" href="https://funcuan.com.co/contactanos/" target="_blank" 
-                   data-animate="true" 
-                   data-loading-text="Redireccionando..." 
-                   data-animation-type="contact"
-                   data-delay="800"
-                   data-restore-delay="1000">
-                    <i class="fa-solid fa-envelope"></i> Contactar Fundación
-                </a>
-            </div>
-        </section>
-
-        <!-- Información adicional -->
-        <section class="section">
-            <h2>Actualidad</h2>
+<main class="content">
+    <!-- Encabezado de la fundación -->
+    <section class="hero">
+        <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo Fundación FUNCUAN" />
+        <div class="hero-info">
+            <h1>Funcuan</h1>
+            <span class="by"><i class="fa-solid fa-user"></i> Creado por user@</span>
             <p>
-                La Secretaría de Gobierno de Barranquilla incorporó un nuevo vehículo a la Patrulla Animal para reforzar la
-                atención de animales domésticos y callejeros en situación de emergencia. Esta unidad móvil, una camioneta
-                Renault Kangoo adaptada, opera desde el 1 de mayo de 2019 y complementa las dos Unidades Móviles Veterinarias
-                existentes. Funciona seis días a la semana en horario diurno, atendiendo reportes ciudadanos sobre animales en
-                peligro o víctimas de violencia.
+                Fundación Cuidado Animal. Somos una entidad sin ánimo de lucro, de fondos privados que decidió tomar
+                partido
+                contra el maltrato animal apoyando a la comunidad para el desarrollo de ciudadanos confiables en la
+                tenencia
+                responsable de animales.
             </p>
-        </section>
-    </main>
+            <a class="cta" href="https://funcuan.com.co/contactanos/" target="_blank" data-animate="true"
+                data-loading-text="Redireccionando..." data-animation-type="contact" data-delay="800"
+                data-restore-delay="1000">
+                <i class="fa-solid fa-envelope"></i> Contactar Fundación
+            </a>
+        </div>
+    </section>
+
+    <!-- Información adicional -->
+    <section class="section">
+        <h2>Actualidad</h2>
+        <p>
+            La Secretaría de Gobierno de Barranquilla incorporó un nuevo vehículo a la Patrulla Animal para reforzar la
+            atención de animales domésticos y callejeros en situación de emergencia. Esta unidad móvil, una camioneta
+            Renault Kangoo adaptada, opera desde el 1 de mayo de 2019 y complementa las dos Unidades Móviles
+            Veterinarias
+            existentes. Funciona seis días a la semana en horario diurno, atendiendo reportes ciudadanos sobre animales
+            en
+            peligro o víctimas de violencia.
+        </p>
+    </section>
+</main>
 {% endblock %}
 
 {% block footer %}
-    <!-- Footer personalizado para página de fundación -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
-            <div class="footer-grid">
-                <div>
-                    <h4>Contáctanos</h4>
-                    <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
-                    <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-                    <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
-                </div>
-                <div>
-                    <h4>Adopción</h4>
-                    <a href="#">¿Cómo adoptar?</a>
-                    <a href="#">Requisitos</a>
-                    <a href="#">Historias felices</a>
-                </div>
-                <div>
-                    <h4>Fundaciones</h4>
-                    <a href="#">Unirse</a>
-                    <a href="#">Recursos</a>
-                    <a href="#">Eventos</a>
-                </div>
-                <div>
-                    <h4>Legal</h4>
-                    <a href="#">Términos</a>
-                    <a href="#">Privacidad</a>
-                    <a href="#">Ayuda</a>
-                </div>
+<!-- Footer personalizado para página de fundación -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
+        <div class="footer-grid">
+            <div>
+                <h4>Contáctanos</h4>
+                <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
+                <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
+            </div>
+            <div>
+                <h4>Adopción</h4>
+                <a href="#">¿Cómo adoptar?</a>
+                <a href="#">Requisitos</a>
+                <a href="#">Historias felices</a>
+            </div>
+            <div>
+                <h4>Fundaciones</h4>
+                <a href="#">Unirse</a>
+                <a href="#">Recursos</a>
+                <a href="#">Eventos</a>
+            </div>
+            <div>
+                <h4>Legal</h4>
+                <a href="#">Términos</a>
+                <a href="#">Privacidad</a>
+                <a href="#">Ayuda</a>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
 
-    <!-- Incluir componente de botón animado -->
-    {% include 'components/boton_animado.html' %}
+<!-- Incluir componente de botón animado -->
+{% include 'components/boton_animado.html' %}
 {% endblock %}

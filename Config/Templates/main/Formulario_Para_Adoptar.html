@@ -3,236 +3,242 @@
 {% block title %}Formulario de Adopción{% endblock %}
 
 {% block stylesheets %}
-    {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
 {% endblock %}
 
 {% block navbar %}
-    <!-- Header personalizado para formulario de adopción -->
-    <header class="topbar">
-        <div class="topbar-inner">
-            <div class="brand">
-                <i class="fa-solid fa-paw"></i> Adopt Me
-            </div>
-            <nav class="nav" aria-label="Navegación principal">
-                <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
-                <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
-                <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
-            </nav>
-            <div class="user" title="Perfil">
-                <i class="fa-regular fa-user"></i>
-            </div>
+<!-- Header personalizado para formulario de adopción -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <i class="fa-solid fa-paw"></i> Adopt Me
         </div>
-    </header>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
+            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+        </nav>
+        <div class="user" title="Perfil">
+            <i class="fa-regular fa-user"></i>
+        </div>
+    </div>
+</header>
 {% endblock %}
 
 {% block background_effects %}
-    {% include 'components/paws.html' %}
+{% include 'components/paws.html' %}
 {% endblock %}
 
 {% block content %}
-    <main>
-        <section class="form-container">
-            <h1 class="form-title" id="form-title">Formulario de Adopción</h1>
-            <p class="form-desc">Completa tus datos y cuéntanos por qué deseas adoptar. Nos pondremos en contacto contigo pronto.</p>
-            <form method="POST" action="/formulario" novalidate>
-                <div class="form-row">
-                    <div>
-                        <label for="nombre">Nombre completo</label>
-                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellidos" minlength="3" required />
-                    </div>
-                    <div>
-                        <label for="email">Correo electrónico</label>
-                        <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required />
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div>
-                        <label for="telefono">Teléfono</label>
-                        <input type="tel" id="telefono" name="telefono" placeholder="(+57) 300 000 0000" inputmode="tel" pattern="\+?\d[\d\s-]{7,15}" title="Ingresa un teléfono válido (8 a 16 dígitos, puede incluir +, espacios o guiones)" required />
-                    </div>
-                    <div>
-                        <label for="direccion">Dirección</label>
-                        <input type="text" id="direccion" name="direccion" placeholder="Calle 123 #45-67, Barrio, Ciudad" minlength="5" required />
-                    </div>
+<main>
+    <section class="form-container">
+        <h1 class="form-title" id="form-title">Formulario de Adopción</h1>
+        <p class="form-desc">Completa tus datos y cuéntanos por qué deseas adoptar. Nos pondremos en contacto contigo
+            pronto.</p>
+        <form method="POST" action="/formulario" novalidate>
+            <div class="form-row">
+                <div>
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellidos" minlength="3"
+                        required />
                 </div>
                 <div>
-                    <label for="ocupacion">Ocupación</label>
-                    <input type="text" id="ocupacion" name="ocupacion" placeholder="¿A qué te dedicas?" minlength="2" required />
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required />
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" placeholder="(+57) 300 000 0000" inputmode="tel"
+                        pattern="\+?\d[\d\s-]{7,15}"
+                        title="Ingresa un teléfono válido (8 a 16 dígitos, puede incluir +, espacios o guiones)"
+                        required />
                 </div>
                 <div>
-                    <label for="vivienda">Tipo de vivienda</label>
-                    <select id="vivienda" name="vivienda" required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="casa">Casa</option>
-                        <option value="apartamento">Apartamento</option>
-                        <option value="finca">Finca</option>
-                        <option value="otro">Otro</option>
-                    </select>
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" name="direccion" placeholder="Calle 123 #45-67, Barrio, Ciudad"
+                        minlength="5" required />
                 </div>
-                <div>
-                    <label for="mascotas">¿Tienes otras mascotas?</label>
-                    <select id="mascotas" name="mascotas" required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="no">No</option>
-                        <option value="perro">Sí, perro(s)</option>
-                        <option value="gato">Sí, gato(s)</option>
-                        <option value="otros">Sí, otros</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="motivo">¿Por qué deseas adoptar?</label>
-                    <textarea id="motivo" name="motivo" placeholder="Cuéntanos sobre tu hogar, tu tiempo disponible y por qué te gustaría adoptar." minlength="10" required></textarea>
-                </div>
-                <div class="actions">
-                    <a class="btn btn-ghost" href="/adopcion"><i class="fa-solid fa-arrow-left"></i> Volver</a>
-                    <button type="submit" class="btn btn-primary" 
-                            data-animate="true" 
-                            data-loading-text="Enviando solicitud..." 
-                            data-animation-type="submit"
-                            data-delay="800"
-                            data-restore-delay="1000">
-                        <i class="fa-solid fa-paper-plane"></i> Enviar solicitud
-                    </button>
-                </div>
-            </form>
-        </section>
-    </main>
+            </div>
+            <div>
+                <label for="ocupacion">Ocupación</label>
+                <input type="text" id="ocupacion" name="ocupacion" placeholder="¿A qué te dedicas?" minlength="2"
+                    required />
+            </div>
+            <div>
+                <label for="vivienda">Tipo de vivienda</label>
+                <select id="vivienda" name="vivienda" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="casa">Casa</option>
+                    <option value="apartamento">Apartamento</option>
+                    <option value="finca">Finca</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div>
+                <label for="mascotas">¿Tienes otras mascotas?</label>
+                <select id="mascotas" name="mascotas" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="no">No</option>
+                    <option value="perro">Sí, perro(s)</option>
+                    <option value="gato">Sí, gato(s)</option>
+                    <option value="otros">Sí, otros</option>
+                </select>
+            </div>
+            <div>
+                <label for="motivo">¿Por qué deseas adoptar?</label>
+                <textarea id="motivo" name="motivo"
+                    placeholder="Cuéntanos sobre tu hogar, tu tiempo disponible y por qué te gustaría adoptar."
+                    minlength="10" required></textarea>
+            </div>
+            <div class="actions">
+                <a class="btn btn-ghost" href="/adopcion"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+                <button type="submit" class="btn btn-primary" data-animate="true"
+                    data-loading-text="Enviando solicitud..." data-animation-type="submit" data-delay="800"
+                    data-restore-delay="1000">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar solicitud
+                </button>
+            </div>
+        </form>
+    </section>
+</main>
 
-    <!-- Incluir componentes -->
-    {% include 'components/boton_animado.html' %}
-    {% include 'components/notificacion_exitosa.html' %}
+<!-- Incluir componentes -->
+{% include 'components/boton_animado.html' %}
+{% include 'components/notificacion_exitosa.html' %}
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const pet = params.get('pet');
-            if (pet){
-                const title = document.getElementById('form-title');
-                if (title) title.textContent = `Formulario de Adopción – ${pet}`;
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const pet = params.get('pet');
+        if (pet) {
+            const title = document.getElementById('form-title');
+            if (title) title.textContent = `Formulario de Adopción – ${pet}`;
+        }
+        // Configurar validación estricta antes de la animación
+        const form = document.querySelector('form');
+        const submitBtn = document.querySelector('button[type="submit"]');
+
+        if (form && submitBtn) {
+            // Función para validar completamente el formulario
+            function validateForm() {
+                // Verificar validez nativa del formulario
+                if (!form.checkValidity()) {
+                    return false;
+                }
+
+                // Validaciones adicionales personalizadas
+                const requiredFields = form.querySelectorAll('[required]');
+                for (let field of requiredFields) {
+                    if (!field.value.trim()) {
+                        return false;
+                    }
+
+                    // Validación específica por tipo de campo
+                    if (field.type === 'email' && !field.value.includes('@')) {
+                        return false;
+                    }
+
+                    if (field.type === 'tel' && field.value.length < 8) {
+                        return false;
+                    }
+
+                    if (field.tagName === 'TEXTAREA' && field.value.trim().length < 10) {
+                        return false;
+                    }
+                }
+
+                return true;
             }
-            // Configurar validación estricta antes de la animación
-            const form = document.querySelector('form');
-            const submitBtn = document.querySelector('button[type="submit"]');
-            
-            if (form && submitBtn) {
-                // Función para validar completamente el formulario
-                function validateForm() {
-                    // Verificar validez nativa del formulario
-                    if (!form.checkValidity()) {
-                        return false;
-                    }
-                    
-                    // Validaciones adicionales personalizadas
-                    const requiredFields = form.querySelectorAll('[required]');
-                    for (let field of requiredFields) {
-                        if (!field.value.trim()) {
-                            return false;
-                        }
-                        
-                        // Validación específica por tipo de campo
-                        if (field.type === 'email' && !field.value.includes('@')) {
-                            return false;
-                        }
-                        
-                        if (field.type === 'tel' && field.value.length < 8) {
-                            return false;
-                        }
-                        
-                        if (field.tagName === 'TEXTAREA' && field.value.trim().length < 10) {
-                            return false;
-                        }
-                    }
-                    
-                    return true;
-                }
-                
-                // Función para limpiar todos los campos del formulario
-                function clearFormFields() {
-                    // Limpiar todos los inputs de texto, email, tel
-                    const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
-                    inputs.forEach(input => {
-                        input.value = '';
-                    });
-                    
-                    // Limpiar selects (volver a la primera opción vacía)
-                    const selects = form.querySelectorAll('select');
-                    selects.forEach(select => {
-                        select.selectedIndex = 0; // Volver a "Selecciona una opción"
-                    });
-                    
-                    // Limpiar textareas
-                    const textareas = form.querySelectorAll('textarea');
-                    textareas.forEach(textarea => {
-                        textarea.value = '';
-                    });
-                    
-                    // Remover clases de validación para que no aparezcan mensajes de error
-                    form.classList.remove('was-validated');
-                    
-                    // Opcional: Enfocar el primer campo para facilitar el siguiente uso
-                    const firstInput = form.querySelector('input');
-                    if (firstInput) {
-                        setTimeout(() => firstInput.focus(), 300);
-                    }
-                    
-                    console.log('Formulario limpiado completamente');
-                }
-                
-                // Interceptar TODOS los eventos del botón para validar primero
-                submitBtn.addEventListener('click', (e) => {
-                    // Validación estricta antes de cualquier acción
-                    if (!validateForm()) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        
-                        // Mostrar errores de validación
-                        form.classList.add('was-validated');
-                        form.reportValidity();
-                        
-                        // Prevenir cualquier animación
-                        return false;
-                    }
-                    
-                    // Si pasa la validación, permitir que la animación continúe
-                    console.log('Formulario válido, iniciando animación...');
-                }, true); // Usar capture para ejecutar primero
-                
-                // Manejar el envío del formulario con notificación
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault(); // Siempre prevenir el envío real
-                    
-                    if (!validateForm()) {
-                        form.classList.add('was-validated');
-                        form.reportValidity();
-                        return false;
-                    }
-                    
-                    // Si es válido, mostrar notificación de éxito después de la animación
-                    console.log('Formulario válido, preparando notificación...');
-                    
-                    // Esperar un momento para que el componente esté disponible
-                    setTimeout(async () => {
-                        await showSuccessModal(
-                            '¡Formulario Enviado Correctamente!',
-                            'Tu solicitud de adopción ha sido recibida. Nos pondremos en contacto contigo muy pronto para continuar con el proceso.',
-                            {
-                                isForm: true, // Modo específico para formularios
-                                buttonText: '¡Perfecto!'
-                            }
-                        );
-                        
-                        // Limpiar todos los campos del formulario después de cerrar el modal
-                        clearFormFields();
-                        
-                        // Opcional: Redirigir después de cerrar la notificación
-                        // window.location.href = '/adopcion';
-                    }, 100);
+
+            // Función para limpiar todos los campos del formulario
+            function clearFormFields() {
+                // Limpiar todos los inputs de texto, email, tel
+                const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
+                inputs.forEach(input => {
+                    input.value = '';
                 });
+
+                // Limpiar selects (volver a la primera opción vacía)
+                const selects = form.querySelectorAll('select');
+                selects.forEach(select => {
+                    select.selectedIndex = 0; // Volver a "Selecciona una opción"
+                });
+
+                // Limpiar textareas
+                const textareas = form.querySelectorAll('textarea');
+                textareas.forEach(textarea => {
+                    textarea.value = '';
+                });
+
+                // Remover clases de validación para que no aparezcan mensajes de error
+                form.classList.remove('was-validated');
+
+                // Opcional: Enfocar el primer campo para facilitar el siguiente uso
+                const firstInput = form.querySelector('input');
+                if (firstInput) {
+                    setTimeout(() => firstInput.focus(), 300);
+                }
+
+                console.log('Formulario limpiado completamente');
             }
-        });
-    </script>
+
+            // Interceptar TODOS los eventos del botón para validar primero
+            submitBtn.addEventListener('click', (e) => {
+                // Validación estricta antes de cualquier acción
+                if (!validateForm()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+
+                    // Mostrar errores de validación
+                    form.classList.add('was-validated');
+                    form.reportValidity();
+
+                    // Prevenir cualquier animación
+                    return false;
+                }
+
+                // Si pasa la validación, permitir que la animación continúe
+                console.log('Formulario válido, iniciando animación...');
+            }, true); // Usar capture para ejecutar primero
+
+            // Manejar el envío del formulario con notificación
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Siempre prevenir el envío real
+
+                if (!validateForm()) {
+                    form.classList.add('was-validated');
+                    form.reportValidity();
+                    return false;
+                }
+
+                // Si es válido, mostrar notificación de éxito después de la animación
+                console.log('Formulario válido, preparando notificación...');
+
+                // Esperar un momento para que el componente esté disponible
+                setTimeout(async () => {
+                    await showSuccessModal(
+                        '¡Formulario Enviado Correctamente!',
+                        'Tu solicitud de adopción ha sido recibida. Nos pondremos en contacto contigo muy pronto para continuar con el proceso.',
+                        {
+                            isForm: true, // Modo específico para formularios
+                            buttonText: '¡Perfecto!'
+                        }
+                    );
+
+                    // Limpiar todos los campos del formulario después de cerrar el modal
+                    clearFormFields();
+
+                    // Opcional: Redirigir después de cerrar la notificación
+                    // window.location.href = '/adopcion';
+                }, 100);
+            });
+        }
+    });
+</script>
 {% endblock %}
