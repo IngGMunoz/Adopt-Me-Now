@@ -1,0 +1,519 @@
+<!-- Modal de Bienvenida a Adopt Me -->
+<div class="adopt-modal-overlay" id="successModalOverlay">
+    <div class="adopt-modal" id="successModal">
+        <div class="modal-header">
+            <div class="welcome-illustration">
+                <div class="pet-welcome">
+                    <i class="fas fa-dog pet-icon main-pet"></i>
+                    <i class="fas fa-cat pet-icon secondary-pet"></i>
+                </div>
+                <div class="hearts-animation">
+                    <i class="fas fa-heart heart heart-1"></i>
+                    <i class="fas fa-heart heart heart-2"></i>
+                    <i class="fas fa-heart heart heart-3"></i>
+                </div>
+            </div>
+            <div class="paw-prints">
+                <i class="fas fa-paw paw-print paw-1"></i>
+                <i class="fas fa-paw paw-print paw-2"></i>
+                <i class="fas fa-paw paw-print paw-3"></i>
+            </div>
+        </div>
+        <div class="modal-body">
+            <h2 id="modalTitle">¡Bienvenido a Adopt Me!</h2>
+            <p id="modalMessage">Tu cuenta ha sido creada exitosamente. Ahora puedes encontrar a tu compañero perfecto.</p>
+            <div class="welcome-features">
+                <div class="feature">
+                    <i class="fas fa-heart"></i>
+                    <span>Encuentra tu mascota ideal</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-home"></i>
+                    <span>Dale un hogar lleno de amor</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-users"></i>
+                    <span>Únete a nuestra comunidad</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="adopt-btn" id="acceptBtn">
+                <i class="fas fa-paw"></i>
+                ¡Comenzar mi aventura!
+            </button>
+        </div>
+        <div class="floating-paws" id="floatingPaws">
+            <div class="floating-paw">🐾</div>
+            <div class="floating-paw">🐾</div>
+            <div class="floating-paw">🐾</div>
+            <div class="floating-paw">🐾</div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modal Temático de Adopt Me */
+.adopt-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 183, 77, 0.15), rgba(212, 154, 74, 0.25));
+    backdrop-filter: blur(12px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.adopt-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.adopt-modal {
+    background: linear-gradient(145deg, #fff8f2, #ffffff);
+    border-radius: 28px;
+    box-shadow: 
+        0 30px 60px rgba(212, 154, 74, 0.25),
+        0 15px 30px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    max-width: 480px;
+    width: 90%;
+    position: relative;
+    overflow: hidden;
+    transform: scale(0.6) translateY(80px) rotate(3deg);
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 3px solid rgba(212, 154, 74, 0.3);
+}
+
+.adopt-modal-overlay.show .adopt-modal {
+    transform: scale(1) translateY(0) rotate(0deg);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #d49a4a, #bf8f3f);
+    padding: 40px 30px 25px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-illustration {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.pet-welcome {
+    position: relative;
+    display: inline-block;
+}
+
+.pet-icon {
+    font-size: 3.5rem;
+    color: #fff8f2;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+}
+
+.main-pet {
+    animation: petBounce 2s ease-in-out infinite;
+    animation-delay: 0.3s;
+}
+
+.secondary-pet {
+    position: absolute;
+    right: -45px;
+    top: 10px;
+    font-size: 2.5rem;
+    opacity: 0.8;
+    animation: petWiggle 2.5s ease-in-out infinite;
+    animation-delay: 1s;
+}
+
+.hearts-animation {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.heart {
+    position: absolute;
+    color: #ff6b6b;
+    font-size: 1.2rem;
+    animation: floatingHearts 3s ease-in-out infinite;
+}
+
+.heart-1 { left: -20px; animation-delay: 0.5s; }
+.heart-2 { left: 0px; animation-delay: 1.2s; }
+.heart-3 { left: 20px; animation-delay: 1.8s; }
+
+.paw-prints {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.paw-print {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.2rem;
+    animation: pawPrints 2s ease-in-out infinite;
+}
+
+.paw-1 { animation-delay: 0.2s; }
+.paw-2 { animation-delay: 0.6s; }
+.paw-3 { animation-delay: 1s; }
+
+.modal-body {
+    padding: 35px 30px 25px;
+    text-align: center;
+    background: linear-gradient(180deg, #fff8f2, #ffffff);
+}
+
+.modal-body h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8em;
+    font-weight: 800;
+    color: #d49a4a;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(212, 154, 74, 0.2);
+}
+
+.modal-body p {
+    font-size: 1.1em;
+    color: #6d4c41;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.welcome-features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: rgba(212, 154, 74, 0.1);
+    border-radius: 12px;
+    color: #6d4c41;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.feature:hover {
+    background: rgba(212, 154, 74, 0.2);
+    transform: translateX(5px);
+}
+
+.feature i {
+    color: #d49a4a;
+    font-size: 1.1em;
+}
+
+.modal-footer {
+    padding: 0 30px 35px;
+    text-align: center;
+    background: linear-gradient(180deg, #ffffff, #fff8f2);
+}
+
+.adopt-btn {
+    background: linear-gradient(135deg, #d49a4a, #bf8f3f);
+    color: white;
+    border: none;
+    padding: 18px 40px;
+    border-radius: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2em;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 
+        0 10px 20px rgba(212, 154, 74, 0.4),
+        0 5px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+    min-width: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+.adopt-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.adopt-btn:hover::before {
+    left: 100%;
+}
+
+.adopt-btn:hover {
+    background: linear-gradient(135deg, #bf8f3f, #a67c35);
+    transform: translateY(-3px);
+    box-shadow: 
+        0 15px 30px rgba(212, 154, 74, 0.5),
+        0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.adopt-btn:active {
+    transform: translateY(0);
+}
+
+/* Patitas flotantes */
+.floating-paws {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: 28px;
+}
+
+.floating-paw {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: floatingPaws 4s ease-in-out infinite;
+}
+
+.floating-paw:nth-child(1) {
+    top: 15%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.floating-paw:nth-child(2) {
+    top: 25%;
+    right: 15%;
+    animation-delay: 1s;
+}
+
+.floating-paw:nth-child(3) {
+    bottom: 20%;
+    left: 15%;
+    animation-delay: 2s;
+}
+
+.floating-paw:nth-child(4) {
+    bottom: 30%;
+    right: 10%;
+    animation-delay: 3s;
+}
+
+/* Animaciones */
+@keyframes petBounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    40% {
+        transform: translateY(-15px) rotate(-5deg);
+    }
+    60% {
+        transform: translateY(-10px) rotate(3deg);
+    }
+}
+
+@keyframes petWiggle {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-10deg);
+    }
+    75% {
+        transform: rotate(10deg);
+    }
+}
+
+@keyframes floatingHearts {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.8);
+    }
+}
+
+@keyframes pawPrints {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.2);
+    }
+}
+
+@keyframes floatingPaws {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) rotate(0deg);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translateY(-30px) rotate(180deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .adopt-modal {
+        max-width: 350px;
+        margin: 15px;
+    }
+    
+    .modal-header {
+        padding: 30px 20px 20px;
+    }
+    
+    .pet-icon {
+        font-size: 2.8rem;
+    }
+    
+    .secondary-pet {
+        font-size: 2rem;
+        right: -35px;
+    }
+    
+    .modal-body {
+        padding: 25px 20px 20px;
+    }
+    
+    .modal-body h2 {
+        font-size: 1.5em;
+    }
+    
+    .modal-body p {
+        font-size: 1em;
+    }
+    
+    .welcome-features {
+        gap: 8px;
+    }
+    
+    .feature {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+    
+    .modal-footer {
+        padding: 0 20px 25px;
+    }
+    
+    .adopt-btn {
+        padding: 15px 30px;
+        font-size: 1.1em;
+        min-width: 180px;
+    }
+}
+</style>
+
+<script>
+// JavaScript del Modal de Éxito
+(function() {
+    let modalResolve = null;
+
+    // Función global para mostrar modal (retorna una Promise)
+    window.showSuccessModal = function(title, message) {
+        return new Promise((resolve) => {
+            const overlay = document.getElementById('successModalOverlay');
+            const titleElement = document.getElementById('modalTitle');
+            const messageElement = document.getElementById('modalMessage');
+            
+            // Personalizar contenido
+            if (title) titleElement.textContent = title;
+            if (message) messageElement.textContent = message;
+            
+            // Guardar la función resolve para llamarla cuando se haga clic en Aceptar
+            modalResolve = resolve;
+            
+            // Mostrar modal
+            overlay.classList.add('show');
+            
+            // Bloquear scroll del body
+            document.body.style.overflow = 'hidden';
+        });
+    };
+
+    // Función global para ocultar modal
+    window.hideSuccessModal = function() {
+        const overlay = document.getElementById('successModalOverlay');
+        overlay.classList.remove('show');
+        
+        // Restaurar scroll del body
+        document.body.style.overflow = '';
+        
+        // Resolver la promesa si existe
+        if (modalResolve) {
+            modalResolve();
+            modalResolve = null;
+        }
+    };
+
+    // Función de compatibilidad (mantiene el nombre anterior)
+    window.showSuccessNotification = window.showSuccessModal;
+    window.hideSuccessNotification = window.hideSuccessModal;
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        const acceptBtn = document.getElementById('acceptBtn');
+        const overlay = document.getElementById('successModalOverlay');
+        
+        // Botón Aceptar
+        if (acceptBtn) {
+            acceptBtn.addEventListener('click', hideSuccessModal);
+        }
+        
+        // Cerrar al hacer clic fuera del modal (opcional)
+        if (overlay) {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    hideSuccessModal();
+                }
+            });
+        }
+        
+        // Cerrar con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('show')) {
+                hideSuccessModal();
+            }
+        });
+    });
+})();
+</script>

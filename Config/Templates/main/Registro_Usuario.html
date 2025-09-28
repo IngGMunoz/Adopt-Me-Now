@@ -86,12 +86,16 @@
         </div>
     </div>
 </div>
+
+<!-- Incluir componente de notificación -->
+{% include 'components/success_notification.html' %}
+
 {% endblock %}
 
 {% block scripts %}
 <script>
         (function () {
-            const form = document.getElementById('registerForm');
+            const form = document.querySelector('form');
             const inputs = form.querySelectorAll('.form-input');
             const submitBtn = document.getElementById('submitBtn');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -241,26 +245,53 @@
                 });
             });
 
-            // Submit del formulario
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                // Validar todos los campos
+            // Función para validar todo el formulario
+            function isFormValid() {
                 const isUserValid = validateUser();
                 const isPasswordValid = validatePassword();
                 const isEmailValid = validateEmail();
                 const isEmail2Valid = validateEmailConfirmation();
+                
+                return isUserValid && isPasswordValid && isEmailValid && isEmail2Valid;
+            }
 
-                if (isUserValid && isPasswordValid && isEmailValid && isEmail2Valid) {
+            // Submit del formulario - UN SOLO EVENT LISTENER
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // Validar todos los campos
+                if (isFormValid()) {
                     // Mostrar loading
                     submitBtn.disabled = true;
                     loadingSpinner.style.display = 'inline-block';
                     btnText.textContent = 'Creando cuenta...';
 
-                    // Simular envío (en producción aquí iría el envío real)
+                    // Simular proceso de registro (2 segundos)
                     setTimeout(() => {
-                        form.submit(); // Envío real del formulario
-                    }, 1000);
+                        // Ocultar spinner
+                        loadingSpinner.style.display = 'none';
+                        btnText.textContent = 'Crear Cuenta';
+                        submitBtn.disabled = false;
+                        
+                        // Mostrar modal de éxito y esperar confirmación
+                        showSuccessModal(
+                            `¡Bienvenido a Adopt Me, ${userInput.value}!`,
+                            `Tu cuenta ha sido creada exitosamente. Ahora puedes comenzar a buscar a tu compañero peludo ideal y darle el hogar que se merece.`
+                        ).then(() => {
+                            // Esta parte se ejecuta DESPUÉS de hacer clic en "Aceptar"
+                            console.log('Usuario confirmó la creación de cuenta');
+                            
+                            // Redirigir a la página de iniciar sesión
+                            window.location.href = '/iniciar-sesion';
+                        });
+                        
+                        // Aquí es donde se guardaría en la base de datos
+                        console.log('Datos del formulario:', {
+                            usuario: userInput.value,
+                            email: emailInput.value,
+                            timestamp: new Date().toISOString()
+                        });
+                    }, 2000);
                 } else {
                     // Enfocar el primer campo inválido
                     const firstInvalid = form.querySelector('.form-input.invalid');
