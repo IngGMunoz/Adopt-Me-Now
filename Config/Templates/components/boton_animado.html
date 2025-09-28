@@ -149,10 +149,15 @@
                 } else if (button.href) {
                     window.open(button.href, '_blank');
                 } else if (button.type === 'submit') {
-                    // Para botones de submit, enviar el formulario
+                    // Para botones de submit, disparar el evento submit del formulario
                     const form = button.closest('form');
                     if (form) {
-                        form.submit();
+                        // Crear y disparar evento submit personalizado
+                        const submitEvent = new Event('submit', {
+                            bubbles: true,
+                            cancelable: true
+                        });
+                        form.dispatchEvent(submitEvent);
                     }
                 }
                 

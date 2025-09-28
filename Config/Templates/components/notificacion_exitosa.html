@@ -26,6 +26,20 @@
                     <i class="fas fa-shield-alt admin-icon-simple"></i>
                 </div>
             </div>
+            
+            <!-- Contenido para formularios de adopción -->
+            <div class="form-illustration form-mode" id="formWelcome" style="display: none;">
+                <div class="form-welcome">
+                    <div class="success-checkmark">
+                        <i class="fas fa-check form-check-icon"></i>
+                    </div>
+                    <div class="adoption-hearts">
+                        <i class="fas fa-heart adoption-heart adoption-heart-1"></i>
+                        <i class="fas fa-heart adoption-heart adoption-heart-2"></i>
+                        <i class="fas fa-heart adoption-heart adoption-heart-3"></i>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="modal-body">
             <h2 id="modalTitle">¡Bienvenido a Adopt Me!</h2>
@@ -57,6 +71,20 @@
                 <div class="feature admin-features" style="display: none;">
                     <i class="fas fa-chart-bar"></i>
                     <span>Accede a reportes y estadísticas</span>
+                </div>
+                
+                <!-- Contenido para formularios de adopción -->
+                <div class="feature form-features" style="display: none;">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <span>Tu solicitud ha sido enviada</span>
+                </div>
+                <div class="feature form-features" style="display: none;">
+                    <i class="fas fa-phone"></i>
+                    <span>Te contactaremos pronto</span>
+                </div>
+                <div class="feature form-features" style="display: none;">
+                    <i class="fas fa-heart-circle-check"></i>
+                    <span>Gracias por querer adoptar</span>
                 </div>
             </div>
         </div>
@@ -448,6 +476,95 @@
     filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.3));
 }
 
+/* Estilos para formularios de adopción */
+.form-mode {
+    display: none;
+}
+
+.form-illustration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.form-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.success-checkmark {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: checkmarkPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+.form-check-icon {
+    font-size: 2.5rem;
+    color: white;
+    animation: checkIconScale 0.8s ease-out 0.3s both;
+}
+
+.adoption-hearts {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.adoption-heart {
+    font-size: 1.5rem;
+    color: #ff6b6b;
+    animation: adoptionHeartFloat 2s ease-in-out infinite;
+}
+
+.adoption-heart-1 { animation-delay: 0s; }
+.adoption-heart-2 { animation-delay: 0.3s; }
+.adoption-heart-3 { animation-delay: 0.6s; }
+
+@keyframes checkmarkPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes checkIconScale {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes adoptionHeartFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateY(-15px) scale(1.2);
+        opacity: 1;
+    }
+}
+
 /* Estilos simplificados - sin badges ni animaciones complejas */
 
 /* Efectos flotantes para administradores */
@@ -577,9 +694,14 @@
             if (title) titleElement.textContent = title;
             if (message) messageElement.textContent = message;
             
-            // Configurar modo administrador si se especifica
+            // Configurar modo según las opciones
             if (options.isAdmin) {
                 setupAdminMode();
+                if (options.buttonText) {
+                    btnText.textContent = options.buttonText;
+                }
+            } else if (options.isForm) {
+                setupFormMode();
                 if (options.buttonText) {
                     btnText.textContent = options.buttonText;
                 }
@@ -633,6 +755,25 @@
         }
         if (btnText) {
             btnText.textContent = '¡Comenzar mi aventura!';
+        }
+    }
+    
+    // Función para configurar modo formulario
+    function setupFormMode() {
+        // Ocultar elementos de usuario y admin
+        const userElements = document.querySelectorAll('.user-mode, .user-features');
+        const adminElements = document.querySelectorAll('.admin-mode, .admin-features');
+        userElements.forEach(el => el.style.display = 'none');
+        adminElements.forEach(el => el.style.display = 'none');
+        
+        // Mostrar elementos de formulario
+        const formElements = document.querySelectorAll('.form-mode, .form-features');
+        formElements.forEach(el => el.style.display = el.classList.contains('form-features') ? 'flex' : 'block');
+        
+        // Cambiar el icono del botón
+        const btnIcon = document.querySelector('#acceptBtn i');
+        if (btnIcon) {
+            btnIcon.className = 'fas fa-check';
         }
     }
 

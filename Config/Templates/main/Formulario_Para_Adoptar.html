@@ -99,8 +99,9 @@
         </section>
     </main>
 
-    <!-- Incluir componente de botón animado -->
+    <!-- Incluir componentes -->
     {% include 'components/boton_animado.html' %}
+    {% include 'components/notificacion_exitosa.html' %}
 {% endblock %}
 
 {% block scripts %}
@@ -148,6 +149,38 @@
                     return true;
                 }
                 
+                // Función para limpiar todos los campos del formulario
+                function clearFormFields() {
+                    // Limpiar todos los inputs de texto, email, tel
+                    const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
+                    inputs.forEach(input => {
+                        input.value = '';
+                    });
+                    
+                    // Limpiar selects (volver a la primera opción vacía)
+                    const selects = form.querySelectorAll('select');
+                    selects.forEach(select => {
+                        select.selectedIndex = 0; // Volver a "Selecciona una opción"
+                    });
+                    
+                    // Limpiar textareas
+                    const textareas = form.querySelectorAll('textarea');
+                    textareas.forEach(textarea => {
+                        textarea.value = '';
+                    });
+                    
+                    // Remover clases de validación para que no aparezcan mensajes de error
+                    form.classList.remove('was-validated');
+                    
+                    // Opcional: Enfocar el primer campo para facilitar el siguiente uso
+                    const firstInput = form.querySelector('input');
+                    if (firstInput) {
+                        setTimeout(() => firstInput.focus(), 300);
+                    }
+                    
+                    console.log('Formulario limpiado completamente');
+                }
+                
                 // Interceptar TODOS los eventos del botón para validar primero
                 submitBtn.addEventListener('click', (e) => {
                     // Validación estricta antes de cualquier acción
@@ -168,16 +201,36 @@
                     console.log('Formulario válido, iniciando animación...');
                 }, true); // Usar capture para ejecutar primero
                 
-                // Manejar el envío real del formulario
-                form.addEventListener('submit', (e) => {
+                // Manejar el envío del formulario con notificación
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault(); // Siempre prevenir el envío real
+                    
                     if (!validateForm()) {
-                        e.preventDefault();
                         form.classList.add('was-validated');
                         form.reportValidity();
                         return false;
                     }
-                    // Si es válido, permitir el envío
-                    console.log('Enviando formulario...');
+                    
+                    // Si es válido, mostrar notificación de éxito después de la animación
+                    console.log('Formulario válido, preparando notificación...');
+                    
+                    // Esperar un momento para que el componente esté disponible
+                    setTimeout(async () => {
+                        await showSuccessModal(
+                            '¡Formulario Enviado Correctamente!',
+                            'Tu solicitud de adopción ha sido recibida. Nos pondremos en contacto contigo muy pronto para continuar con el proceso.',
+                            {
+                                isForm: true, // Modo específico para formularios
+                                buttonText: '¡Perfecto!'
+                            }
+                        );
+                        
+                        // Limpiar todos los campos del formulario después de cerrar el modal
+                        clearFormFields();
+                        
+                        // Opcional: Redirigir después de cerrar la notificación
+                        // window.location.href = '/adopcion';
+                    }, 100);
                 });
             }
         });
