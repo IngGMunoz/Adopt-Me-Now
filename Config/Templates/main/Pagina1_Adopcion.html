@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Adopt Me - Mascotas en Adopción{% endblock %}
+{% block title %}Adopt Me - Mascotas y Fundaciones{% endblock %}
 
 {% block stylesheets %}
 {{ super() }}
@@ -27,71 +27,85 @@
 {% endblock %}
 
 {% block content %}
-    <div class="toolbar">
-        <label for="sortSelect" class="visually-hidden">Ordenar por</label>
-        <select id="sortSelect" class="sort-btn" aria-label="Ordenar por">
-            <option value="default">Orden recomendado</option>
-            <option value="title-asc">Nombre (A-Z)</option>
-            <option value="author-asc">Autor (A-Z)</option>
-        </select>
-    </div>
+<div class="toolbar">
+    <label for="sortSelect" class="visually-hidden">Ordenar por</label>
+    <select id="sortSelect" class="sort-btn" aria-label="Ordenar por">
+        <option value="default">Orden recomendado</option>
+        <option value="title-asc">Nombre (A-Z)</option>
+        <option value="author-asc">Autor (A-Z)</option>
+    </select>
+</div>
 
-    <main class="content">
-        <!-- Card 1 -->
-        <section class="card" data-title="Cachorro" data-author="Daniel">
-            <img src="{{ url_for('static', filename='images/Cachorro.png') }}" alt="Cachorro" />
-            <div class="card-content">
-                <h2 class="title">Cachorro</h2>
-                <span class="by"><i class="fa-solid fa-user"></i> Creado por Daniel</span>
-                <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</p>
-                <a class="cta" href="/cachorro"><i class="fa-solid fa-envelope"></i> Contactar</a>
+<main class="content">
+    <!-- Card 1 -->
+    <section class="card" data-title="Cachorro" data-author="Daniel">
+        <img src="{{ url_for('static', filename='images/Cachorro.png') }}" alt="Cachorro" />
+        <div class="card-content">
+            <h2 class="title">Cachorro</h2>
+            <span class="by"><i class="fa-solid fa-user"></i> Creado por Daniel</span>
+            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas
+                con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y
+                facilitando el proceso de adopción de forma rápida y segura.</p>
+            <a class="cta" href="/cachorro" data-animate="true" data-loading-text="Conectando..."
+                data-animation-type="contact" data-delay="600" data-restore-delay="800">
+                <i class="fa-solid fa-envelope"></i> Contactar
+            </a>
+        </div>
+    </section>
+
+    <!-- Card 2 -->
+    <section class="card" data-title="Funcuan" data-author="David">
+        <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo Fundación FUNCUAN"
+            style="object-fit: contain;" />
+        <div class="card-content">
+            <h2 class="title">Funcuan</h2>
+            <span class="by"><i class="fa-solid fa-user"></i> Creado por David</span>
+            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas
+                con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y
+                facilitando el proceso de adopción de forma rápida y segura.</p>
+            <a class="cta" href="/funcuan" data-animate="true" data-loading-text="Redireccionando..."
+                data-animation-type="redirect" data-delay="700" data-restore-delay="900">
+                <i class="fa-solid fa-envelope"></i> Contactar
+            </a>
+        </div>
+    </section>
+</main>
+
+<!-- Footer local (nota: el layout ya agrega uno global mediante el bloque footer) -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
+        <div class="footer-grid">
+            <div>
+                <h4>Contáctanos</h4>
+                <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
+                <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
             </div>
-        </section>
-
-        <!-- Card 2 -->
-        <section class="card" data-title="Funcuan" data-author="David">
-            <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo Fundación FUNCUAN" style="object-fit: contain;" />
-            <div class="card-content">
-                <h2 class="title">Funcuan</h2>
-                <span class="by"><i class="fa-solid fa-user"></i> Creado por David</span>
-                <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</p>
-                <a class="cta" href="/funcuan"><i class="fa-solid fa-envelope"></i> Contactar</a>
+            <div>
+                <h4>Adopción</h4>
+                <a href="#">¿Cómo adoptar?</a>
+                <a href="#">Requisitos</a>
+                <a href="#">Historias felices</a>
             </div>
-        </section>
-    </main>
-
-    <!-- Footer local (nota: el layout ya agrega uno global mediante el bloque footer) -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
-            <div class="footer-grid">
-                <div>
-                    <h4>Contáctanos</h4>
-                    <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
-                    <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-                    <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
-                </div>
-                <div>
-                    <h4>Adopción</h4>
-                    <a href="#">¿Cómo adoptar?</a>
-                    <a href="#">Requisitos</a>
-                    <a href="#">Historias felices</a>
-                </div>
-                <div>
-                    <h4>Fundaciones</h4>
-                    <a href="#">Unirse</a>
-                    <a href="#">Recursos</a>
-                    <a href="#">Eventos</a>
-                </div>
-                <div>
-                    <h4>Legal</h4>
-                    <a href="#">Términos</a>
-                    <a href="#">Privacidad</a>
-                    <a href="#">Ayuda</a>
-                </div>
+            <div>
+                <h4>Fundaciones</h4>
+                <a href="#">Unirse</a>
+                <a href="#">Recursos</a>
+                <a href="#">Eventos</a>
+            </div>
+            <div>
+                <h4>Legal</h4>
+                <a href="#">Términos</a>
+                <a href="#">Privacidad</a>
+                <a href="#">Ayuda</a>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
+
+<!-- Incluir componente de botón animado -->
+{% include 'components/boton_animado.html' %}
 {% endblock %}
 
 {% block footer %}
@@ -99,50 +113,50 @@
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        (function(){
-            const select = document.getElementById('sortSelect');
-            const container = document.querySelector('.content');
-            const original = Array.from(container.querySelectorAll('.card'));
+<script>
+    (function () {
+        const select = document.getElementById('sortSelect');
+        const container = document.querySelector('.content');
+        const original = Array.from(container.querySelectorAll('.card'));
 
-            function compare(a, b, key, dir) {
-                const av = (a.dataset[key] || '').toLowerCase();
-                const bv = (b.dataset[key] || '').toLowerCase();
-                if (av < bv) return dir === 'asc' ? -1 : 1;
-                if (av > bv) return dir === 'asc' ? 1 : -1;
-                return 0;
+        function compare(a, b, key, dir) {
+            const av = (a.dataset[key] || '').toLowerCase();
+            const bv = (b.dataset[key] || '').toLowerCase();
+            if (av < bv) return dir === 'asc' ? -1 : 1;
+            if (av > bv) return dir === 'asc' ? 1 : -1;
+            return 0;
+        }
+
+        function applySort(mode) {
+            let list;
+            switch (mode) {
+                case 'title-asc':
+                    list = [...original].sort((a, b) => compare(a, b, 'title', 'asc')); break;
+                case 'title-desc':
+                    list = [...original].sort((a, b) => compare(a, b, 'title', 'desc')); break;
+                case 'author-asc':
+                    list = [...original].sort((a, b) => compare(a, b, 'author', 'asc')); break;
+                case 'author-desc':
+                    list = [...original].sort((a, b) => compare(a, b, 'author', 'desc')); break;
+                default:
+                    list = [...original];
             }
+            // Reinsert nodes in new order
+            list.forEach(node => container.appendChild(node));
 
-            function applySort(mode){
-                let list;
-                switch(mode){
-                    case 'title-asc':
-                        list = [...original].sort((a,b)=>compare(a,b,'title','asc')); break;
-                    case 'title-desc':
-                        list = [...original].sort((a,b)=>compare(a,b,'title','desc')); break;
-                    case 'author-asc':
-                        list = [...original].sort((a,b)=>compare(a,b,'author','asc')); break;
-                    case 'author-desc':
-                        list = [...original].sort((a,b)=>compare(a,b,'author','desc')); break;
-                    default:
-                        list = [...original];
-                }
-                // Reinsert nodes in new order
-                list.forEach(node => container.appendChild(node));
+            // Persist in querystring
+            const url = new URL(window.location.href);
+            if (mode === 'default') url.searchParams.delete('sort');
+            else url.searchParams.set('sort', mode);
+            window.history.replaceState({}, '', url.toString());
+        }
 
-                // Persist in querystring
-                const url = new URL(window.location.href);
-                if (mode === 'default') url.searchParams.delete('sort');
-                else url.searchParams.set('sort', mode);
-                window.history.replaceState({}, '', url.toString());
-            }
+        // Init from URL if present
+        const urlMode = new URL(window.location.href).searchParams.get('sort') || 'default';
+        select.value = urlMode;
+        applySort(urlMode);
 
-            // Init from URL if present
-            const urlMode = new URL(window.location.href).searchParams.get('sort') || 'default';
-            select.value = urlMode;
-            applySort(urlMode);
-
-            select.addEventListener('change', (e)=> applySort(e.target.value));
-        })();
-    </script>
+        select.addEventListener('change', (e) => applySort(e.target.value));
+    })();
+</script>
 {% endblock %}

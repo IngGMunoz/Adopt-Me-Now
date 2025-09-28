@@ -86,11 +86,21 @@
                 </div>
                 <div class="actions">
                     <a class="btn btn-ghost" href="/adopcion"><i class="fa-solid fa-arrow-left"></i> Volver</a>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Enviar solicitud</button>
+                    <button type="submit" class="btn btn-primary" 
+                            data-animate="true" 
+                            data-loading-text="Enviando solicitud..." 
+                            data-animation-type="submit"
+                            data-delay="800"
+                            data-restore-delay="1000">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar solicitud
+                    </button>
                 </div>
             </form>
         </section>
     </main>
+
+    <!-- Incluir componente de botón animado -->
+    {% include 'components/boton_animado.html' %}
 {% endblock %}
 
 {% block scripts %}
@@ -102,15 +112,72 @@
                 const title = document.getElementById('form-title');
                 if (title) title.textContent = `Formulario de Adopción – ${pet}`;
             }
-            // Validación: impedir envío si hay campos inválidos y resaltar
+            // Configurar validación estricta antes de la animación
             const form = document.querySelector('form');
-            if (form){
+            const submitBtn = document.querySelector('button[type="submit"]');
+            
+            if (form && submitBtn) {
+                // Función para validar completamente el formulario
+                function validateForm() {
+                    // Verificar validez nativa del formulario
+                    if (!form.checkValidity()) {
+                        return false;
+                    }
+                    
+                    // Validaciones adicionales personalizadas
+                    const requiredFields = form.querySelectorAll('[required]');
+                    for (let field of requiredFields) {
+                        if (!field.value.trim()) {
+                            return false;
+                        }
+                        
+                        // Validación específica por tipo de campo
+                        if (field.type === 'email' && !field.value.includes('@')) {
+                            return false;
+                        }
+                        
+                        if (field.type === 'tel' && field.value.length < 8) {
+                            return false;
+                        }
+                        
+                        if (field.tagName === 'TEXTAREA' && field.value.trim().length < 10) {
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                }
+                
+                // Interceptar TODOS los eventos del botón para validar primero
+                submitBtn.addEventListener('click', (e) => {
+                    // Validación estricta antes de cualquier acción
+                    if (!validateForm()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        
+                        // Mostrar errores de validación
+                        form.classList.add('was-validated');
+                        form.reportValidity();
+                        
+                        // Prevenir cualquier animación
+                        return false;
+                    }
+                    
+                    // Si pasa la validación, permitir que la animación continúe
+                    console.log('Formulario válido, iniciando animación...');
+                }, true); // Usar capture para ejecutar primero
+                
+                // Manejar el envío real del formulario
                 form.addEventListener('submit', (e) => {
-                    if (!form.checkValidity()){
+                    if (!validateForm()) {
                         e.preventDefault();
                         form.classList.add('was-validated');
                         form.reportValidity();
+                        return false;
                     }
+                    // Si es válido, permitir el envío
+                    console.log('Enviando formulario...');
                 });
             }
         });

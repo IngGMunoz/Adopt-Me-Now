@@ -1,0 +1,193 @@
+<!-- Componente de Botón Animado -->
+<div class="animated-button-component">
+    <!-- El contenido del botón será inyectado por JavaScript -->
+</div>
+
+<style>
+/* Estilos para Botones Animados - Mínimamente invasivos */
+.animated-btn {
+    /* Solo transiciones suaves, sin cambiar layout */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    /* No tocar overflow para no afectar el diseño del botón */
+}
+
+.animated-btn.loading {
+    cursor: wait;
+    /* No cambiar el tamaño del botón original */
+}
+
+.animated-btn i {
+    transition: all 0.3s ease;
+}
+
+.animated-btn .btn-text {
+    transition: all 0.3s ease;
+}
+
+/* Diferentes tipos de botones animados */
+.animated-btn.contact-type.loading {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    animation: contactPulse 1.5s ease-in-out infinite;
+}
+
+.animated-btn.redirect-type.loading {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    animation: redirectPulse 1.5s ease-in-out infinite;
+}
+
+.animated-btn.submit-type.loading {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    animation: submitPulse 1.5s ease-in-out infinite;
+}
+
+/* Animaciones específicas */
+@keyframes contactPulse {
+    0%, 100% {
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+    }
+}
+
+@keyframes redirectPulse {
+    0%, 100% {
+        box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(33, 150, 243, 0.5);
+    }
+}
+
+@keyframes submitPulse {
+    0%, 100% {
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(255, 152, 0, 0.5);
+    }
+}
+
+/* Efecto de shimmer opcional */
+.animated-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.animated-btn:hover::before {
+    left: 100%;
+}
+</style>
+
+<script>
+// JavaScript del Componente de Botón Animado
+(function() {
+    // Función global para animar botones
+    window.animateButton = function(buttonSelector, options = {}) {
+        const button = document.querySelector(buttonSelector);
+        if (!button) return;
+
+        // Configuración por defecto
+        const config = {
+            loadingText: 'Cargando...',
+            loadingIcon: 'fa-solid fa-spinner fa-spin',
+            originalIcon: button.querySelector('i')?.className || 'fa-solid fa-link',
+            originalText: button.textContent.trim(),
+            delay: 800,
+            restoreDelay: 1000,
+            type: 'contact', // contact, redirect, submit
+            action: null, // función personalizada o URL
+            ...options
+        };
+
+        // Añadir clases necesarias
+        button.classList.add('animated-btn', `${config.type}-type`);
+        
+        // Preservar completamente la estructura original del botón
+        const icon = button.querySelector('i');
+        
+        // Guardar el contenido original sin modificarlo
+        const originalHTML = button.innerHTML;
+        config.originalHTML = originalHTML;
+
+        // Añadir event listener
+        button.addEventListener('click', function(e) {
+            // Para botones de submit, validar el formulario primero
+            if (button.type === 'submit') {
+                const form = button.closest('form');
+                if (form && !form.checkValidity()) {
+                    // Si el formulario no es válido, no activar la animación
+                    return; // Permitir que el evento siga su curso normal para mostrar errores
+                }
+                // Si es válido, prevenir el envío inmediato para mostrar la animación
+                e.preventDefault();
+            } else {
+                // Para otros botones, prevenir default normalmente
+                e.preventDefault();
+            }
+            
+            // Cambiar temporalmente el contenido completo
+            const loadingHTML = `<i class="${config.loadingIcon}"></i> ${config.loadingText}`;
+            button.innerHTML = loadingHTML;
+            button.classList.add('loading');
+            
+            // Ejecutar acción después del delay
+            setTimeout(() => {
+                if (config.action) {
+                    if (typeof config.action === 'function') {
+                        config.action();
+                    } else if (typeof config.action === 'string') {
+                        window.open(config.action, '_blank');
+                    }
+                } else if (button.href) {
+                    window.open(button.href, '_blank');
+                } else if (button.type === 'submit') {
+                    // Para botones de submit, enviar el formulario
+                    const form = button.closest('form');
+                    if (form) {
+                        form.submit();
+                    }
+                }
+                
+                // Restaurar estado original completo
+                setTimeout(() => {
+                    button.innerHTML = config.originalHTML;
+                    button.classList.remove('loading');
+                }, config.restoreDelay);
+            }, config.delay);
+        });
+    };
+
+    // Función para configurar múltiples botones
+    window.setupAnimatedButtons = function(buttonsConfig) {
+        buttonsConfig.forEach(config => {
+            animateButton(config.selector, config.options);
+        });
+    };
+
+    // Auto-inicialización para botones con atributos data
+    document.addEventListener('DOMContentLoaded', function() {
+        const autoButtons = document.querySelectorAll('[data-animate="true"]');
+        autoButtons.forEach(button => {
+            const options = {
+                loadingText: button.dataset.loadingText || 'Cargando...',
+                type: button.dataset.animationType || 'contact',
+                delay: parseInt(button.dataset.delay) || 800,
+                restoreDelay: parseInt(button.dataset.restoreDelay) || 1000
+            };
+            
+            // Usar un selector único para este botón
+            const uniqueId = 'animated-btn-' + Math.random().toString(36).substr(2, 9);
+            button.id = uniqueId;
+            animateButton(`#${uniqueId}`, options);
+        });
+    });
+})();
+</script>

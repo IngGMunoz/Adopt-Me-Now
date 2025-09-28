@@ -39,7 +39,14 @@
                     contra el maltrato animal apoyando a la comunidad para el desarrollo de ciudadanos confiables en la tenencia
                     responsable de animales.
                 </p>
-                <a class="cta" href="https://funcuan.com.co/contactanos/" target="_blank"><i class="fa-solid fa-envelope"></i> Contactar Fundación</a>
+                <a class="cta" href="https://funcuan.com.co/contactanos/" target="_blank" 
+                   data-animate="true" 
+                   data-loading-text="Redireccionando..." 
+                   data-animation-type="contact"
+                   data-delay="800"
+                   data-restore-delay="1000">
+                    <i class="fa-solid fa-envelope"></i> Contactar Fundación
+                </a>
             </div>
         </section>
 
@@ -90,4 +97,7 @@
             </div>
         </div>
     </footer>
+
+    <!-- Incluir componente de botón animado -->
+    {% include 'components/boton_animado.html' %}
 {% endblock %}

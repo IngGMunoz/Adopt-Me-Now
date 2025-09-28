@@ -97,6 +97,10 @@
         </div>
     </div>
 </div>
+
+<!-- Incluir componente de notificación -->
+{% include 'components/notificacion_exitosa.html' %}
+
 {% endblock %}
 
 {% block scripts %}
@@ -278,27 +282,58 @@
                 });
             });
 
-            // Submit del formulario
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                // Validar todos los campos
+            // Función para validar todo el formulario
+            function isFormValid() {
                 const isUserValid = validateUser();
                 const isPasswordValid = validatePassword();
                 const isEmailValid = validateEmail();
                 const isEmail2Valid = validateEmailConfirmation();
                 const isNitValid = validateNit();
+                
+                return isUserValid && isPasswordValid && isEmailValid && isEmail2Valid && isNitValid;
+            }
 
-                if (isUserValid && isPasswordValid && isEmailValid && isEmail2Valid && isNitValid) {
+            // Submit del formulario
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // Validar todos los campos
+                if (isFormValid()) {
                     // Mostrar loading
                     submitBtn.disabled = true;
                     loadingSpinner.style.display = 'inline-block';
                     btnText.textContent = 'Creando cuenta administrativa...';
 
-                    // Simular envío (en producción aquí iría el envío real)
+                    // Simular proceso de registro administrativo (2.5 segundos)
                     setTimeout(() => {
-                        form.submit(); // Envío real del formulario
-                    }, 1000);
+                        // Ocultar spinner
+                        loadingSpinner.style.display = 'none';
+                        btnText.textContent = '🛡️ Crear Cuenta Administrativa';
+                        submitBtn.disabled = false;
+                        
+                        // Mostrar modal de éxito en modo administrador
+                        showSuccessModal(
+                            `¡Bienvenido, Administrador ${userInput.value}!`,
+                            `Tu cuenta administrativa ha sido creada exitosamente. Ahora tienes acceso completo para gestionar las adopciones y fundaciones en Adopt Me.`,
+                            {
+                                isAdmin: true,
+                                buttonText: '¡Acceder al Panel!'
+                            }
+                        ).then(() => {
+                            // Redirigir al panel administrativo o login
+                            console.log('Administrador confirmó la creación de cuenta');
+                            window.location.href = '/iniciar-sesion';
+                        });
+                        
+                        // Aquí es donde se guardaría en la base de datos
+                        console.log('Datos del administrador:', {
+                            usuario: userInput.value,
+                            email: emailInput.value,
+                            nit: nitInput.value,
+                            rol: 'administrador',
+                            timestamp: new Date().toISOString()
+                        });
+                    }, 2500);
                 } else {
                     // Enfocar el primer campo inválido
                     const firstInvalid = form.querySelector('.admin-form-input.invalid');

@@ -43,7 +43,14 @@
                     <li><b>Ubicación:</b> Barranquilla, Atlántico, barrio San Jose</li>
                     <li><b>Contacto:</b> +57 3022163398</li>
                 </ul>
-                <a class="cta" href="/formulario?pet=Cachorro"><i class="fa-solid fa-paw"></i> Postularme para adoptar</a>
+                <a class="cta" href="/formulario?pet=Cachorro" 
+                   data-animate="true" 
+                   data-loading-text="Preparando formulario..." 
+                   data-animation-type="submit"
+                   data-delay="700"
+                   data-restore-delay="900">
+                    <i class="fa-solid fa-paw"></i> Postularme para adoptar
+                </a>
             </div>
         </section>
     </main>
@@ -82,4 +89,7 @@
             </div>
         </div>
     </footer>
+
+    <!-- Incluir componente de botón animado -->
+    {% include 'components/boton_animado.html' %}
 {% endblock %}
