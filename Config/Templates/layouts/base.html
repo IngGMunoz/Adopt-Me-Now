@@ -34,7 +34,16 @@
     {% include 'components/footer.html' %}
     {% endblock %}
     
+  
     <!-- Scripts base -->
     {% block scripts %}{% endblock %}
+
+
+    <!-- Chatbot -->
+    {% block chatbot %}
+    <script src="{{ url_for('static', filename='js/IA_adoptme.js') }}"></script>
+    {% endblock %}
+
+    
 </body>
 </html>
