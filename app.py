@@ -7,6 +7,13 @@ from Config.db import app
 def Pagina2_Cachorro():
     return render_template("main/Pagina2_Cachorro.html")
 
+@app.route("/michi")
+def Pagina_Michi():
+    return render_template("main/Pagina_Michi.html")
+
+@app.route("/perro2")
+def Pagina_perro2():
+    return render_template("main/Pagina_perro2.html")
 # Formulario de adopción
 @app.route("/formulario", methods=["GET", "POST"])
 def Formulario_Para_Adoptar():
