@@ -22,107 +22,107 @@
     <div class="login-card">
         {% include 'components/university_logo.html' %}
 
-            <h1 class="login-title">Iniciar Sesión</h1>
+        <h1 class="login-title">Iniciar Sesión</h1>
 
-            <form method="post" action="{{ url_for('Iniciar_Sesion') }}" id="loginForm">
-                <div class="form-group">
-                    <label for="email" class="form-label">Correo Electrónico</label>
-                    <div style="position: relative;">
-                        <input type="email" id="email" name="email" class="form-input" placeholder="ejemplo@correo.com"
-                            autocomplete="email" required />
-                        <i class="fas fa-envelope input-icon"></i>
-                    </div>
+        <form method="post" action="{{ url_for('Iniciar_Sesion') }}" id="loginForm">
+            <div class="form-group">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <div style="position: relative;">
+                    <input type="email" id="email" name="email" class="form-input" placeholder="ejemplo@correo.com"
+                        autocomplete="email" required />
+                    <i class="fas fa-envelope input-icon"></i>
                 </div>
-
-                <div class="form-group">
-                    <label for="password" class="form-label">Contraseña</label>
-                    <div style="position: relative;">
-                        <input type="password" id="password" name="password" class="form-input"
-                            placeholder="Ingresa tu contraseña" autocomplete="current-password" required />
-                        <i class="fas fa-lock input-icon"></i>
-                    </div>
-                </div>
-
-                <button type="submit" class="login-btn" id="submitBtn">
-                    <div class="loading-spinner" id="loadingSpinner"></div>
-                    <span id="btnText">Iniciar Sesión</span>
-                </button>
-            </form>
-
-            <div class="register-link">
-                <a href="/registro">¿No tienes cuenta? Crear cuenta</a>
             </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Contraseña</label>
+                <div style="position: relative;">
+                    <input type="password" id="password" name="password" class="form-input"
+                        placeholder="Ingresa tu contraseña" autocomplete="current-password" required />
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn" id="submitBtn">
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <span id="btnText">Iniciar Sesión</span>
+            </button>
+        </form>
+
+        <div class="register-link">
+            <a href="/registro">¿No tienes cuenta? Crear cuenta</a>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-(function () {
-    const form = document.getElementById('loginForm');
-    const inputs = form.querySelectorAll('.form-input');
-    const submitBtn = document.getElementById('submitBtn');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const btnText = document.getElementById('btnText');
+    (function () {
+        const form = document.getElementById('loginForm');
+        const inputs = form.querySelectorAll('.form-input');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const btnText = document.getElementById('btnText');
 
-    // Efectos de focus para los iconos
-    inputs.forEach(input => {
-        input.addEventListener('focus', () => {
-            const icon = input.nextElementSibling;
-            if (icon && icon.classList.contains('input-icon')) {
-                icon.style.color = '#e08c2b';
-            }
+        // Efectos de focus para los iconos
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                const icon = input.nextElementSibling;
+                if (icon && icon.classList.contains('input-icon')) {
+                    icon.style.color = '#e08c2b';
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                const icon = input.nextElementSibling;
+                if (icon && icon.classList.contains('input-icon') && !input.value) {
+                    icon.style.color = '#eeb807';
+                }
+            });
         });
 
-        input.addEventListener('blur', () => {
-            const icon = input.nextElementSibling;
-            if (icon && icon.classList.contains('input-icon') && !input.value) {
-                icon.style.color = '#eeb807';
+        // Submit del formulario
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Validar que ambos campos tengan contenido
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!email || !password) {
+                alert('Por favor, completa todos los campos');
+                return;
             }
+
+            // Mostrar loading
+            submitBtn.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            btnText.textContent = 'Iniciando sesión...';
+
+            // Simular proceso de login y redirigir a la página principal
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1500);
         });
-    });
 
-    // Submit del formulario
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
+        // Efecto de escritura en el título
+        const title = document.querySelector('.login-title');
+        const titleText = title.textContent;
+        title.textContent = '';
 
-        // Validar que ambos campos tengan contenido
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value.trim();
-
-        if (!email || !password) {
-            alert('Por favor, completa todos los campos');
-            return;
-        }
-
-        // Mostrar loading
-        submitBtn.disabled = true;
-        loadingSpinner.style.display = 'inline-block';
-        btnText.textContent = 'Iniciando sesión...';
-
-        // Simular proceso de login y redirigir a la página principal
         setTimeout(() => {
-            window.location.href = '/';
-        }, 1500);
-    });
-
-    // Efecto de escritura en el título
-    const title = document.querySelector('.login-title');
-    const titleText = title.textContent;
-    title.textContent = '';
-
-    setTimeout(() => {
-        let i = 0;
-        const typeWriter = () => {
-            if (i < titleText.length) {
-                title.textContent += titleText.charAt(i);
-                i++;
-                setTimeout(typeWriter, 100);
-            }
-        };
-        typeWriter();
-    }, 800);
-})();
+            let i = 0;
+            const typeWriter = () => {
+                if (i < titleText.length) {
+                    title.textContent += titleText.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 100);
+                }
+            };
+            typeWriter();
+        }, 800);
+    })();
 </script>
 {% endblock %}

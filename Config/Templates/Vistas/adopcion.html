@@ -41,18 +41,23 @@
         <div class="card-content">
             <h2 class="title">Cachorro</h2>
             <span class="by"><i class="fa-solid fa-user"></i> Creado por Daniel</span>
-            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</p>
+            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas
+                con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y
+                facilitando el proceso de adopción de forma rápida y segura.</p>
             <a class="cta" href="{{ url_for('Pagina2_Cachorro') }}"><i class="fa-solid fa-envelope"></i> Contactar</a>
         </div>
     </section>
 
     <!-- Card 2 -->
     <section class="card" data-title="Funcuan" data-author="David">
-        <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo Fundación FUNCUAN" style="object-fit: contain;" />
+        <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo Fundación FUNCUAN"
+            style="object-fit: contain;" />
         <div class="card-content">
             <h2 class="title">Funcuan</h2>
             <span class="by"><i class="fa-solid fa-user"></i> Creado por David</span>
-            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</p>
+            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas
+                con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y
+                facilitando el proceso de adopción de forma rápida y segura.</p>
             <a class="cta" href="{{ url_for('Pagina_Funcuan') }}"><i class="fa-solid fa-envelope"></i> Contactar</a>
         </div>
     </section>
@@ -63,7 +68,9 @@
         <div class="card-content">
             <h2 class="title">Michi</h2>
             <span class="by"><i class="fa-solid fa-user"></i> Creado por Ana</span>
-            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y facilitando el proceso de adopción de forma rápida y segura.</p>
+            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas
+                con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y
+                facilitando el proceso de adopción de forma rápida y segura.</p>
             <a class="cta" href="{{ url_for('Pagina_Michi') }}"><i class="fa-solid fa-envelope"></i> Contactar</a>
         </div>
     </section>
@@ -74,7 +81,9 @@
         <div class="card-content">
             <h2 class="title">Rocky</h2>
             <span class="by"><i class="fa-solid fa-user"></i> Creado por Andrea</span>
-            <p>Rocky es un perro mestizo de tamaño mini, muy noble y protector. Le encanta jugar al aire libre y convivir con personas y otros animales. Está vacunado, desparasitado y listo para encontrar una familia que lo quiera y cuide para siempre.</p>
+            <p>Rocky es un perro mestizo de tamaño mini, muy noble y protector. Le encanta jugar al aire libre y
+                convivir con personas y otros animales. Está vacunado, desparasitado y listo para encontrar una familia
+                que lo quiera y cuide para siempre.</p>
             <a class="cta" href="{{ url_for('Pagina_perro2') }}"><i class="fa-solid fa-envelope"></i> Contactar</a>
         </div>
     </section>
@@ -118,7 +127,7 @@
 
 {% block scripts %}
 <script>
-    (function(){
+    (function () {
         const select = document.getElementById('sortSelect');
         const container = document.querySelector('.content');
         const original = Array.from(container.querySelectorAll('.card'));
@@ -131,17 +140,17 @@
             return 0;
         }
 
-        function applySort(mode){
+        function applySort(mode) {
             let list;
-            switch(mode){
+            switch (mode) {
                 case 'title-asc':
-                    list = [...original].sort((a,b)=>compare(a,b,'title','asc')); break;
+                    list = [...original].sort((a, b) => compare(a, b, 'title', 'asc')); break;
                 case 'title-desc':
-                    list = [...original].sort((a,b)=>compare(a,b,'title','desc')); break;
+                    list = [...original].sort((a, b) => compare(a, b, 'title', 'desc')); break;
                 case 'author-asc':
-                    list = [...original].sort((a,b)=>compare(a,b,'author','asc')); break;
+                    list = [...original].sort((a, b) => compare(a, b, 'author', 'asc')); break;
                 case 'author-desc':
-                    list = [...original].sort((a,b)=>compare(a,b,'author','desc')); break;
+                    list = [...original].sort((a, b) => compare(a, b, 'author', 'desc')); break;
                 default:
                     list = [...original];
             }
@@ -160,7 +169,7 @@
         select.value = urlMode;
         applySort(urlMode);
 
-        select.addEventListener('change', (e)=> applySort(e.target.value));
+        select.addEventListener('change', (e) => applySort(e.target.value));
     })();
 </script>
 {% endblock %}

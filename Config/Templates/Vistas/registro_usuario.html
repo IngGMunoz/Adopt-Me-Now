@@ -31,7 +31,7 @@
                 <label for="user" class="form-label">Usuario</label>
                 <div style="position: relative;">
                     <input type="text" id="user" name="user" class="form-input"
-                           placeholder="Ingresa tu nombre de usuario" autocomplete="username" required minlength="3" />
+                        placeholder="Ingresa tu nombre de usuario" autocomplete="username" required minlength="3" />
                     <i class="fas fa-user input-icon"></i>
                 </div>
                 <div class="validation-message" id="userValidation"></div>
@@ -41,7 +41,7 @@
                 <label for="password" class="form-label">Contraseña</label>
                 <div style="position: relative;">
                     <input type="password" id="password" name="password" class="form-input"
-                           placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
+                        placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
                     <i class="fas fa-lock input-icon"></i>
                 </div>
                 <div class="password-strength">
@@ -54,7 +54,7 @@
                 <label for="email" class="form-label">Correo Electrónico</label>
                 <div style="position: relative;">
                     <input type="email" id="email" name="email" class="form-input" placeholder="ejemplo@correo.com"
-                           autocomplete="email" required />
+                        autocomplete="email" required />
                     <i class="fas fa-envelope input-icon"></i>
                 </div>
                 <div class="validation-message" id="emailValidation"></div>
@@ -64,7 +64,7 @@
                 <label for="email2" class="form-label">Confirmar Correo</label>
                 <div style="position: relative;">
                     <input type="email" id="email2" name="email2" class="form-input"
-                           placeholder="Repite tu correo electrónico" autocomplete="email" required />
+                        placeholder="Repite tu correo electrónico" autocomplete="email" required />
                     <i class="fas fa-envelope-circle-check input-icon"></i>
                 </div>
                 <div class="validation-message" id="email2Validation"></div>
@@ -79,7 +79,8 @@
         <div class="login-link">
             <a href="{{ url_for('Iniciar_Sesion') }}">¿Ya tienes cuenta? Inicia sesión</a>
             <div style="margin-top:12px; font-size:14px;">
-                ¿O eres administrador? <a href="{{ url_for('Registro_Administrador') }}" style="color:#e08c2b; text-decoration:underline; font-weight:600;">Regístrate</a>
+                ¿O eres administrador? <a href="{{ url_for('Registro_Administrador') }}"
+                    style="color:#e08c2b; text-decoration:underline; font-weight:600;">Regístrate</a>
             </div>
         </div>
     </div>
@@ -161,7 +162,7 @@
                 return true;
             }
         }
-        
+
         function validateEmail() {
             const value = emailInput.value;
             const validation = document.getElementById('emailValidation');

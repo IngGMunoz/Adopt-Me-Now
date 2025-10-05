@@ -23,7 +23,7 @@
 <div class="admin-register-container">
     <div class="admin-register-card">
         <div class="admin-badge">Administrador</div>
-        
+
         {% include 'components/university_logo.html' %}
 
         <h1 class="admin-register-title">Registro Administrativo</h1>
@@ -33,7 +33,8 @@
                 <label for="admin_user" class="admin-form-label">Usuario Administrador</label>
                 <div style="position: relative;">
                     <input type="text" id="admin_user" name="admin_user" class="admin-form-input"
-                           placeholder="Ingresa tu nombre de usuario administrativo" autocomplete="username" required minlength="3" />
+                        placeholder="Ingresa tu nombre de usuario administrativo" autocomplete="username" required
+                        minlength="3" />
                     <i class="fas fa-user-shield admin-input-icon"></i>
                 </div>
                 <div class="admin-validation-message" id="adminUserValidation"></div>
@@ -43,7 +44,8 @@
                 <label for="admin_password" class="admin-form-label">Contraseña Administrativa</label>
                 <div style="position: relative;">
                     <input type="password" id="admin_password" name="admin_password" class="admin-form-input"
-                           placeholder="Mínimo 8 caracteres para administradores" autocomplete="new-password" required minlength="8" />
+                        placeholder="Mínimo 8 caracteres para administradores" autocomplete="new-password" required
+                        minlength="8" />
                     <i class="fas fa-shield-halved admin-input-icon"></i>
                 </div>
                 <div class="admin-password-strength">
@@ -55,8 +57,8 @@
             <div class="admin-form-group">
                 <label for="admin_email" class="admin-form-label">Correo Institucional</label>
                 <div style="position: relative;">
-                    <input type="email" id="admin_email" name="admin_email" class="admin-form-input" 
-                           placeholder="admin@institucion.edu" autocomplete="email" required />
+                    <input type="email" id="admin_email" name="admin_email" class="admin-form-input"
+                        placeholder="admin@institucion.edu" autocomplete="email" required />
                     <i class="fas fa-envelope-circle-check admin-input-icon"></i>
                 </div>
                 <div class="admin-validation-message" id="adminEmailValidation"></div>
@@ -66,7 +68,7 @@
                 <label for="admin_email2" class="admin-form-label">Confirmar Correo</label>
                 <div style="position: relative;">
                     <input type="email" id="admin_email2" name="admin_email2" class="admin-form-input"
-                           placeholder="Repite tu correo institucional" autocomplete="email" required />
+                        placeholder="Repite tu correo institucional" autocomplete="email" required />
                     <i class="fas fa-envelope-check admin-input-icon"></i>
                 </div>
                 <div class="admin-validation-message" id="adminEmail2Validation"></div>
@@ -76,7 +78,7 @@
                 <label for="admin_nit" class="admin-form-label">N.I.T. Institucional</label>
                 <div style="position: relative;">
                     <input type="text" id="admin_nit" name="admin_nit" class="admin-form-input"
-                           placeholder="NIT de la institución" required minlength="5" />
+                        placeholder="NIT de la institución" required minlength="5" />
                     <i class="fas fa-id-card admin-input-icon"></i>
                 </div>
                 <div class="admin-validation-message" id="adminNitValidation"></div>
@@ -91,7 +93,8 @@
         <div class="admin-login-link">
             <a href="{{ url_for('Iniciar_Sesion') }}">¿Ya tienes cuenta? Inicia sesión</a>
             <div style="margin-top:12px; font-size:14px;">
-                ¿Usuario regular? <a href="{{ url_for('Registro_Usuario') }}" style="color:#4299e1; text-decoration:underline; font-weight:600;">Regístrate aquí</a>
+                ¿Usuario regular? <a href="{{ url_for('Registro_Usuario') }}"
+                    style="color:#4299e1; text-decoration:underline; font-weight:600;">Regístrate aquí</a>
             </div>
         </div>
     </div>

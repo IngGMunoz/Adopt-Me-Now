@@ -29,7 +29,7 @@
 {% block content %}
 {% if is_authenticated %}
 <div class="user-info">
-    <i class="fa-solid fa-user-check"></i> 
+    <i class="fa-solid fa-user-check"></i>
     ¡Hola, {{ current_user.nombre }}! Ya puedes contactar a las mascotas para adopción.
     <a href="/logout" style="margin-left: 1rem; color: #e08c2b; text-decoration: none;">
         <i class="fa-solid fa-sign-out-alt"></i> Cerrar Sesión
@@ -62,8 +62,9 @@
                 <i class="fa-solid fa-envelope"></i> Contactar
             </a>
             {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal('Cachorro', event)" data-animate="true" data-loading-text="Debes iniciar sesión..."
-                data-animation-type="auth" data-delay="300" data-restore-delay="600">
+            <button class="cta cta-locked" onclick="showAuthModal('Cachorro', event)" data-animate="true"
+                data-loading-text="Debes iniciar sesión..." data-animation-type="auth" data-delay="300"
+                data-restore-delay="600">
                 <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
             </button>
             {% endif %}
@@ -93,15 +94,18 @@
         <div class="card-content">
             <h2 class="title">Michi</h2>
             <span class="by"><i class="fa-solid fa-user"></i> Creado por Ana</span>
-            <p>Michi es un gatito adorable y muy cariñoso. Le encanta jugar y recibir mimos. Es perfecto para familias que buscan una compañía tierna y llena de amor. Está vacunado y listo para encontrar su hogar para siempre.</p>
+            <p>Michi es un gatito adorable y muy cariñoso. Le encanta jugar y recibir mimos. Es perfecto para familias
+                que buscan una compañía tierna y llena de amor. Está vacunado y listo para encontrar su hogar para
+                siempre.</p>
             {% if is_authenticated %}
             <a class="cta" href="/michi" data-animate="true" data-loading-text="Conectando..."
                 data-animation-type="contact" data-delay="600" data-restore-delay="800">
                 <i class="fa-solid fa-envelope"></i> Contactar
             </a>
             {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal('Michi', event)" data-animate="true" data-loading-text="Debes iniciar sesión..."
-                data-animation-type="auth" data-delay="300" data-restore-delay="600">
+            <button class="cta cta-locked" onclick="showAuthModal('Michi', event)" data-animate="true"
+                data-loading-text="Debes iniciar sesión..." data-animation-type="auth" data-delay="300"
+                data-restore-delay="600">
                 <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
             </button>
             {% endif %}
@@ -114,15 +118,18 @@
         <div class="card-content">
             <h2 class="title">Rocky</h2>
             <span class="by"><i class="fa-solid fa-user"></i> Creado por Andrea</span>
-            <p>Rocky es un perro mestizo de tamaño mini, muy noble y protector. Le encanta jugar al aire libre y convivir con personas y otros animales. Está vacunado, desparasitado y listo para encontrar una familia que lo quiera y cuide para siempre.</p>
+            <p>Rocky es un perro mestizo de tamaño mini, muy noble y protector. Le encanta jugar al aire libre y
+                convivir con personas y otros animales. Está vacunado, desparasitado y listo para encontrar una familia
+                que lo quiera y cuide para siempre.</p>
             {% if is_authenticated %}
             <a class="cta" href="/rocky" data-animate="true" data-loading-text="Conectando..."
                 data-animation-type="contact" data-delay="600" data-restore-delay="800">
                 <i class="fa-solid fa-envelope"></i> Contactar
             </a>
             {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal('Rocky', event)" data-animate="true" data-loading-text="Debes iniciar sesión..."
-                data-animation-type="auth" data-delay="300" data-restore-delay="600">
+            <button class="cta cta-locked" onclick="showAuthModal('Rocky', event)" data-animate="true"
+                data-loading-text="Debes iniciar sesión..." data-animation-type="auth" data-delay="300"
+                data-restore-delay="600">
                 <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
             </button>
             {% endif %}
@@ -163,8 +170,9 @@
     </div>
 </footer>
 
-<!-- Incluir componente de botón animado -->
+<!-- Incluir componentes necesarios -->
 {% include 'components/boton_animado.html' %}
+{% include 'components/auth-modal.html' %}
 {% endblock %}
 
 {% block footer %}
@@ -172,413 +180,5 @@
 {% endblock %}
 
 {% block scripts %}
-<style>
-/* Estilos para botones bloqueados y modal de autenticación */
-.cta-locked {
-    background: linear-gradient(135deg, #6c757d, #495057) !important;
-    border-color: #495057 !important;
-    cursor: pointer !important;
-    opacity: 0.8;
-    border: none;
-    font-family: inherit;
-    font-size: inherit;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.cta-locked:hover {
-    background: linear-gradient(135deg, #5a6268, #3d4142) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
-}
-
-/* Modal de autenticación mejorado */
-.auth-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(224, 140, 43, 0.2));
-    z-index: 1000;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    animation: modalFadeIn 0.3s ease-out;
-}
-
-@keyframes modalFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes modalContentIn {
-    from { 
-        opacity: 0; 
-        transform: translate(-50%, -60%) scale(0.8);
-    }
-    to { 
-        opacity: 1; 
-        transform: translate(-50%, -50%) scale(1);
-    }
-}
-
-@keyframes modalContentOut {
-    from { 
-        opacity: 1; 
-        transform: translate(-50%, -50%) scale(1);
-    }
-    to { 
-        opacity: 0; 
-        transform: translate(-50%, -40%) scale(0.9);
-    }
-}
-
-@keyframes modalFadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-.auth-modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
-    padding: 3rem;
-    border-radius: 25px;
-    max-width: 480px;
-    width: 90%;
-    box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    text-align: center;
-    animation: modalContentIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.auth-modal-content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #e08c2b, #f4a261, #e76f51, #e08c2b);
-    background-size: 200% 100%;
-    animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.auth-modal-icon {
-    font-size: 4rem;
-    color: #e08c2b;
-    margin-bottom: 1.5rem;
-    animation: bounceIn 0.6s ease-out 0.2s both;
-}
-
-@keyframes bounceIn {
-    0% { 
-        transform: scale(0.3) rotate(-180deg);
-        opacity: 0;
-    }
-    50% { 
-        transform: scale(1.05) rotate(0deg);
-    }
-    70% { 
-        transform: scale(0.9);
-    }
-    100% { 
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.auth-modal h3 {
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.auth-modal-subtitle {
-    color: #e08c2b;
-    font-size: 1rem;
-    margin-bottom: 2rem;
-    font-weight: 500;
-}
-
-.auth-modal p {
-    margin-bottom: 2.5rem;
-    color: #555;
-    font-size: 1.1rem;
-    line-height: 1.6;
-}
-
-.auth-modal p strong {
-    color: #e08c2b;
-    font-weight: 600;
-}
-
-.auth-modal-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-}
-
-.auth-modal-btn {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    min-width: 140px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.auth-modal-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s;
-}
-
-.auth-modal-btn:hover::before {
-    left: 100%;
-}
-
-.auth-modal-btn.primary {
-    background: linear-gradient(135deg, #e08c2b, #f4a261);
-    color: white;
-    box-shadow: 
-        0 8px 25px rgba(224, 140, 43, 0.3),
-        0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.auth-modal-btn.primary:hover {
-    background: linear-gradient(135deg, #d67b1a, #e08c2b);
-    transform: translateY(-2px);
-    box-shadow: 
-        0 12px 35px rgba(224, 140, 43, 0.4),
-        0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.auth-modal-btn.primary:active {
-    transform: translateY(0);
-}
-
-.auth-modal-btn.secondary {
-    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-    color: #6c757d;
-    border: 2px solid #dee2e6;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.auth-modal-btn.secondary:hover {
-    background: linear-gradient(145deg, #e9ecef, #dee2e6);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    color: #495057;
-}
-
-.auth-modal-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #adb5bd;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.auth-modal-close:hover {
-    background: rgba(224, 140, 43, 0.1);
-    color: #e08c2b;
-    transform: rotate(90deg);
-}
-
-/* Indicador de usuario autenticado */
-.user-info {
-    background: rgba(224, 140, 43, 0.1);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    color: #e08c2b;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-</style>
-
-<script>
-    (function () {
-        const select = document.getElementById('sortSelect');
-        const container = document.querySelector('.content');
-        const original = Array.from(container.querySelectorAll('.card'));
-
-        function compare(a, b, key, dir) {
-            const av = (a.dataset[key] || '').toLowerCase();
-            const bv = (b.dataset[key] || '').toLowerCase();
-            if (av < bv) return dir === 'asc' ? -1 : 1;
-            if (av > bv) return dir === 'asc' ? 1 : -1;
-            return 0;
-        }
-
-        function applySort(mode) {
-            let list;
-            switch (mode) {
-                case 'title-asc':
-                    list = [...original].sort((a, b) => compare(a, b, 'title', 'asc')); break;
-                case 'title-desc':
-                    list = [...original].sort((a, b) => compare(a, b, 'title', 'desc')); break;
-                case 'author-asc':
-                    list = [...original].sort((a, b) => compare(a, b, 'author', 'asc')); break;
-                case 'author-desc':
-                    list = [...original].sort((a, b) => compare(a, b, 'author', 'desc')); break;
-                default:
-                    list = [...original];
-            }
-            // Reinsert nodes in new order
-            list.forEach(node => container.appendChild(node));
-
-            // Persist in querystring
-            const url = new URL(window.location.href);
-            if (mode === 'default') url.searchParams.delete('sort');
-            else url.searchParams.set('sort', mode);
-            window.history.replaceState({}, '', url.toString());
-        }
-
-        // Init from URL if present
-        const urlMode = new URL(window.location.href).searchParams.get('sort') || 'default';
-        select.value = urlMode;
-        applySort(urlMode);
-
-        select.addEventListener('change', (e) => applySort(e.target.value));
-    })();
-
-    // Función para mostrar el modal de autenticación
-    function showAuthModal(petName, event) {
-        // Prevenir comportamiento por defecto del enlace
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        // Crear modal si no existe
-        let modal = document.getElementById('authModal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'authModal';
-            modal.className = 'auth-modal';
-            modal.innerHTML = `
-                <div class="auth-modal-content">
-                    <button class="auth-modal-close" onclick="closeAuthModal()" title="Cerrar">
-                        <i class="fa-solid fa-times"></i>
-                    </button>
-                    <div class="auth-modal-icon">
-                        <i class="fa-solid fa-paw"></i>
-                    </div>
-                    <h3>¡Hola, futuro adoptante!</h3>
-                    <p class="auth-modal-subtitle">Tu nuevo mejor amigo te está esperando</p>
-                    <p>Para contactar y adoptar a <strong id="modalPetName">${petName}</strong>, necesitas crear una cuenta o iniciar sesión. ¡Es rápido y completamente gratis!</p>
-                    <div class="auth-modal-buttons">
-                        <a href="/registro" class="auth-modal-btn primary">
-                            <i class="fa-solid fa-user-plus"></i> Crear Cuenta
-                        </a>
-                        <a href="/iniciar-sesion" class="auth-modal-btn primary">
-                            <i class="fa-solid fa-sign-in-alt"></i> Iniciar Sesión
-                        </a>
-                        <button onclick="closeAuthModal()" class="auth-modal-btn secondary">
-                            <i class="fa-solid fa-times-circle"></i> Ahora no
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        } else {
-            document.getElementById('modalPetName').textContent = petName;
-        }
-        
-        modal.style.display = 'block';
-        
-        // Efecto de apertura suave
-        setTimeout(() => {
-            modal.style.opacity = '1';
-        }, 10);
-        
-        // Cerrar modal al hacer clic fuera
-        modal.onclick = function(event) {
-            if (event.target === modal) {
-                closeAuthModal();
-            }
-        }
-        
-        // Enfocar el primer botón para accesibilidad
-        setTimeout(() => {
-            const firstBtn = modal.querySelector('.auth-modal-btn');
-            if (firstBtn) firstBtn.focus();
-        }, 300);
-        
-        return false; // Prevenir navegación
-    }
-    
-    // Función para cerrar el modal con animación
-    function closeAuthModal() {
-        const modal = document.getElementById('authModal');
-        if (modal) {
-            const content = modal.querySelector('.auth-modal-content');
-            if (content) {
-                content.style.animation = 'modalContentOut 0.3s cubic-bezier(0.55, 0, 1, 0.45) forwards';
-                modal.style.animation = 'modalFadeOut 0.3s ease-out 0.1s forwards';
-                
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                    // Resetear animaciones para la próxima vez
-                    content.style.animation = '';
-                    modal.style.animation = '';
-                }, 400);
-            } else {
-                modal.style.display = 'none';
-            }
-        }
-    }
-    
-    // Cerrar modal con tecla Escape
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeAuthModal();
-        }
-    });
-</script>
+<!-- Los estilos y scripts ahora están incluidos en los componentes -->
 {% endblock %}

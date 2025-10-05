@@ -3,91 +3,88 @@
 {% block title %}Detalle de Rocky{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/cachorro.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cachorro.css') }}">
 {% endblock %}
 
 {% block navbar %}
-    <!-- Header personalizado para página de Rocky -->
-    <header class="topbar">
-        <div class="topbar-inner">
-            <div class="brand">
-                <i class="fa-solid fa-paw"></i> Adopt Me
-            </div>
-            <nav class="nav" aria-label="Navegación principal">
-                <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
-                <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
-                <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
-            </nav>
-            <div class="user" title="Perfil">
-                <i class="fa-regular fa-user"></i>
-            </div>
+<!-- Header personalizado para página de Rocky -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <i class="fa-solid fa-paw"></i> Adopt Me
         </div>
-    </header>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
+            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+        </nav>
+        <div class="user" title="Perfil">
+            <i class="fa-regular fa-user"></i>
+        </div>
+    </div>
+</header>
 {% endblock %}
 
 {% block content %}
-    <main class="main-content">
-        <section class="detail-card">
-            <img class="detail-img" src="{{ url_for('static', filename='images/chiki.jpg') }}" alt="Rocky" />
-            <div class="detail-info">
-                <h2 class="detail-title">Rocky</h2>
-                <span class="detail-by"><i class="fa-solid fa-user"></i> Creado por Andrea</span>
-                <ul class="detail-list">
-                    <li><b>Raza:</b> Mestizo</li>
-                    <li><b>Edad:</b> 2 años</li>
-                    <li><b>Sexo:</b> Macho</li>
-                    <li><b>Tamaño:</b> miniatura (4 kg aprox.)</li>
-                    <li><b>Estado de salud:</b> Vacunado, desparasitado y en excelente estado</li>
-                    <li><b>Carácter:</b> Noble, protector, juguetón y sociable con personas y otros animales</li>
-                    <li><b>Requisitos para adopción:</b> Espacio para jugar, paseos diarios, compromiso con su bienestar y controles veterinarios</li>
-                    <li><b>Ubicación:</b> Barranquilla, Atlántico</li>
-                    <li><b>Contacto:</b> +57 3012345678</li>
-                </ul>
-               <a class="cta" href="/formulario?pet=Rocky" 
-                   data-animate="true" 
-                   data-loading-text="Preparando formulario..." 
-                   data-animation-type="submit"
-                   data-delay="700"
-                   data-restore-delay="900">
-                    <i class="fa-solid fa-paw"></i> Postularme para adoptar
-                </a>
-            </div>
-        </section>
-    </main>
+<main class="main-content">
+    <section class="detail-card">
+        <img class="detail-img" src="{{ url_for('static', filename='images/chiki.jpg') }}" alt="Rocky" />
+        <div class="detail-info">
+            <h2 class="detail-title">Rocky</h2>
+            <span class="detail-by"><i class="fa-solid fa-user"></i> Creado por Andrea</span>
+            <ul class="detail-list">
+                <li><b>Raza:</b> Mestizo</li>
+                <li><b>Edad:</b> 2 años</li>
+                <li><b>Sexo:</b> Macho</li>
+                <li><b>Tamaño:</b> miniatura (4 kg aprox.)</li>
+                <li><b>Estado de salud:</b> Vacunado, desparasitado y en excelente estado</li>
+                <li><b>Carácter:</b> Noble, protector, juguetón y sociable con personas y otros animales</li>
+                <li><b>Requisitos para adopción:</b> Espacio para jugar, paseos diarios, compromiso con su bienestar y
+                    controles veterinarios</li>
+                <li><b>Ubicación:</b> Barranquilla, Atlántico</li>
+                <li><b>Contacto:</b> +57 3012345678</li>
+            </ul>
+            <a class="cta" href="/formulario?pet=Rocky" data-animate="true" data-loading-text="Preparando formulario..."
+                data-animation-type="submit" data-delay="700" data-restore-delay="900">
+                <i class="fa-solid fa-paw"></i> Postularme para adoptar
+            </a>
+        </div>
+    </section>
+</main>
 {% endblock %}
 
 {% block footer %}
-    <!-- Footer personalizado para página de Rocky -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
-            <div class="footer-grid">
-                <div>
-                    <h4>Contáctanos</h4>
-                    <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
-                    <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-                    <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
-                </div>
-                <div>
-                    <h4>Adopción</h4>
-                    <a href="#">¿Cómo adoptar?</a>
-                    <a href="#">Requisitos</a>
-                    <a href="#">Historias felices</a>
-                </div>
-                <div>
-                    <h4>Fundaciones</h4>
-                    <a href="#">Unirse</a>
-                    <a href="#">Recursos</a>
-                    <a href="#">Eventos</a>
-                </div>
-                <div>
-                    <h4>Legal</h4>
-                    <a href="#">Términos</a>
-                    <a href="#">Privacidad</a>
-                    <a href="#">Ayuda</a>
-                </div>
+<!-- Footer personalizado para página de Rocky -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
+        <div class="footer-grid">
+            <div>
+                <h4>Contáctanos</h4>
+                <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
+                <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
+            </div>
+            <div>
+                <h4>Adopción</h4>
+                <a href="#">¿Cómo adoptar?</a>
+                <a href="#">Requisitos</a>
+                <a href="#">Historias felices</a>
+            </div>
+            <div>
+                <h4>Fundaciones</h4>
+                <a href="#">Unirse</a>
+                <a href="#">Recursos</a>
+                <a href="#">Eventos</a>
+            </div>
+            <div>
+                <h4>Legal</h4>
+                <a href="#">Términos</a>
+                <a href="#">Privacidad</a>
+                <a href="#">Ayuda</a>
             </div>
         </div>
-    </footer>
-    {% include 'components/boton_animado.html' %}
+    </div>
+</footer>
+{% include 'components/boton_animado.html' %}
 {% endblock %}

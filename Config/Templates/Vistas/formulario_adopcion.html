@@ -3,111 +3,121 @@
 {% block title %}Formulario de Adopción{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
 {% endblock %}
 
 {% block navbar %}
-    <!-- Header personalizado para formulario de adopción -->
-    <header class="topbar">
-        <div class="topbar-inner">
-            <div class="brand">
-                <i class="fa-solid fa-paw"></i> Adopt Me
-            </div>
-            <nav class="nav" aria-label="Navegación principal">
-                <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
-                <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
-                <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
-            </nav>
-            <div class="user" title="Perfil">
-                <i class="fa-regular fa-user"></i>
-            </div>
+<!-- Header personalizado para formulario de adopción -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <i class="fa-solid fa-paw"></i> Adopt Me
         </div>
-    </header>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
+            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+        </nav>
+        <div class="user" title="Perfil">
+            <i class="fa-regular fa-user"></i>
+        </div>
+    </div>
+</header>
 {% endblock %}
 
 {% block content %}
-    <main>
-        <section class="form-container">
-            <h1 class="form-title" id="form-title">Formulario de Adopción</h1>
-            <p class="form-desc">Completa tus datos y cuéntanos por qué deseas adoptar. Nos pondremos en contacto contigo pronto.</p>
-            <form method="POST" action="/formulario" novalidate>
-                <div class="form-row">
-                    <div>
-                        <label for="nombre">Nombre completo</label>
-                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellidos" minlength="3" required />
-                    </div>
-                    <div>
-                        <label for="email">Correo electrónico</label>
-                        <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required />
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div>
-                        <label for="telefono">Teléfono</label>
-                        <input type="tel" id="telefono" name="telefono" placeholder="(+57) 300 000 0000" inputmode="tel" pattern="\+?\d[\d\s-]{7,15}" title="Ingresa un teléfono válido (8 a 16 dígitos, puede incluir +, espacios o guiones)" required />
-                    </div>
-                    <div>
-                        <label for="direccion">Dirección</label>
-                        <input type="text" id="direccion" name="direccion" placeholder="Calle 123 #45-67, Barrio, Ciudad" minlength="5" required />
-                    </div>
+<main>
+    <section class="form-container">
+        <h1 class="form-title" id="form-title">Formulario de Adopción</h1>
+        <p class="form-desc">Completa tus datos y cuéntanos por qué deseas adoptar. Nos pondremos en contacto contigo
+            pronto.</p>
+        <form method="POST" action="/formulario" novalidate>
+            <div class="form-row">
+                <div>
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellidos" minlength="3"
+                        required />
                 </div>
                 <div>
-                    <label for="ocupacion">Ocupación</label>
-                    <input type="text" id="ocupacion" name="ocupacion" placeholder="¿A qué te dedicas?" minlength="2" required />
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required />
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" placeholder="(+57) 300 000 0000" inputmode="tel"
+                        pattern="\+?\d[\d\s-]{7,15}"
+                        title="Ingresa un teléfono válido (8 a 16 dígitos, puede incluir +, espacios o guiones)"
+                        required />
                 </div>
                 <div>
-                    <label for="vivienda">Tipo de vivienda</label>
-                    <select id="vivienda" name="vivienda" required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="casa">Casa</option>
-                        <option value="apartamento">Apartamento</option>
-                        <option value="finca">Finca</option>
-                        <option value="otro">Otro</option>
-                    </select>
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" name="direccion" placeholder="Calle 123 #45-67, Barrio, Ciudad"
+                        minlength="5" required />
                 </div>
-                <div>
-                    <label for="mascotas">¿Tienes otras mascotas?</label>
-                    <select id="mascotas" name="mascotas" required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="no">No</option>
-                        <option value="perro">Sí, perro(s)</option>
-                        <option value="gato">Sí, gato(s)</option>
-                        <option value="otros">Sí, otros</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="motivo">¿Por qué deseas adoptar?</label>
-                    <textarea id="motivo" name="motivo" placeholder="Cuéntanos sobre tu hogar, tu tiempo disponible y por qué te gustaría adoptar." minlength="10" required></textarea>
-                </div>
-                <div class="actions">
-                    <a class="btn btn-ghost" href="/adopcion"><i class="fa-solid fa-arrow-left"></i> Volver</a>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Enviar solicitud</button>
-                </div>
-            </form>
-        </section>
-    </main>
+            </div>
+            <div>
+                <label for="ocupacion">Ocupación</label>
+                <input type="text" id="ocupacion" name="ocupacion" placeholder="¿A qué te dedicas?" minlength="2"
+                    required />
+            </div>
+            <div>
+                <label for="vivienda">Tipo de vivienda</label>
+                <select id="vivienda" name="vivienda" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="casa">Casa</option>
+                    <option value="apartamento">Apartamento</option>
+                    <option value="finca">Finca</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div>
+                <label for="mascotas">¿Tienes otras mascotas?</label>
+                <select id="mascotas" name="mascotas" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="no">No</option>
+                    <option value="perro">Sí, perro(s)</option>
+                    <option value="gato">Sí, gato(s)</option>
+                    <option value="otros">Sí, otros</option>
+                </select>
+            </div>
+            <div>
+                <label for="motivo">¿Por qué deseas adoptar?</label>
+                <textarea id="motivo" name="motivo"
+                    placeholder="Cuéntanos sobre tu hogar, tu tiempo disponible y por qué te gustaría adoptar."
+                    minlength="10" required></textarea>
+            </div>
+            <div class="actions">
+                <a class="btn btn-ghost" href="/adopcion"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Enviar
+                    solicitud</button>
+            </div>
+        </form>
+    </section>
+</main>
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const pet = params.get('pet');
-            if (pet){
-                const title = document.getElementById('form-title');
-                if (title) title.textContent = `Formulario de Adopción – ${pet}`;
-            }
-            // Validación: impedir envío si hay campos inválidos y resaltar
-            const form = document.querySelector('form');
-            if (form){
-                form.addEventListener('submit', (e) => {
-                    if (!form.checkValidity()){
-                        e.preventDefault();
-                        form.classList.add('was-validated');
-                        form.reportValidity();
-                    }
-                });
-            }
-        });
-    </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const pet = params.get('pet');
+        if (pet) {
+            const title = document.getElementById('form-title');
+            if (title) title.textContent = `Formulario de Adopción – ${pet}`;
+        }
+        // Validación: impedir envío si hay campos inválidos y resaltar
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    form.classList.add('was-validated');
+                    form.reportValidity();
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
