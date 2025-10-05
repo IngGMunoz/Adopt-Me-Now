@@ -2,48 +2,6 @@
    ESTILOS PARA REGISTRO DE USUARIO
    =================================== */
 
-/* Estilos adicionales para el nuevo sistema de validación */
-.admin-link {
-    margin-top: 12px;
-    font-size: 14px;
-}
-
-.admin-register-link {
-    color: #e08c2b;
-    text-decoration: underline;
-    font-weight: 600;
-}
-
-.admin-register-link:hover {
-    color: #d67e1b;
-    text-decoration: none;
-}
-
-/* Integración con el sistema de validación */
-.register-card .form-group {
-    margin-bottom: 1.5rem;
-}
-
-.register-card .input-with-icon .form-input {
-    padding-left: 50px;
-}
-
-.register-card .input-icon {
-    left: 18px;
-    color: #e08c2b;
-    opacity: 0.7;
-}
-
-.register-card .form-input.valid + .input-icon {
-    color: #28a745;
-    opacity: 1;
-}
-
-.register-card .form-input.invalid + .input-icon {
-    color: #dc3545;
-    opacity: 1;
-}
-
 /* Reset y base */
 * {
     margin: 0;
