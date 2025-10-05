@@ -1,0 +1,45 @@
+<!-- 
+  Componente: Checkbox con Validación
+  Archivo: form-checkbox.html
+  
+  Componente para campos de checkbox con validación.
+-->
+
+{# 
+  Uso:
+  {% include 'components/form-checkbox.html' with {
+    'name': 'acepta_terminos',
+    'label': 'Acepto los términos y condiciones',
+    'validation': 'required',
+    'required': true
+  } %}
+#}
+
+{% set field_id = name %}
+{% set field_label = label %}
+{% set field_validation = validation or '' %}
+{% set field_required = required or false %}
+{% set field_checked = checked or false %}
+{% set field_class = class or 'form-checkbox' %}
+
+<div class="form-group checkbox-group">
+    <div class="form-field">
+        <input 
+            type="checkbox"
+            id="{{ field_id }}"
+            name="{{ field_id }}"
+            class="{{ field_class }}"
+            {% if field_validation %}data-validate="{{ field_validation }}"{% endif %}
+            {% if field_required %}required{% endif %}
+            {% if field_checked %}checked{% endif %}
+            aria-describedby="{{ field_id }}_error"
+        />
+        <label for="{{ field_id }}" class="checkbox-label">
+            <span class="checkbox-custom"></span>
+            {{ field_label }}
+            {% if field_required %}
+                <span class="required-asterisk">*</span>
+            {% endif %}
+        </label>
+    </div>
+</div>

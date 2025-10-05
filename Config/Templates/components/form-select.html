@@ -1,0 +1,63 @@
+<!-- 
+  Componente: Select con Validación
+  Archivo: form-select.html
+  
+  Componente para campos de selección con validación.
+-->
+
+{# 
+  Uso:
+  {% include 'components/form-select.html' with {
+    'name': 'tipo_vivienda',
+    'label': 'Tipo de Vivienda',
+    'validation': 'required',
+    'required': true,
+    'options': [
+      {'value': 'casa', 'label': 'Casa'},
+      {'value': 'apartamento', 'label': 'Apartamento'},
+      {'value': 'finca', 'label': 'Finca'}
+    ]
+  } %}
+#}
+
+{% set field_id = name %}
+{% set field_label = label %}
+{% set field_validation = validation or '' %}
+{% set field_required = required or false %}
+{% set field_value = value or '' %}
+{% set field_class = class or 'form-input' %}
+{% set field_options = options or [] %}
+{% set field_placeholder = placeholder or 'Selecciona una opción' %}
+
+<div class="form-group">
+    <label for="{{ field_id }}" class="form-label">
+        {{ field_label }}
+        {% if field_required %}
+            <span class="required-asterisk">*</span>
+        {% endif %}
+    </label>
+    
+    <div class="form-field">
+        <select 
+            id="{{ field_id }}"
+            name="{{ field_id }}"
+            class="{{ field_class }}"
+            {% if field_validation %}data-validate="{{ field_validation }}"{% endif %}
+            {% if field_required %}required{% endif %}
+            aria-describedby="{{ field_id }}_error"
+        >
+            <option value="" disabled {% if not field_value %}selected{% endif %}>
+                {{ field_placeholder }}
+            </option>
+            {% for option in field_options %}
+                <option 
+                    value="{{ option.value }}" 
+                    {% if option.value == field_value %}selected{% endif %}
+                >
+                    {{ option.label }}
+                </option>
+            {% endfor %}
+        </select>
+        <i class="fas fa-chevron-down select-arrow"></i>
+    </div>
+</div>

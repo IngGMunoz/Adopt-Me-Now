@@ -1,0 +1,64 @@
+<!-- 
+  Componente: Formulario Base con Validación
+  Archivo: form-wrapper.html
+  
+  Wrapper para formularios con validación automática.
+-->
+
+{# 
+  Uso:
+  {% include 'components/form-wrapper.html' with {
+    'form_id': 'registration-form',
+    'action': url_for('Registro_Usuario'),
+    'method': 'POST',
+    'submit_text': 'Crear Cuenta',
+    'novalidate': true
+  } %}
+    <!-- Campos del formulario aquí -->
+  {% endinclude %}
+#}
+
+{% set form_id = form_id or ('form_' + range(1000, 9999) | random | string) %}
+{% set form_action = action %}
+{% set form_method = method or 'POST' %}
+{% set form_submit_text = submit_text or 'Enviar' %}
+{% set form_novalidate = novalidate or true %}
+{% set form_class = class or 'validated-form' %}
+
+<form 
+    id="{{ form_id }}"
+    action="{{ form_action }}"
+    method="{{ form_method }}"
+    class="{{ form_class }}"
+    {% if form_novalidate %}novalidate{% endif %}
+    data-validate
+>
+    {% if csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    {% endif %}
+    
+    <div class="form-fields">
+        {{ caller() }}
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="submit-btn" disabled>
+            <i class="fas fa-paper-plane"></i>
+            {{ form_submit_text }}
+        </button>
+    </div>
+    
+    <div class="form-status" id="{{ form_id }}_status" role="status" aria-live="polite">
+        <!-- Mensajes de estado del formulario -->
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar validación para este formulario específico
+    const form = document.getElementById('{{ form_id }}');
+    if (window.AdoptMeValidator) {
+        window.AdoptMeValidator.registerForm(form);
+    }
+});
+</script>

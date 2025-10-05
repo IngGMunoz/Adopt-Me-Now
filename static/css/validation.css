@@ -1,0 +1,579 @@
+/*
+ * Estilos de Validación Unificada - Adopt Me Now
+ * 
+ * Estilos CSS para el sistema de validación de formularios.
+ * Proporciona feedback visual consistente en toda la aplicación.
+ */
+
+/* ===== ESTILOS BASE DE FORMULARIOS ===== */
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #e08c2b;
+    box-shadow: 0 0 0 3px rgba(224, 140, 43, 0.1);
+}
+
+.form-input::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+/* ===== ESTADOS DE VALIDACIÓN ===== */
+
+/* Estado válido */
+.form-input.valid {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+.form-input.valid:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+.form-group:has(.form-input.valid) .form-label {
+    color: #28a745;
+}
+
+/* Estado inválido */
+.form-input.invalid {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+.form-input.invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.form-group:has(.form-input.invalid) .form-label {
+    color: #dc3545;
+}
+
+/* ===== MENSAJES DE ERROR ===== */
+.validation-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    background: rgba(220, 53, 69, 0.05);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    border-radius: 4px;
+    display: none;
+    animation: errorSlideIn 0.3s ease-out;
+}
+
+.validation-error:empty {
+    display: none !important;
+}
+
+@keyframes errorSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 100px;
+    }
+}
+
+/* Ícono de error */
+.validation-error::before {
+    content: "⚠️";
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* ===== MENSAJES DE ÉXITO ===== */
+.validation-success {
+    color: #28a745;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    background: rgba(40, 167, 69, 0.05);
+    border: 1px solid rgba(40, 167, 69, 0.2);
+    border-radius: 4px;
+    animation: successSlideIn 0.3s ease-out;
+}
+
+@keyframes successSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.validation-success::before {
+    content: "✅";
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* ===== INDICADOR DE FORTALEZA DE CONTRASEÑA ===== */
+.password-strength {
+    width: 100%;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.password-strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+    width: 0%;
+}
+
+.password-strength-fill.strength-none {
+    width: 0%;
+    background: transparent;
+}
+
+.password-strength-fill.strength-weak {
+    background: linear-gradient(90deg, #dc3545, #fd7e14);
+}
+
+.password-strength-fill.strength-fair {
+    background: linear-gradient(90deg, #fd7e14, #ffc107);
+}
+
+.password-strength-fill.strength-good {
+    background: linear-gradient(90deg, #ffc107, #28a745);
+}
+
+.password-strength-fill.strength-strong {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+/* Texto de fortaleza */
+.password-strength-text {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    text-align: right;
+    font-weight: 500;
+}
+
+.strength-weak .password-strength-text {
+    color: #dc3545;
+}
+
+.strength-fair .password-strength-text {
+    color: #fd7e14;
+}
+
+.strength-good .password-strength-text {
+    color: #ffc107;
+}
+
+.strength-strong .password-strength-text {
+    color: #28a745;
+}
+
+/* ===== ANIMACIONES DE FEEDBACK ===== */
+
+/* Shake para errores */
+@keyframes fieldErrorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.field-error-shake {
+    animation: fieldErrorShake 0.5s ease-in-out;
+}
+
+/* Glow para éxito */
+@keyframes fieldSuccessGlow {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(40, 167, 69, 0); }
+    50% { box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.3); }
+}
+
+.field-success-glow {
+    animation: fieldSuccessGlow 1s ease-in-out;
+}
+
+/* ===== ESTILOS PARA CAMPOS CON ICONOS ===== */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon .form-input {
+    padding-left: 45px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+    z-index: 1;
+}
+
+.input-with-icon:has(.form-input.valid) .input-icon {
+    color: #28a745;
+}
+
+.input-with-icon:has(.form-input.invalid) .input-icon {
+    color: #dc3545;
+}
+
+/* ===== ESTADOS DEL FORMULARIO ===== */
+.form-valid .submit-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    cursor: pointer;
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.form-invalid .submit-btn {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ===== FEEDBACK ESPECÍFICO POR TIPO DE CAMPO ===== */
+
+/* Email preview */
+.form-input.email-preview {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2328a745'><path d='M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px 20px;
+    padding-right: 40px;
+}
+
+/* Número de teléfono */
+.form-input[type="tel"].valid {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2328a745'><path d='M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px 20px;
+}
+
+/* ===== TOOLTIPS DE AYUDA ===== */
+.validation-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.validation-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.validation-tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.validation-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .form-input {
+        padding: 14px 16px;
+        font-size: 16px; /* Evita zoom en iOS */
+    }
+    
+    .validation-error {
+        font-size: 0.8rem;
+        padding: 0.4rem;
+    }
+    
+    .input-with-icon .form-input {
+        padding-left: 40px;
+    }
+    
+    .input-icon {
+        left: 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== MODO OSCURO (OPCIONAL) ===== */
+@media (prefers-color-scheme: dark) {
+    .form-input {
+        background: #2d2d2d;
+        color: #fff;
+        border-color: #555;
+    }
+    
+    .form-input:focus {
+        border-color: #e08c2b;
+        box-shadow: 0 0 0 3px rgba(224, 140, 43, 0.2);
+    }
+    
+    .form-label {
+        color: #e0e0e0;
+    }
+    
+    .validation-error {
+        background: rgba(220, 53, 69, 0.1);
+        color: #ff6b6b;
+    }
+    
+    .validation-success {
+        background: rgba(40, 167, 69, 0.1);
+        color: #51cf66;
+    }
+}
+
+/* ===== ESTILOS PARA COMPONENTES ESPECÍFICOS ===== */
+
+/* Select personalizado */
+.form-field {
+    position: relative;
+}
+
+select.form-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    cursor: pointer;
+    padding-right: 40px;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+    font-size: 0.9rem;
+}
+
+select.form-input:focus + .select-arrow {
+    color: #e08c2b;
+}
+
+/* Checkbox personalizado */
+.checkbox-group {
+    margin-bottom: 1rem;
+}
+
+.form-checkbox {
+    display: none;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: normal;
+    margin-bottom: 0;
+    user-select: none;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.checkbox-custom::after {
+    content: "✓";
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s ease;
+}
+
+.form-checkbox:checked + .checkbox-label .checkbox-custom {
+    background: #28a745;
+    border-color: #28a745;
+}
+
+.form-checkbox:checked + .checkbox-label .checkbox-custom::after {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.form-checkbox:focus + .checkbox-label .checkbox-custom {
+    border-color: #e08c2b;
+    box-shadow: 0 0 0 3px rgba(224, 140, 43, 0.1);
+}
+
+.form-checkbox.invalid + .checkbox-label .checkbox-custom {
+    border-color: #dc3545;
+}
+
+/* Textarea específico */
+textarea.form-input {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+    line-height: 1.5;
+}
+
+.character-count {
+    text-align: right;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.character-count-warning {
+    color: #fd7e14;
+}
+
+.character-count-error {
+    color: #dc3545;
+}
+
+/* Asterisco requerido */
+.required-asterisk {
+    color: #dc3545;
+    margin-left: 4px;
+    font-weight: bold;
+}
+
+/* Acciones del formulario */
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.form-status {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    display: none;
+}
+
+.form-status.success {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    display: block;
+}
+
+.form-status.error {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    display: block;
+}
+
+/* ===== INTEGRACIÓN CON COMPONENTES EXISTENTES ===== */
+
+/* Asegurar que los estilos de validación funcionen en contenedores existentes */
+.register-card .form-input.valid,
+.login-card .form-input.valid,
+.adoption-form .form-input.valid,
+.form-container .form-input.valid {
+    border-color: #28a745 !important;
+    background-color: #f8fff9;
+}
+
+.register-card .form-input.invalid,
+.login-card .form-input.invalid,
+.adoption-form .form-input.invalid,
+.form-container .form-input.invalid {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5;
+}

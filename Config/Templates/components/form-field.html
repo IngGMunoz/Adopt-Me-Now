@@ -1,0 +1,73 @@
+<!-- 
+  Componente: Campo de Formulario con Validación
+  Archivo: form-field.html
+  
+  Componente reutilizable para campos de formulario con validación integrada.
+  Incluye label, input, ícono opcional y contenedor para mensajes de error.
+-->
+
+{# 
+  Uso:
+  {% include 'components/form-field.html' with {
+    'name': 'email',
+    'type': 'email',
+    'label': 'Correo Electrónico',
+    'placeholder': 'ejemplo@correo.com',
+    'validation': 'required|email',
+    'icon': 'fa-envelope',
+    'required': true
+  } %}
+#}
+
+{% set field_id = name %}
+{% set field_type = type or 'text' %}
+{% set field_label = label %}
+{% set field_placeholder = placeholder or '' %}
+{% set field_validation = validation or '' %}
+{% set field_icon = icon or '' %}
+{% set field_required = required or false %}
+{% set field_value = value or '' %}
+{% set field_autocomplete = autocomplete or '' %}
+{% set field_minlength = minlength or '' %}
+{% set field_maxlength = maxlength or '' %}
+{% set field_pattern = pattern or '' %}
+{% set field_class = class or 'form-input' %}
+
+<div class="form-group">
+    <label for="{{ field_id }}" class="form-label">
+        {{ field_label }}
+        {% if field_required %}
+            <span class="required-asterisk">*</span>
+        {% endif %}
+    </label>
+    
+    <div class="form-field {% if field_icon %}input-with-icon{% endif %}">
+        {% if field_icon %}
+            <i class="fas {{ field_icon }} input-icon"></i>
+        {% endif %}
+        
+        <input 
+            type="{{ field_type }}"
+            id="{{ field_id }}"
+            name="{{ field_id }}"
+            class="{{ field_class }}"
+            placeholder="{{ field_placeholder }}"
+            value="{{ field_value }}"
+            {% if field_validation %}data-validate="{{ field_validation }}"{% endif %}
+            {% if field_required %}required{% endif %}
+            {% if field_autocomplete %}autocomplete="{{ field_autocomplete }}"{% endif %}
+            {% if field_minlength %}minlength="{{ field_minlength }}"{% endif %}
+            {% if field_maxlength %}maxlength="{{ field_maxlength }}"{% endif %}
+            {% if field_pattern %}pattern="{{ field_pattern }}"{% endif %}
+            aria-describedby="{{ field_id }}_error"
+        />
+        
+        {% if field_type == 'password' %}
+            <div class="password-strength">
+                <div class="password-strength-fill"></div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- El contenedor de error se crea automáticamente por el validador -->
+</div>
