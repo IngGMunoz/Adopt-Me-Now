@@ -24,33 +24,28 @@
 
             <h1 class="login-title">Iniciar Sesión</h1>
 
-            <form id="loginForm" method="POST" action="{{ url_for('Iniciar_Sesion') }}" data-validate novalidate>
-                
-                {% include 'components/form-field.html' with {
-                    'name': 'email',
-                    'type': 'email',
-                    'label': 'Correo Electrónico',
-                    'placeholder': 'ejemplo@correo.com',
-                    'validation': 'required|email',
-                    'icon': 'fa-envelope',
-                    'required': true,
-                    'autocomplete': 'email'
-                } %}
+            <form method="post" action="{{ url_for('Iniciar_Sesion') }}" id="loginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <div style="position: relative;">
+                        <input type="email" id="email" name="email" class="form-input" placeholder="ejemplo@correo.com"
+                            autocomplete="email" required />
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                </div>
 
-                {% include 'components/form-field.html' with {
-                    'name': 'password',
-                    'type': 'password',
-                    'label': 'Contraseña',
-                    'placeholder': 'Ingresa tu contraseña',
-                    'validation': 'required',
-                    'icon': 'fa-lock',
-                    'required': true,
-                    'autocomplete': 'current-password'
-                } %}
+                <div class="form-group">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" name="password" class="form-input"
+                            placeholder="Ingresa tu contraseña" autocomplete="current-password" required />
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                </div>
 
-                <button type="submit" class="login-btn submit-btn" disabled>
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>Iniciar Sesión</span>
+                <button type="submit" class="login-btn" id="submitBtn">
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                    <span id="btnText">Iniciar Sesión</span>
                 </button>
             </form>
 
@@ -62,13 +57,7 @@
 </div>
 {% endblock %}
 
-{% block stylesheets %}
-<link href="{{ url_for('static', filename='css/registro-usuario.css') }}" rel="stylesheet" />
-<link href="{{ url_for('static', filename='css/validation.css') }}" rel="stylesheet" />
-{% endblock %}
-
 {% block scripts %}
-<script src="{{ url_for('static', filename='JS/validation.js') }}"></script>
 <script>
 (function () {
     const form = document.getElementById('loginForm');

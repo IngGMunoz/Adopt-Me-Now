@@ -5,7 +5,6 @@
 {% block stylesheets %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/validation.css') }}">
 {% endblock %}
 
 {% block navbar %}
@@ -37,112 +36,69 @@
         <h1 class="form-title" id="form-title">Formulario de Adopción</h1>
         <p class="form-desc">Completa tus datos y cuéntanos por qué deseas adoptar. Nos pondremos en contacto contigo
             pronto.</p>
-        <form id="adoptionForm" method="POST" action="/formulario" data-validate novalidate>
-            
+        <form method="POST" action="/formulario" novalidate>
             <div class="form-row">
-                <div class="form-field-container">
-                    {% include 'components/form-field.html' with {
-                        'name': 'nombre',
-                        'type': 'text',
-                        'label': 'Nombre Completo',
-                        'placeholder': 'Tu nombre y apellidos',
-                        'validation': 'required|name',
-                        'required': true
-                    } %}
+                <div>
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellidos" minlength="3"
+                        required />
                 </div>
-                <div class="form-field-container">
-                    {% include 'components/form-field.html' with {
-                        'name': 'email',
-                        'type': 'email',
-                        'label': 'Correo Electrónico',
-                        'placeholder': 'tucorreo@ejemplo.com',
-                        'validation': 'required|email',
-                        'required': true
-                    } %}
+                <div>
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required />
                 </div>
             </div>
-            
             <div class="form-row">
-                <div class="form-field-container">
-                    {% include 'components/form-field.html' with {
-                        'name': 'telefono',
-                        'type': 'tel',
-                        'label': 'Teléfono',
-                        'placeholder': '(+57) 300 000 0000',
-                        'validation': 'required|phone',
-                        'required': true
-                    } %}
+                <div>
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" placeholder="(+57) 300 000 0000" inputmode="tel"
+                        pattern="\+?\d[\d\s-]{7,15}"
+                        title="Ingresa un teléfono válido (8 a 16 dígitos, puede incluir +, espacios o guiones)"
+                        required />
                 </div>
-                <div class="form-field-container">
-                    {% include 'components/form-field.html' with {
-                        'name': 'direccion',
-                        'type': 'text',
-                        'label': 'Dirección',
-                        'placeholder': 'Calle 123 #45-67, Barrio, Ciudad',
-                        'validation': 'required|minLength:5',
-                        'required': true
-                    } %}
+                <div>
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" name="direccion" placeholder="Calle 123 #45-67, Barrio, Ciudad"
+                        minlength="5" required />
                 </div>
             </div>
-            
-            {% include 'components/form-field.html' with {
-                'name': 'ocupacion',
-                'type': 'text',
-                'label': 'Ocupación',
-                'placeholder': '¿A qué te dedicas?',
-                'validation': 'required|minLength:2',
-                'required': true
-            } %}
-            
-            {% include 'components/form-select.html' with {
-                'name': 'vivienda',
-                'label': 'Tipo de Vivienda',
-                'validation': 'required',
-                'required': true,
-                'options': [
-                    {'value': 'casa', 'label': 'Casa'},
-                    {'value': 'apartamento', 'label': 'Apartamento'},
-                    {'value': 'finca', 'label': 'Finca'},
-                    {'value': 'otro', 'label': 'Otro'}
-                ]
-            } %}
-            
-            {% include 'components/form-select.html' with {
-                'name': 'mascotas',
-                'label': '¿Tienes otras mascotas?',
-                'validation': 'required',
-                'required': true,
-                'options': [
-                    {'value': 'no', 'label': 'No'},
-                    {'value': 'perro', 'label': 'Sí, perro(s)'},
-                    {'value': 'gato', 'label': 'Sí, gato(s)'},
-                    {'value': 'otros', 'label': 'Sí, otros'}
-                ]
-            } %}
-            
-            {% include 'components/form-textarea.html' with {
-                'name': 'motivo',
-                'label': '¿Por qué deseas adoptar?',
-                'placeholder': 'Cuéntanos sobre tu hogar, tu tiempo disponible y por qué te gustaría adoptar.',
-                'validation': 'required|minLength:10',
-                'required': true,
-                'rows': 4,
-                'maxlength': 500
-            } %}
-            
-            {% include 'components/form-checkbox.html' with {
-                'name': 'acepta_terminos',
-                'label': 'Acepto los términos y condiciones de adopción',
-                'validation': 'required',
-                'required': true
-            } %}
-            
-            <div class="form-actions">
-                <a class="btn btn-ghost" href="/adopcion">
-                    <i class="fa-solid fa-arrow-left"></i> Volver
-                </a>
-                <button type="submit" class="btn btn-primary submit-btn" disabled>
-                    <i class="fa-solid fa-paper-plane"></i> Enviar Solicitud
+            <div>
+                <label for="ocupacion">Ocupación</label>
+                <input type="text" id="ocupacion" name="ocupacion" placeholder="¿A qué te dedicas?" minlength="2"
+                    required />
+            </div>
+            <div>
+                <label for="vivienda">Tipo de vivienda</label>
+                <select id="vivienda" name="vivienda" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="casa">Casa</option>
+                    <option value="apartamento">Apartamento</option>
+                    <option value="finca">Finca</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div>
+                <label for="mascotas">¿Tienes otras mascotas?</label>
+                <select id="mascotas" name="mascotas" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="no">No</option>
+                    <option value="perro">Sí, perro(s)</option>
+                    <option value="gato">Sí, gato(s)</option>
+                    <option value="otros">Sí, otros</option>
+                </select>
+            </div>
+            <div>
+                <label for="motivo">¿Por qué deseas adoptar?</label>
+                <textarea id="motivo" name="motivo"
+                    placeholder="Cuéntanos sobre tu hogar, tu tiempo disponible y por qué te gustaría adoptar."
+                    minlength="10" required></textarea>
+            </div>
+            <div class="actions">
+                <a class="btn btn-ghost" href="/adopcion"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+                <button type="submit" class="btn btn-primary" data-animate="true"
+                    data-loading-text="Enviando solicitud..." data-animation-type="submit" data-delay="800"
+                    data-restore-delay="1000">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar solicitud
                 </button>
             </div>
         </form>
@@ -155,7 +111,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='JS/validation.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const params = new URLSearchParams(window.location.search);
