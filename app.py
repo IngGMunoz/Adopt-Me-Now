@@ -1,6 +1,42 @@
 
-from flask import Flask, request, jsonify, redirect, render_template, url_for
+from flask import Flask, request, jsonify, redirect, render_template, url_for, session, flash
 from Config.db import app
+from functools import wraps
+import hashlib
+
+# Configurar clave secreta para sesiones
+app.secret_key = 'adopt-me-secret-key-2025'  # En producción, usar variable de entorno
+
+# Almacenamiento temporal de usuarios (en producción usar base de datos)
+users_db = {}
+
+# Decorador para rutas que requieren autenticación
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Debes iniciar sesión para acceder a esta página', 'error')
+            return redirect(url_for('Iniciar_Sesion'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Función helper para verificar si el usuario está autenticado
+def is_authenticated():
+    return 'user_id' in session
+
+# Función helper para obtener el usuario actual
+def get_current_user():
+    if 'user_id' in session:
+        return users_db.get(session['user_id'])
+    return None
+
+# Context processor para hacer disponible la información de autenticación en todas las plantillas
+@app.context_processor
+def inject_auth():
+    return {
+        'is_authenticated': is_authenticated(),
+        'current_user': get_current_user()
+    }
 
 # Página de detalle de cachorro
 @app.route("/cachorro")
@@ -17,13 +53,17 @@ def Pagina_Michi():
 def Pagina_perro2():
     return render_template("main/Pagina_perro2.html")
 
-# Formulario de adopción
+# Formulario de adopción (requiere autenticación)
 @app.route("/formulario", methods=["GET", "POST"])
+@login_required
 def Formulario_Para_Adoptar():
     if request.method == "POST":
-        # Aquí podrías procesar y guardar la solicitud de adopción.
-        # Por ahora, redirigimos a la página del cachorro como confirmación sencilla.
-        return redirect("/cachorro")
+        # Procesar solicitud de adopción con usuario autenticado
+        user = get_current_user()
+        pet_name = request.form.get('pet_name', 'Mascota')
+        
+        flash(f'¡Solicitud de adopción enviada correctamente para {pet_name}! Te contactaremos pronto.', 'success')
+        return redirect("/adopcion")
     return render_template("main/Formulario_Para_Adoptar.html")
 
 
@@ -35,21 +75,81 @@ def Pagina_Principal():
 
 
 # Registro usuario
-
 @app.route("/registro", methods=["GET", "POST"])
 def Registro_Usuario():
     if request.method == "POST":
-        # Aquí podrías validar/guardar datos. Por ahora solo redirigimos.
+        email = request.form.get('email')
+        password = request.form.get('password')
+        nombre = request.form.get('nombre')
+        telefono = request.form.get('telefono')
+        
+        # Validar que todos los campos estén presentes
+        if not all([email, password, nombre]):
+            flash('Todos los campos son obligatorios', 'error')
+            return render_template("main/Registro_Usuario.html")
+        
+        # Verificar si el usuario ya existe
+        if email in [user['email'] for user in users_db.values()]:
+            flash('Este email ya está registrado', 'error')
+            return render_template("main/Registro_Usuario.html")
+        
+        # Crear nuevo usuario
+        user_id = len(users_db) + 1
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        
+        users_db[user_id] = {
+            'id': user_id,
+            'email': email,
+            'password': hashed_password,
+            'nombre': nombre,
+            'telefono': telefono or '',
+            'registered_at': __import__('datetime').datetime.now()
+        }
+        
+        flash('¡Registro exitoso! Ahora puedes iniciar sesión', 'success')
         return redirect("/iniciar-sesion")
+    
     return render_template("main/Registro_Usuario.html")
 
 
 @app.route("/iniciar-sesion", methods=["GET", "POST"])
 def Iniciar_Sesion():
     if request.method == "POST":
-        # Aquí podrías validar credenciales; por ahora redirigimos al inicio
-        return redirect("/")
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        # Validar campos
+        if not email or not password:
+            flash('Email y contraseña son obligatorios', 'error')
+            return render_template("main/Iniciar_Sesion.html")
+        
+        # Buscar usuario por email
+        user = None
+        for u in users_db.values():
+            if u['email'] == email:
+                user = u
+                break
+        
+        # Validar credenciales
+        if user and user['password'] == hashlib.sha256(password.encode()).hexdigest():
+            # Iniciar sesión
+            session['user_id'] = user['id']
+            session['user_email'] = user['email']
+            session['user_name'] = user['nombre']
+            
+            flash(f'¡Bienvenido, {user["nombre"]}!', 'success')
+            return redirect("/")
+        else:
+            flash('Email o contraseña incorrectos', 'error')
+    
     return render_template("main/Iniciar_Sesion.html")
+
+# Ruta para cerrar sesión
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash('Has cerrado sesión correctamente', 'info')
+    return redirect("/")
 
 # Registro administrador
 @app.route("/registro-administrador", methods=["GET", "POST"])
