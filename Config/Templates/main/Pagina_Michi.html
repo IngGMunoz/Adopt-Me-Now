@@ -1,0 +1,94 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Detalle de Michi{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cachorro.css') }}">
+{% endblock %}
+
+{% block navbar %}
+    <!-- Header personalizado para página de Michi -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <i class="fa-solid fa-paw"></i> Adopt Me
+            </div>
+            <nav class="nav" aria-label="Navegación principal">
+                <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
+                <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
+                <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+            </nav>
+            <div class="user" title="Perfil">
+                <i class="fa-regular fa-user"></i>
+            </div>
+        </div>
+    </header>
+{% endblock %}
+
+{% block content %}
+    <main class="main-content">
+        <section class="detail-card">
+            <img class="detail-img" src="{{ url_for('static', filename='images/michi.jpg') }}" alt="Michi" />
+            <div class="detail-info">
+                <h2 class="detail-title">Michi</h2>
+                <span class="detail-by"><i class="fa-solid fa-user"></i> Creado por Ana</span>
+                <ul class="detail-list">
+                    <li><b>Raza:</b> Criolla</li>
+                    <li><b>Edad:</b> 8 meses</li>
+                    <li><b>Sexo:</b> Hembra</li>
+                    <li><b>Estado de salud:</b> Vacunada, desparasitada y esterilizada</li>
+                    <li><b>Carácter:</b> Muy cariñosa, juguetona y sociable con otros gatos</li>
+                    <li><b>Requisitos para adopción:</b> Hogar responsable, protección de ventanas, compromiso con su bienestar y controles veterinarios</li>
+                    <li><b>Ubicación:</b> Barranquilla, Atlántico</li>
+                    <li><b>Contacto:</b> +57 3001234567</li>
+                </ul>
+                <a class="cta" href="/formulario?pet=Michi" 
+                   data-animate="true" 
+                   data-loading-text="Preparando formulario..." 
+                   data-animation-type="submit"
+                   data-delay="700"
+                   data-restore-delay="900">
+                    <i class="fa-solid fa-paw"></i> Postularme para adoptar
+                </a>
+            </div>
+        </section>
+    </main>
+{% endblock %}
+
+{% block footer %}
+    <!-- Footer personalizado para página de Michi -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
+            <div class="footer-grid">
+                <div>
+                    <h4>Contáctanos</h4>
+                    <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
+                    <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                    <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
+                </div>
+                <div>
+                    <h4>Adopción</h4>
+                    <a href="#">¿Cómo adoptar?</a>
+                    <a href="#">Requisitos</a>
+                    <a href="#">Historias felices</a>
+                </div>
+                <div>
+                    <h4>Fundaciones</h4>
+                    <a href="#">Unirse</a>
+                    <a href="#">Recursos</a>
+                    <a href="#">Eventos</a>
+                </div>
+                <div>
+                    <h4>Legal</h4>
+                    <a href="#">Términos</a>
+                    <a href="#">Privacidad</a>
+                    <a href="#">Ayuda</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Incluir componente de botón animado -->
+    {% include 'components/boton_animado.html' %}
+{% endblock %}
