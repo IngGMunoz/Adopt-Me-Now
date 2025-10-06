@@ -7,8 +7,22 @@
 {% endblock %}
 
 {% block content %}
-{% set active_page = 'adopcion' %}
-{% include 'components/topbar.html' %}
+<!-- Header especial para esta página -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <i class="fa-solid fa-paw"></i> Adopt Me
+        </div>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="{{ url_for('Pagina_Principal') }}"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="{{ url_for('Pagina_Adopcion') }}"><i class="fa-solid fa-dog"></i> Mascotas</a>
+            <a href="{{ url_for('Pagina_Fundacion') }}"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+        </nav>
+        <div class="user" title="Perfil">
+            <i class="fa-regular fa-user"></i>
+        </div>
+    </div>
+</header>
 
 <!-- Ordenar Por -->
 <div class="toolbar">

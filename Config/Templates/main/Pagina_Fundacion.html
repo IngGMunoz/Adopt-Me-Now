@@ -7,32 +7,47 @@
 {% endblock %}
 
 {% block navbar %}
-{% set active_page = 'fundaciones' %}
-{% include 'components/topbar.html' %}
+<!-- Header personalizado para página de fundación -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <i class="fa-solid fa-paw"></i> Adopt Me
+        </div>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
+            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+        </nav>
+        <div class="user" title="Perfil">
+            <i class="fa-regular fa-user"></i>
+        </div>
+    </div>
+</header>
 {% endblock %}
 
 {% block content %}
-{% block content %}
 
 <main class="content">
-    {% set hero = {
-        'image': url_for('static', filename='images/v5_101.png'),
-        'alt': 'Logo Fundación FUNCUAN',
-        'title': 'Funcuan',
-        'description': 'Fundación Cuidado Animal. Somos una entidad sin ánimo de lucro que apoya la comunidad contra el maltrato animal.',
-        'cta': {
-            'url': 'https://funcuan.com.co/contactanos/',
-            'text': 'Contactar Fundación',
-            'icon': 'fa-solid fa-envelope',
-            'target': '_blank',
-            'loading_text': 'Redireccionando...',
-            'animation_type': 'contact',
-            'delay': '800',
-            'restore_delay': '1000'
-        }
-    } %}
-
-    {% include 'components/page-hero.html' with hero=hero %}
+    <!-- Encabezado de la fundación -->
+    <section class="hero">
+        <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo Fundación FUNCUAN" />
+        <div class="hero-info">
+            <h1>Funcuan</h1>
+            <span class="by"><i class="fa-solid fa-user"></i> Creado por user@</span>
+            <p>
+                Fundación Cuidado Animal. Somos una entidad sin ánimo de lucro, de fondos privados que decidió tomar
+                partido
+                contra el maltrato animal apoyando a la comunidad para el desarrollo de ciudadanos confiables en la
+                tenencia
+                responsable de animales.
+            </p>
+            <a class="cta" href="https://funcuan.com.co/contactanos/" target="_blank" data-animate="true"
+                data-loading-text="Redireccionando..." data-animation-type="contact" data-delay="800"
+                data-restore-delay="1000">
+                <i class="fa-solid fa-envelope"></i> Contactar Fundación
+            </a>
+        </div>
+    </section>
 
     <!-- Información adicional -->
     <section class="section">
@@ -41,8 +56,10 @@
             La Secretaría de Gobierno de Barranquilla incorporó un nuevo vehículo a la Patrulla Animal para reforzar la
             atención de animales domésticos y callejeros en situación de emergencia. Esta unidad móvil, una camioneta
             Renault Kangoo adaptada, opera desde el 1 de mayo de 2019 y complementa las dos Unidades Móviles
-            Veterinarias existentes. Funciona seis días a la semana en horario diurno, atendiendo reportes ciudadanos
-            sobre animales en peligro o víctimas de violencia.
+            Veterinarias
+            existentes. Funciona seis días a la semana en horario diurno, atendiendo reportes ciudadanos sobre animales
+            en
+            peligro o víctimas de violencia.
         </p>
     </section>
 </main>
