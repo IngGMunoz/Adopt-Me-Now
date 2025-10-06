@@ -1,201 +1,203 @@
 <!-- Componente de mensajes flash -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="flash-messages-container">
-      {% for category, message in messages %}
-        <div class="flash-message flash-{{ category }}" data-category="{{ category }}">
-          <div class="flash-content">
+{% if messages %}
+<div class="flash-messages-container">
+    {% for category, message in messages %}
+    <div class="flash-message flash-{{ category }}" data-category="{{ category }}">
+        <div class="flash-content">
             {% if category == 'success' %}
-              <i class="fa-solid fa-check-circle"></i>
+            <i class="fa-solid fa-check-circle"></i>
             {% elif category == 'error' %}
-              <i class="fa-solid fa-exclamation-triangle"></i>
+            <i class="fa-solid fa-exclamation-triangle"></i>
             {% elif category == 'warning' %}
-              <i class="fa-solid fa-exclamation-circle"></i>
+            <i class="fa-solid fa-exclamation-circle"></i>
             {% elif category == 'info' %}
-              <i class="fa-solid fa-info-circle"></i>
+            <i class="fa-solid fa-info-circle"></i>
             {% endif %}
             <span>{{ message }}</span>
-          </div>
-          <button class="flash-close" onclick="closeFlashMessage(this)">
-            <i class="fa-solid fa-times"></i>
-          </button>
         </div>
-      {% endfor %}
+        <button class="flash-close" onclick="closeFlashMessage(this)">
+            <i class="fa-solid fa-times"></i>
+        </button>
     </div>
-  {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 {% endwith %}
 
 <style>
-.flash-messages-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    max-width: 400px;
-    width: 100%;
-}
-
-.flash-message {
-    background: white;
-    border-radius: 8px;
-    padding: 15px 20px;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    animation: flashSlideIn 0.3s ease-out;
-    border-left: 4px solid;
-}
-
-.flash-success {
-    border-left-color: #28a745;
-    background-color: #d4edda;
-}
-
-.flash-error {
-    border-left-color: #dc3545;
-    background-color: #f8d7da;
-}
-
-.flash-warning {
-    border-left-color: #ffc107;
-    background-color: #fff3cd;
-}
-
-.flash-info {
-    border-left-color: #17a2b8;
-    background-color: #d1ecf1;
-}
-
-.flash-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-grow: 1;
-}
-
-.flash-content i {
-    font-size: 1.1rem;
-}
-
-.flash-success .flash-content i {
-    color: #155724;
-}
-
-.flash-error .flash-content i {
-    color: #721c24;
-}
-
-.flash-warning .flash-content i {
-    color: #856404;
-}
-
-.flash-info .flash-content i {
-    color: #0c5460;
-}
-
-.flash-content span {
-    font-weight: 500;
-    font-size: 0.95rem;
-}
-
-.flash-success .flash-content span {
-    color: #155724;
-}
-
-.flash-error .flash-content span {
-    color: #721c24;
-}
-
-.flash-warning .flash-content span {
-    color: #856404;
-}
-
-.flash-info .flash-content span {
-    color: #0c5460;
-}
-
-.flash-close {
-    background: none;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    opacity: 0.7;
-    padding: 4px;
-    border-radius: 4px;
-    transition: all 0.2s;
-    margin-left: 10px;
-}
-
-.flash-close:hover {
-    opacity: 1;
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-@keyframes flashSlideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes flashSlideOut {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-}
-
-.flash-message.closing {
-    animation: flashSlideOut 0.3s ease-in;
-}
-
-@media (max-width: 480px) {
     .flash-messages-container {
-        left: 10px;
-        right: 10px;
-        max-width: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+        width: 100%;
     }
-    
+
     .flash-message {
-        padding: 12px 15px;
+        background: white;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        animation: flashSlideIn 0.3s ease-out;
+        border-left: 4px solid;
     }
-}
+
+    .flash-success {
+        border-left-color: #28a745;
+        background-color: #d4edda;
+    }
+
+    .flash-error {
+        border-left-color: #dc3545;
+        background-color: #f8d7da;
+    }
+
+    .flash-warning {
+        border-left-color: #ffc107;
+        background-color: #fff3cd;
+    }
+
+    .flash-info {
+        border-left-color: #17a2b8;
+        background-color: #d1ecf1;
+    }
+
+    .flash-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-grow: 1;
+    }
+
+    .flash-content i {
+        font-size: 1.1rem;
+    }
+
+    .flash-success .flash-content i {
+        color: #155724;
+    }
+
+    .flash-error .flash-content i {
+        color: #721c24;
+    }
+
+    .flash-warning .flash-content i {
+        color: #856404;
+    }
+
+    .flash-info .flash-content i {
+        color: #0c5460;
+    }
+
+    .flash-content span {
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .flash-success .flash-content span {
+        color: #155724;
+    }
+
+    .flash-error .flash-content span {
+        color: #721c24;
+    }
+
+    .flash-warning .flash-content span {
+        color: #856404;
+    }
+
+    .flash-info .flash-content span {
+        color: #0c5460;
+    }
+
+    .flash-close {
+        background: none;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        opacity: 0.7;
+        padding: 4px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        margin-left: 10px;
+    }
+
+    .flash-close:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes flashSlideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes flashSlideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    .flash-message.closing {
+        animation: flashSlideOut 0.3s ease-in;
+    }
+
+    @media (max-width: 480px) {
+        .flash-messages-container {
+            left: 10px;
+            right: 10px;
+            max-width: none;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+        }
+    }
 </style>
 
 <script>
-function closeFlashMessage(button) {
-    const message = button.closest('.flash-message');
-    message.classList.add('closing');
-    
-    setTimeout(() => {
-        message.remove();
-    }, 300);
-}
+    function closeFlashMessage(button) {
+        const message = button.closest('.flash-message');
+        message.classList.add('closing');
 
-// Auto-cerrar mensajes después de 5 segundos
-document.addEventListener('DOMContentLoaded', function() {
-    const messages = document.querySelectorAll('.flash-message');
-    messages.forEach(message => {
-        const category = message.dataset.category;
-        
-        // No auto-cerrar mensajes de error
-        if (category !== 'error') {
-            setTimeout(() => {
-                if (message.parentNode) {
-                    closeFlashMessage(message.querySelector('.flash-close'));
-                }
-            }, 5000);
-        }
+        setTimeout(() => {
+            message.remove();
+        }, 300);
+    }
+
+    // Auto-cerrar mensajes después de 5 segundos
+    document.addEventListener('DOMContentLoaded', function () {
+        const messages = document.querySelectorAll('.flash-message');
+        messages.forEach(message => {
+            const category = message.dataset.category;
+
+            // No auto-cerrar mensajes de error
+            if (category !== 'error') {
+                setTimeout(() => {
+                    if (message.parentNode) {
+                        closeFlashMessage(message.querySelector('.flash-close'));
+                    }
+                }, 5000);
+            }
+        });
     });
-});
 </script>

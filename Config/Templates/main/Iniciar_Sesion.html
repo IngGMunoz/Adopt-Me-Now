@@ -32,6 +32,8 @@
         <h1 class="login-title">Iniciar Sesión</h1>
 
         <form method="post" action="{{ url_for('Iniciar_Sesion') }}" id="loginForm">
+            {# Preserve next parameter so server can redirect back after login #}
+            <input type="hidden" name="next" value="{{ request.args.get('next','/') }}">
             <div class="form-group">
                 <label for="email" class="form-label">Correo Electrónico</label>
                 <div style="position: relative;">
@@ -66,7 +68,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+        <script>
     (function () {
         const form = document.getElementById('loginForm');
         const inputs = form.querySelectorAll('.form-input');
@@ -91,28 +93,12 @@
             });
         });
 
-        // Submit del formulario
+        // Submit del formulario: dejar que el servidor valide y redirija
         form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            // Validar que ambos campos tengan contenido
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-
-            if (!email || !password) {
-                alert('Por favor, completa todos los campos');
-                return;
-            }
-
-            // Mostrar loading
+            // Mostrar loading visualmente, pero permitir el submit normal
             submitBtn.disabled = true;
             loadingSpinner.style.display = 'inline-block';
             btnText.textContent = 'Iniciando sesión...';
-
-            // Simular proceso de login y redirigir a la página principal
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 1500);
         });
 
         // Efecto de escritura en el título

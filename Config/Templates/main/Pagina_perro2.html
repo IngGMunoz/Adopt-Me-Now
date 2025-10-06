@@ -51,10 +51,18 @@
                 <li><b>Ubicación:</b> Barranquilla, Atlántico</li>
                 <li><b>Contacto:</b> +57 3012345678</li>
             </ul>
+            {% if is_authenticated %}
             <a class="cta" href="/formulario?pet=Rocky" data-animate="true" data-loading-text="Preparando formulario..."
                 data-animation-type="submit" data-delay="700" data-restore-delay="900">
                 <i class="fa-solid fa-paw"></i> Postularme para adoptar
             </a>
+            {% else %}
+            <button class="cta cta-locked" onclick="showAuthModal('Rocky', event)" data-animate="true"
+                data-loading-text="Debes iniciar sesión..." data-animation-type="auth" data-delay="300"
+                data-restore-delay="600">
+                <i class="fa-solid fa-lock"></i> Iniciar Sesión para Adoptar
+            </button>
+            {% endif %}
         </div>
     </section>
 </main>

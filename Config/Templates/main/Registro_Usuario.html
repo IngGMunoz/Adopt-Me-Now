@@ -28,11 +28,13 @@
         <h1 class="register-title">Crear Cuenta</h1>
 
         <form method="POST" action="{{ url_for('Registro_Usuario') }}">
+            {# Preserve next so after registro pueda volver a la página origen o al login con next #}
+            <input type="hidden" name="next" value="{{ request.args.get('next','/') }}">
             <div class="form-group">
-                <label for="user" class="form-label">Usuario</label>
+                <label for="nombre" class="form-label">Nombre</label>
                 <div style="position: relative;">
-                    <input type="text" id="user" name="user" class="form-input"
-                        placeholder="Ingresa tu nombre de usuario" autocomplete="username" required minlength="3" />
+                    <input type="text" id="nombre" name="nombre" class="form-input"
+                        placeholder="Ingresa tu nombre" autocomplete="name" required minlength="3" />
                     <i class="fas fa-user input-icon"></i>
                 </div>
                 <div class="validation-message" id="userValidation"></div>
@@ -258,48 +260,19 @@
 
         // Submit del formulario - UN SOLO EVENT LISTENER
         form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
             // Validar todos los campos
-            if (isFormValid()) {
-                // Mostrar loading
-                submitBtn.disabled = true;
-                loadingSpinner.style.display = 'inline-block';
-                btnText.textContent = 'Creando cuenta...';
-
-                // Simular proceso de registro (2 segundos)
-                setTimeout(() => {
-                    // Ocultar spinner
-                    loadingSpinner.style.display = 'none';
-                    btnText.textContent = 'Crear Cuenta';
-                    submitBtn.disabled = false;
-
-                    // Mostrar modal de éxito y esperar confirmación
-                    showSuccessModal(
-                        `¡Bienvenido a Adopt Me, ${userInput.value}!`,
-                        `Tu cuenta ha sido creada exitosamente. Ahora puedes comenzar a buscar a tu compañero peludo ideal y darle el hogar que se merece.`
-                    ).then(() => {
-                        // Esta parte se ejecuta DESPUÉS de hacer clic en "Aceptar"
-                        console.log('Usuario confirmó la creación de cuenta');
-
-                        // Redirigir a la página de iniciar sesión
-                        window.location.href = '/iniciar-sesion';
-                    });
-
-                    // Aquí es donde se guardaría en la base de datos
-                    console.log('Datos del formulario:', {
-                        usuario: userInput.value,
-                        email: emailInput.value,
-                        timestamp: new Date().toISOString()
-                    });
-                }, 2000);
-            } else {
+            if (!isFormValid()) {
+                e.preventDefault();
                 // Enfocar el primer campo inválido
                 const firstInvalid = form.querySelector('.form-input.invalid');
-                if (firstInvalid) {
-                    firstInvalid.focus();
-                }
+                if (firstInvalid) firstInvalid.focus();
+                return;
             }
+
+            // Mostrar loading visual, permitir submit normal para que el servidor procese el registro
+            submitBtn.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            btnText.textContent = 'Creando cuenta...';
         });
 
         // Efecto de escritura en el título
