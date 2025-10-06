@@ -1,11 +1,16 @@
 {% extends "layouts/base.html" %}
 
+<!--# Aca empieza el bloque title - Define el título de la pestaña para detalle de mascota #-->
 {% block title %}Detalle de Cachorro{% endblock %}
+<!--# Aca termina el bloque title #-->
 
+<!--# Aca empieza el bloque stylesheets - CSS específico para la vista de detalle de mascota #-->
 {% block stylesheets %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/cachorro.css') }}">
 {% endblock %}
+<!--# Aca termina el bloque stylesheets #-->
 
+<!--# Aca empieza el bloque navbar - Header/topbar que reemplaza el navbar global para esta vista #-->
 {% block navbar %}
 <!-- Header personalizado para página de cachorro -->
 <header class="topbar">
@@ -24,7 +29,9 @@
     </div>
 </header>
 {% endblock %}
+<!--# Aca termina el bloque navbar - Fin del header/topbar local #-->
 
+<!--# Aca empieza el bloque content - Contenido principal con imagen y atributos de la mascota #-->
 {% block content %}
 <main class="main-content">
     <section class="detail-card">
@@ -49,7 +56,9 @@
     </section>
 </main>
 {% endblock %}
+<!--# Aca termina el bloque content #-->
 
+<!--# Aca empieza el bloque footer - Pie de página local con enlaces y secciones útiles #-->
 {% block footer %}
 <!-- Footer personalizado para página de cachorro -->
 <footer class="footer">
@@ -84,3 +93,4 @@
     </div>
 </footer>
 {% endblock %}
+<!--# Aca termina el bloque footer #-->

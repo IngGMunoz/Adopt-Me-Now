@@ -2,19 +2,26 @@
 
 {% block title %}Iniciar Sesión - Adopt Me{% endblock %}
 
+<!--# Aca empieza el bloque background_effects #-->
 {% set page_class = "login-page" %}
 
 {% block background_effects %}
 {% include 'components/particles.html' %}
+<!--# Aca termina el bloque background_effects #-->
 {% include 'components/paws.html' %}
+<!--# Aca empieza el bloque navbar #-->
 {% endblock %}
 
 {% block navbar %}
+<!--# Aca termina el bloque navbar #-->
 <!-- No navbar en login -->
+<!--# Aca empieza el bloque footer #-->
 {% endblock %}
 
 {% block footer %}
+<!--# Aca termina el bloque footer #-->
 <!-- No footer en login -->
+<!--# Aca empieza el bloque content #-->
 {% endblock %}
 
 {% block content %}
@@ -53,6 +60,7 @@
             <a href="/registro">¿No tienes cuenta? Crear cuenta</a>
         </div>
     </div>
+<!--# Aca termina el bloque content #-->
 </div>
 </div>
 {% endblock %}

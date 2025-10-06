@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--# Aca empieza el bloque title #-->
     <title>{% block title %}Adopt Me{% endblock %}</title>
+    <!--# Aca termina el bloque title #-->
     
     <!-- Fuentes base -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -11,38 +13,52 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- CSS específico por página -->
+    <!--# Aca empieza el bloque stylesheets #-->
     {% block stylesheets %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/principal.css') }}">
     {% endblock %}
+    <!--# Aca termina el bloque stylesheets #-->
 </head>
 <body>
     <!-- Efectos de fondo si son necesarios -->
+    <!--# Aca empieza el bloque background_effects #-->
     {% block background_effects %}{% endblock %}
+    <!--# Aca termina el bloque background_effects #-->
     
     <!-- Navegación -->
+    <!--# Aca empieza el bloque navbar #-->
     {% block navbar %}
     {% include 'components/navbar.html' %}
     {% endblock %}
+    <!--# Aca termina el bloque navbar #-->
     
     <!-- Contenido principal -->
     <main {% if main_class %}class="{{ main_class }}"{% endif %}>
-        {% block content %}{% endblock %}
+    <!--# Aca empieza el bloque content #-->
+    {% block content %}{% endblock %}
+    <!--# Aca termina el bloque content #-->
     </main>
     
     <!-- Footer -->
+    <!--# Aca empieza el bloque footer #-->
     {% block footer %}
     {% include 'components/footer.html' %}
     {% endblock %}
+    <!--# Aca termina el bloque footer #-->
     
   
     <!-- Scripts base -->
+    <!--# Aca empieza el bloque scripts #-->
     {% block scripts %}{% endblock %}
+    <!--# Aca termina el bloque scripts #-->
 
 
     <!-- Chatbot -->
+    <!--# Aca empieza el bloque chatbot #-->
     {% block chatbot %}
     <script src="{{ url_for('static', filename='js/IA_adoptme.js') }}"></script>
     {% endblock %}
+    <!--# Aca termina el bloque chatbot #-->
 
     
 </body>

@@ -1,11 +1,26 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Adopt Me - Mascotas en Adopción{% endblock %}
+<!--
+    Vista: Adopt Me - Mascotas en Adopción
+    Propósito: Lista las mascotas y fundaciones disponibles. Contiene:
+        - Bloque `title` para el título de la pestaña
+        - Bloque `stylesheets` para CSS específico de la página
+        - Bloque `content` con el toolbar y las tarjetas de mascotas/fundaciones
+        - Bloque `footer` y `scripts` locales
+    Uso: Incluir o migrar componentes (pet-card, sort-toolbar, auth-modal) para limpiar la vista.
+-->
 
+<!--# Aca empieza el bloque title - Título que aparece en la pestaña del navegador para esta vista #-->
+{% block title %}Adopt Me - Mascotas en Adopción{% endblock %}
+<!--# Aca termina el bloque title #-->
+
+<!--# Aca empieza el bloque stylesheets - CSS específico para la vista de adopción #-->
 {% block stylesheets %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/Adopcion.css') }}">
 {% endblock %}
+<!--# Aca termina el bloque stylesheets #-->
 
+<!--# Aca empieza el bloque content - Contenido principal: toolbar y listado de tarjetas de mascotas/fundaciones #-->
 {% block content %}
 <!-- Header especial para esta página -->
 <header class="topbar">
@@ -89,7 +104,9 @@
     </section>
 </main>
 {% endblock %}
+<!--# Aca termina el bloque content #-->
 
+<!--# Aca empieza el bloque footer - Pie de página local con enlaces de contacto y secciones útiles #-->
 {% block footer %}
 <!-- Footer especial para esta página -->
 <footer class="footer">
@@ -125,6 +142,7 @@
 </footer>
 {% endblock %}
 
+<!--# Aca empieza el bloque scripts - Scripts inline y comportamiento de ordenamiento en esta vista #-->
 {% block scripts %}
 <script>
     (function () {

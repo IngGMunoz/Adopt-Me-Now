@@ -1,11 +1,19 @@
 {% extends "layouts/base.html" %}
 
+<!--# Aca empieza el bloque title #-->
 {% block title %}Formulario de Adopción{% endblock %}
+<!--# Aca termina el bloque title #-->
 
 {% block stylesheets %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
 {% endblock %}
+<!--# Aca empieza el bloque stylesheets #-->
+{% block stylesheets %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
+{% endblock %}
+<!--# Aca termina el bloque stylesheets #-->
 
 {% block navbar %}
 <!-- Header personalizado para formulario de adopción -->

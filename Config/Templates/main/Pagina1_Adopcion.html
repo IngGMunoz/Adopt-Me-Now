@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/Adopcion.css') }}">
 {% endblock %}
 
-{% block navbar %}
+{% block navbar %} <!--# Aca empieza el bloque navbar #-->
 <!-- Header personalizado para página de adopción -->
 <header class="topbar">
     <div class="topbar-inner">
@@ -15,16 +15,16 @@
             <i class="fa-solid fa-paw"></i> Adopt Me
         </div>
         <nav class="nav" aria-label="Navegación principal">
-            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
-            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
-            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a> <!-- Esto siempre va a ser /, no /index y es para mantener la coherencia en la navegación -->
+            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a> <!-- Esto es para la ruta de adopción, para que se pueda desplegar la pagina -->
+            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a> <!-- Esto es para la ruta de fundaciones, para que se pueda desplegar la pagina-->
         </nav>
         <div class="user" title="Perfil">
             <i class="fa-regular fa-user"></i>
         </div>
     </div>
 </header>
-{% endblock %}
+{% endblock %} <!-- Aca termina el bloque navbar -->
 
 {% block content %}
 {% if is_authenticated %}

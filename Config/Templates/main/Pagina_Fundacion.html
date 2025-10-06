@@ -1,11 +1,16 @@
 {% extends "layouts/base.html" %}
 
+<!--# Aca empieza el bloque title #-->
 {% block title %}Fundación - Adopt Me{% endblock %}
+<!--# Aca termina el bloque title #-->
 
+<!--# Aca empieza el bloque stylesheets #-->
 {% block stylesheets %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/fundacion.css') }}">
 {% endblock %}
+<!--# Aca termina el bloque stylesheets #-->
 
+<!--# Aca empieza el bloque navbar #-->
 {% block navbar %}
 <!-- Header personalizado para página de fundación -->
 <header class="topbar">
@@ -24,7 +29,9 @@
     </div>
 </header>
 {% endblock %}
+<!--# Aca termina el bloque navbar #-->
 
+<!--# Aca empieza el bloque content #-->
 {% block content %}
 
 <main class="content">
@@ -64,7 +71,9 @@
     </section>
 </main>
 {% endblock %}
+<!--# Aca termina el bloque content #-->
 
+<!--# Aca empieza el bloque footer #-->
 {% block footer %}
 <!-- Footer personalizado para página de fundación -->
 <footer class="footer">

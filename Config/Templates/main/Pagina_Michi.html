@@ -1,11 +1,16 @@
 {% extends "layouts/base.html" %}
 
+<!--# Aca empieza el bloque title #-->
 {% block title %}Detalle de Michi{% endblock %}
+<!--# Aca termina el bloque title #-->
 
+<!--# Aca empieza el bloque stylesheets #-->
 {% block stylesheets %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/cachorro.css') }}">
 {% endblock %}
+<!--# Aca termina el bloque stylesheets #-->
 
+<!--# Aca empieza el bloque navbar #-->
 {% block navbar %}
 <!-- Header personalizado para página de Michi -->
 <header class="topbar">
@@ -24,7 +29,9 @@
     </div>
 </header>
 {% endblock %}
+<!--# Aca termina el bloque navbar #-->
 
+<!--# Aca empieza el bloque content #-->
 {% block content %}
 <main class="main-content">
     <section class="detail-card">
@@ -51,7 +58,9 @@
     </section>
 </main>
 {% endblock %}
+<!--# Aca termina el bloque content #-->
 
+<!--# Aca empieza el bloque footer #-->
 {% block footer %}
 <!-- Footer personalizado para página de Michi -->
 <footer class="footer">

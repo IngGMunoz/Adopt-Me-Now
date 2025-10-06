@@ -1,15 +1,22 @@
 {% extends "layouts/base.html" %}
 
+<!--# Aca empieza el bloque title - Título para la página de postulación de mascotas #-->
 {% block title %}Postular Mascota - Adopt Me{% endblock %}
+<!--# Aca termina el bloque title #-->
 
+<!--# Aca empieza el bloque stylesheets - Estilos globales y específicos para la forma de postular mascotas #-->
 {% block stylesheets %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 {% endblock %}
+<!--# Aca termina el bloque stylesheets #-->
 
+<!--# Aca empieza el bloque navbar - Navbar que incluye los botones de acceso/registro para esta vista #-->
 {% block navbar %}
 {% include "components/navbar.html" %}
 {% endblock %}
+<!--# Aca termina el bloque navbar #-->
 
+<!--# Aca empieza el bloque content - Formulario para crear una nueva publicación de adopción #-->
 {% block content %}
 <main class="main-content">
     <div class="form-container">
@@ -105,3 +112,4 @@
 {% block footer %}
 {% include "components/footer.html" %}
 {% endblock %}
+<!--# Aca termina el bloque content #-->

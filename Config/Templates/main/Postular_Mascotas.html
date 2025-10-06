@@ -1,14 +1,20 @@
 {% extends "layouts/base.html" %}
 
+<!--# Aca empieza el bloque title #-->
 {% block title %}Postular Mascota - Adopt Me{% endblock %}
+<!--# Aca termina el bloque title #-->
 
+<!--# Aca empieza el bloque stylesheets #-->
 {% block stylesheets %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 {% endblock %}
+<!--# Aca termina el bloque stylesheets #-->
 
+<!--# Aca empieza el bloque navbar #-->
 {% block navbar %}
 {% include "components/navbar.html" %}
 {% endblock %}
+<!--# Aca termina el bloque navbar #-->
 
 {% block content %}
 <main class="main-content">

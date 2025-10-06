@@ -1,6 +1,8 @@
 {% extends "layouts/base.html" %}
 
+<!--# Aca empieza el bloque title - Título para la vista de inicio de sesión #-->
 {% block title %}Iniciar Sesión - Adopt Me{% endblock %}
+<!--# Aca termina el bloque title #-->
 
 {% set page_class = "login-page" %}
 
@@ -17,6 +19,7 @@
 <!-- No footer en login -->
 {% endblock %}
 
+<!--# Aca empieza el bloque content - Formulario de inicio de sesión y elementos UI relacionados #-->
 {% block content %}
 <div class="login-container">
     <div class="login-card">
@@ -125,3 +128,4 @@
     })();
 </script>
 {% endblock %}
+<!--# Aca termina el bloque content #-->
