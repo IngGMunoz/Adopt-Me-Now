@@ -39,7 +39,7 @@
 {% endblock %}
 
 {% block content %}
-<main>
+<main> <!--Este es el bloque principal del formulario de adopción-->
     <section class="form-container">
         <h1 class="form-title" id="form-title">Formulario de Adopción</h1>
         <p class="form-desc">Completa tus datos y cuéntanos por qué deseas adoptar. Nos pondremos en contacto contigo
@@ -111,11 +111,11 @@
             </div>
         </form>
     </section>
-</main>
+</main> <!--Acá termina el bloque principal del formulario de adopción-->
 
 <!-- Incluir componentes -->
-{% include 'components/boton_animado.html' %}
-{% include 'components/notificacion_exitosa.html' %}
+{% include 'components/boton_animado.html' %} <!--Acá llama al botón animadoS-->
+{% include 'components/notificacion_exitosa.html' %} <!--Acá llama a la notificación de éxito-->
 {% endblock %}
 
 {% block scripts %}
