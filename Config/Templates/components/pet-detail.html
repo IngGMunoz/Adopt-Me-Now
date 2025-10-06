@@ -1,0 +1,49 @@
+{% set pet = pet or {} %}
+<section class="detail-card">
+    <img class="detail-img" src="{{ pet.image }}" alt="{{ pet.alt or pet.name }}" />
+    <div class="detail-info">
+        <h2 class="detail-title">{{ pet.name }}</h2>
+        {% if pet.creator %}
+        <span class="detail-by">
+            <i class="fa-solid fa-user"></i>
+            {{ pet.creator }}
+        </span>
+        {% endif %}
+        {% if pet.description %}
+        <p class="detail-description">{{ pet.description }}</p>
+        {% endif %}
+        {% if pet.attributes %}
+        <ul class="detail-list">
+            {%- for item in pet.attributes %}
+            <li><b>{{ item.label }}:</b> {{ item.value }}</li>
+            {%- endfor %}
+        </ul>
+        {% endif %}
+        {% if pet.cta %}
+            {% set cta = pet.cta %}
+            {% if cta.requires_auth and not is_authenticated %}
+            <button class="cta cta-locked"
+                    onclick="AuthModalComponent.show('{{ pet.name }}', event)"
+                    data-animate="true"
+                    data-loading-text="Debes iniciar sesión..."
+                    data-animation-type="auth"
+                    data-delay="300"
+                    data-restore-delay="600">
+                <i class="fa-solid fa-lock"></i> {{ cta.locked_text or 'Inicia sesión para continuar' }}
+            </button>
+            {% else %}
+            <a class="cta"
+               href="{{ cta.url }}"
+               {% if cta.target %}target="{{ cta.target }}"{% endif %}
+               data-animate="true"
+               data-loading-text="{{ cta.loading_text or 'Procesando...' }}"
+               data-animation-type="{{ cta.animation_type or 'contact' }}"
+               data-delay="{{ cta.delay or '700' }}"
+               data-restore-delay="{{ cta.restore_delay or '900' }}">
+                <i class="{{ cta.icon or 'fa-solid fa-envelope' }}"></i>
+                {{ cta.text }}
+            </a>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>

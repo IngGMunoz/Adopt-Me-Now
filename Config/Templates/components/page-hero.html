@@ -1,0 +1,25 @@
+{# Page hero reusable component
+   expected inputs: hero.image, hero.title, hero.subtitle, hero.cta (dict)
+#}
+<section class="hero">
+    {% if hero.image %}
+    <img src="{{ hero.image }}" alt="{{ hero.alt or hero.title }}" />
+    {% endif %}
+    <div class="hero-info">
+        {% if hero.title %}<h1>{{ hero.title }}</h1>{% endif %}
+        {% if hero.subtitle %}<h2 class="hero-subtitle">{{ hero.subtitle }}</h2>{% endif %}
+        {% if hero.description %}<p>{{ hero.description }}</p>{% endif %}
+        {% if hero.cta %}
+            {% set cta = hero.cta %}
+            {% if cta.requires_auth and not is_authenticated %}
+                <button class="cta cta-locked" onclick="AuthModalComponent.show('{{ hero.title }}', event)">
+                    <i class="fa-solid fa-lock"></i> {{ cta.locked_text or 'Inicia sesión' }}
+                </button>
+            {% else %}
+                <a class="cta" href="{{ cta.url }}" {% if cta.target %}target="{{ cta.target }}"{% endif %}>
+                    <i class="{{ cta.icon or 'fa-solid fa-envelope' }}"></i> {{ cta.text }}
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>

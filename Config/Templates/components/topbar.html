@@ -1,0 +1,19 @@
+{% set active_page = active_page | default('') %}
+{% set show_profile = show_profile if show_profile is defined else True %}
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <i class="fa-solid fa-paw"></i> Adopt Me
+        </div>
+        <nav class="nav" aria-label="Navegación principal">
+            <a href="{{ url_for('Pagina_Principal') }}" class="{% if active_page == 'home' %}active{% endif %}"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="{{ url_for('Pagina_Adopcion') }}" class="{% if active_page == 'adopcion' %}active{% endif %}"><i class="fa-solid fa-dog"></i> Mascotas</a>
+            <a href="{{ url_for('Pagina_Fundacion') }}" class="{% if active_page == 'fundaciones' %}active{% endif %}"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
+        </nav>
+        {% if show_profile %}
+        <div class="user" title="Perfil">
+            <i class="fa-regular fa-user"></i>
+        </div>
+        {% endif %}
+    </div>
+</header>

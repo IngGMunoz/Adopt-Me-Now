@@ -7,22 +7,8 @@
 {% endblock %}
 
 {% block navbar %}
-<!-- Header personalizado para página de cachorro -->
-<header class="topbar">
-    <div class="topbar-inner">
-        <div class="brand">
-            <i class="fa-solid fa-paw"></i> Adopt Me
-        </div>
-        <nav class="nav" aria-label="Navegación principal">
-            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
-            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
-            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
-        </nav>
-        <div class="user" title="Perfil">
-            <i class="fa-regular fa-user"></i>
-        </div>
-    </div>
-</header>
+{% set active_page = 'adopcion' %}
+{% include 'components/topbar.html' %}
 {% endblock %}
 
 {% block content %}

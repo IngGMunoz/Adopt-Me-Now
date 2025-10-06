@@ -7,24 +7,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/Adopcion.css') }}">
 {% endblock %}
 
-{% block navbar %}
-<!-- Header personalizado para página de adopción -->
-<header class="topbar">
-    <div class="topbar-inner">
-        <div class="brand">
-            <i class="fa-solid fa-paw"></i> Adopt Me
-        </div>
-        <nav class="nav" aria-label="Navegación principal">
-            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a>
-            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a>
-            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a>
-        </nav>
-        <div class="user" title="Perfil">
-            <i class="fa-regular fa-user"></i>
-        </div>
-    </div>
-</header>
-{% endblock %}
+{% block navbar %} # Empiezamos el bloque navbar
+{% set active_page = 'adopcion' %} # Esto asegura que el enlace "Mascotas" esté activo
+{% include 'components/topbar.html' %} #Esto incluye la barra de navegación
+{% endblock %} # Aca terminamos de agregar el bloque navbar
 
 {% block content %}
 {% if is_authenticated %}
@@ -161,7 +147,7 @@
                 <a href="#">Eventos</a>
             </div>
             <div>
-                <h4>Legal</h4>
+                <h4>Legal</h4>k
                 <a href="#">Términos</a>
                 <a href="#">Privacidad</a>
                 <a href="#">Ayuda</a>
