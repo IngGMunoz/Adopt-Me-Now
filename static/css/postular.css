@@ -1,0 +1,232 @@
+/* Variables de color y diseño */
+:root {
+    --brand: #d49a4a;
+    --brand-dark: #b07b2a;
+    --accent: #ffb74d;
+    --accent-light: #ffe0b2;
+    --text: #22223B;
+    --muted: #6d4c41;
+    --border: #ffe0b2;
+    --bg: #fff8f2;
+    --card-bg: #fff;
+    --shadow: 0 4px 24px rgba(255, 152, 0, 0.09);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Estilos generales */
+body {
+    background: var(--bg);
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos de encabezado */
+h1, h2 {
+    text-align: center;
+    color: var(--brand-dark);
+    margin-top: 32px;
+    margin-bottom: 18px;
+    letter-spacing: .5px;
+}
+
+/* Estilos de formularios */
+form {
+    background: var(--card-bg);
+    max-width: 420px;
+    margin: 32px auto 24px auto;
+    padding: 32px 32px 22px 32px;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    border: 2px solid var(--border);
+    animation: fadeInUp 0.8s cubic-bezier(.4, 1.4, .7, 1) both;
+}
+
+form label {
+    font-weight: 600;
+    color: var(--brand-dark);
+    margin-bottom: 4px;
+    letter-spacing: .2px;
+}
+
+form input[type="text"],
+form textarea,
+form input[type="file"] {
+    padding: 11px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    font-size: 15px;
+    background: var(--accent-light);
+    margin-bottom: 8px;
+    transition: border 0.2s;
+    color: var(--text);
+}
+
+form input[type="text"]:focus,
+form textarea:focus {
+    border: 1.5px solid var(--brand);
+    outline: none;
+    background: #fffde7;
+}
+
+form button {
+    background: linear-gradient(90deg, var(--brand), var(--accent));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 0;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 8px;
+    box-shadow: 0 2px 8px #ff98001a;
+    letter-spacing: .5px;
+}
+
+form button:hover {
+    background: linear-gradient(90deg, var(--accent), var(--brand));
+    transform: scale(1.03);
+}
+
+hr {
+    border: none;
+    border-top: 2px solid var(--border);
+    margin: 36px auto 24px auto;
+    max-width: 420px;
+}
+
+/* Estilos de tarjetas de mascotas */
+.mascotas-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    margin: 30px auto 48px auto;
+    max-width: 1200px;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    width: 340px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 2.5px solid var(--border);
+    position: relative;
+    animation: fadeInUp 0.8s cubic-bezier(.4, 1.4, .7, 1) both;
+    transition: transform .18s, box-shadow .18s, border .18s;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.035);
+    box-shadow: 0 12px 40px rgba(255, 152, 0, 0.18);
+    border: 2.5px solid var(--brand);
+}
+
+.card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-bottom: 3px solid var(--brand);
+    background: var(--accent-light);
+    transition: filter .3s;
+}
+
+.card:hover img {
+    filter: brightness(0.95) saturate(1.2);
+}
+
+.card-content {
+    padding: 24px 22px 18px 22px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card .title {
+    font-size: 1.3em;
+    font-weight: 900;
+    margin: 0 0 8px 0;
+    color: var(--brand-dark);
+    letter-spacing: .2px;
+}
+
+.card .by {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 10px;
+    display: block;
+    font-weight: 500;
+}
+
+.card p {
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 0 14px 0;
+    flex: 1;
+}
+
+.card .cta {
+    background: linear-gradient(90deg, var(--brand), var(--accent));
+    color: #fff;
+    border: none;
+    padding: 11px 0;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1em;
+    box-shadow: 0 2px 8px #ff98001a;
+    cursor: pointer;
+    text-align: center;
+    transition: background .2s, color .2s, transform .2s;
+    text-shadow: 0 1px 4px #0002;
+    margin-top: 8px;
+    letter-spacing: .5px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.card .cta:hover {
+    background: linear-gradient(90deg, var(--accent), var(--brand));
+    color: #fff;
+    transform: scale(1.04);
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .mascotas-list {
+        flex-direction: column;
+        align-items: center;
+    }
+    .card {
+        width: 95vw;
+        max-width: 370px;
+    }
+    form {
+        max-width: 95vw;
+    }
+    hr {
+        max-width: 95vw;
+    }
+}

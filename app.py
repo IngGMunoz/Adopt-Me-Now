@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify, redirect, render_template, url_for, session, flash
 from Config.db import app
 from functools import wraps
@@ -156,8 +155,14 @@ def logout():
 def Registro_Administrador():
     if request.method == "POST":
         # Aquí podrías validar/guardar datos de administrador
-        return redirect("/iniciar-sesion")
+        return render_template("main/postularADM.html")
     return render_template("main/Registro_Administrador.html")
+
+# postular Mascotas (ADMIN)
+@app.route("/postularADM", methods=["GET", "POST"])
+def Postular_Admin():
+    # Aquí va la lógica para manejar el formulario y mostrar las mascotas
+    return render_template("main/postularADM.html")
 
 # Listado de adopción / Mascotas
 @app.route("/adopcion")
@@ -191,3 +196,6 @@ def Postular_Mascotas():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5100, host="0.0.0.0")
+
+    # ruta ADMIN postular mascotas codigo
+

@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/postular.css') }}">
+<h1>Subir Mascota para Adopción</h1>
+<form method="POST" enctype="multipart/form-data">
+    <label>Nombre de la mascota:</label>
+    <input type="text" name="nombre" required><br>
+    <label>Descripción:</label>
+    <textarea name="descripcion" required></textarea><br>
+    <label>Imagen:</label>
+    <input type="file" name="imagen" accept="image/*" required><br>
+    <button type="submit">Subir Mascota</button>
+</form>
+
+<hr>
+
+<h2>Mascotas en Adopción</h2>
+<div class="mascotas-list">
+    {% for mascota in mascotas %}
+    <section class="card" data-title="{{ mascota.nombre }}" data-author="{{ mascota.autor }}">
+        <img src="{{ url_for('static', filename='uploads/' ~ mascota.imagen) }}" alt="{{ mascota.nombre }}" />
+        <div class="card-content">
+            <h2 class="title">{{ mascota.nombre }}</h2>
+            <span class="by"><i class="fa-solid fa-user"></i> Creado por {{ mascota.autor }}</span>
+            <p>{{ mascota.descripcion }}</p>
+            <a class="cta" href="#" data-animate="true">
+                <i class="fa-solid fa-envelope"></i> Contactar
+            </a>
+        </div>
+    </section>
+    {% endfor %}
+</div>
