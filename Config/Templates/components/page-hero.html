@@ -1,5 +1,25 @@
-{# Page hero reusable component
-   expected inputs: hero.image, hero.title, hero.subtitle, hero.cta (dict)
+{#
+Componente: Page Hero (Hero Section reutilizable)
+Ubicación: components/page-hero.html
+Propósito: Renderiza una sección hero adaptable para cualquier página, mostrando imagen, título, subtítulo, descripción
+y un CTA (call-to-action).
+Entradas esperadas (vía contexto Jinja):
+- hero.image: URL de la imagen principal (opcional)
+- hero.title: Título principal (string)
+- hero.subtitle: Subtítulo (string, opcional)
+- hero.description: Descripción corta (string, opcional)
+- hero.cta: Diccionario con datos del botón/enlace de acción:
+- url: destino del CTA
+- text: texto del CTA
+- icon: clase de ícono FontAwesome (opcional)
+- target: target del enlace (opcional)
+- requires_auth: bool, si true muestra botón bloqueado si no está autenticado
+- locked_text: texto alternativo para el botón bloqueado
+Lógica:
+- Si hero.image está definido, la muestra arriba.
+- Si hero.cta.requires_auth y el usuario NO está autenticado, muestra botón bloqueado que abre el modal de
+autenticación.
+- Si el usuario está autenticado o no se requiere auth, muestra el enlace CTA normal.
 #}
 <section class="hero">
     {% if hero.image %}
@@ -10,16 +30,16 @@
         {% if hero.subtitle %}<h2 class="hero-subtitle">{{ hero.subtitle }}</h2>{% endif %}
         {% if hero.description %}<p>{{ hero.description }}</p>{% endif %}
         {% if hero.cta %}
-            {% set cta = hero.cta %}
-            {% if cta.requires_auth and not is_authenticated %}
-                <button class="cta cta-locked" onclick="AuthModalComponent.show('{{ hero.title }}', event)">
-                    <i class="fa-solid fa-lock"></i> {{ cta.locked_text or 'Inicia sesión' }}
-                </button>
-            {% else %}
-                <a class="cta" href="{{ cta.url }}" {% if cta.target %}target="{{ cta.target }}"{% endif %}>
-                    <i class="{{ cta.icon or 'fa-solid fa-envelope' }}"></i> {{ cta.text }}
-                </a>
-            {% endif %}
+        {% set cta = hero.cta %}
+        {% if cta.requires_auth and not is_authenticated %}
+        <button class="cta cta-locked" onclick="AuthModalComponent.show('{{ hero.title }}', event)">
+            <i class="fa-solid fa-lock"></i> {{ cta.locked_text or 'Inicia sesión' }}
+        </button>
+        {% else %}
+        <a class="cta" href="{{ cta.url }}" {% if cta.target %}target="{{ cta.target }}" {% endif %}>
+            <i class="{{ cta.icon or 'fa-solid fa-envelope' }}"></i> {{ cta.text }}
+        </a>
+        {% endif %}
         {% endif %}
     </div>
 </section>
