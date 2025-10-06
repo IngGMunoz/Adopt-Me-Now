@@ -46,7 +46,24 @@
     </select>
 </div>
 
+
 <main class="content">
+    {# Mascotas subidas por el admin (dinámicas) #}
+    {% for mascota in mascotas %}
+    <section class="card" data-title="{{ mascota.nombre }}" data-author="{{ mascota.autor }}">
+        <img src="{{ url_for('static', filename='images/Perro.jpg') }}" alt="Cachorro" alt="{{ mascota.nombre }}" />
+        <div class="card-content">
+            <h2 class="title">{{ mascota.nombre }}</h2>
+            <span class="by"><i class="fa-solid fa-user"></i> Creado por {{ mascota.autor }}</span>
+            <p>{{ mascota.descripcion }}</p>
+            <a class="cta" href="#" data-animate="true">
+                <i class="fa-solid fa-envelope"></i> Contactar
+            </a>
+        </div>
+    </section>
+    {% endfor %}
+
+    {# Mascotas fijas (hardcodeadas) #}
     <!-- Card 1 -->
     <section class="card" data-title="Cachorro" data-author="Daniel">
         <img src="{{ url_for('static', filename='images/Cachorro.png') }}" alt="Cachorro" />

@@ -9,6 +9,9 @@ from flask import (
     flash,
 )
 from Config.db import app
+
+# Lista global para mascotas subidas por el admin
+mascotas = []
 from functools import wraps
 import hashlib
 
@@ -198,14 +201,32 @@ def Registro_Administrador():
 # postular Mascotas (ADMIN)
 @app.route("/postularADM", methods=["GET", "POST"])
 def Postular_Admin():
-    # Aquí va la lógica para manejar el formulario y mostrar las mascotas
-    return render_template("main/postularADM.html")
+    from werkzeug.utils import secure_filename
+    import os
+    if request.method == "POST":
+        nombre = request.form["nombre"]
+        descripcion = request.form["descripcion"]
+        imagen = request.files["imagen"]
+        autor = session.get("user_name", "Anónimo")
+        # Guardar la imagen en static/uploads/
+        uploads_dir = os.path.join(app.root_path, 'static', 'uploads')
+        os.makedirs(uploads_dir, exist_ok=True)
+        imagen_filename = secure_filename(imagen.filename)
+        imagen.save(os.path.join(uploads_dir, imagen_filename))
+        mascotas.append({
+            "nombre": nombre,
+            "descripcion": descripcion,
+            "imagen": imagen_filename,
+            "autor": autor
+        })
+        return redirect("/adopcion")
+    return render_template("main/postularADM.html", mascotas=mascotas)
 
 
 # Listado de adopción / Mascotas
 @app.route("/adopcion")
 def Pagina_Adopcion():
-    return render_template("main/Pagina1_Adopcion.html")
+    return render_template("main/Pagina1_Adopcion.html", mascotas=mascotas)
 
 
 # Alias para compatibilidad: /mascotas -> /adopcion
