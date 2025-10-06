@@ -100,7 +100,7 @@ def Registro_Usuario():
         telefono = request.form.get("telefono")
 
         # Preserve next param so user can be sent back after login
-        next_url = request.form.get('next') or request.args.get('next') or None
+        next_url = request.form.get("next") or request.args.get("next") or None
 
         # Validar que todos los campos estén presentes
         if not all([email, password, nombre]):
@@ -128,8 +128,8 @@ def Registro_Usuario():
         flash("¡Registro exitoso! Ahora puedes iniciar sesión", "success")
         if next_url:
             try:
-                if isinstance(next_url, str) and next_url.startswith('/'):
-                    return redirect(url_for('Iniciar_Sesion') + '?next=' + next_url)
+                if isinstance(next_url, str) and next_url.startswith("/"):
+                    return redirect(url_for("Iniciar_Sesion") + "?next=" + next_url)
             except Exception:
                 pass
         return redirect("/iniciar-sesion")
@@ -143,7 +143,7 @@ def Iniciar_Sesion():
         email = request.form.get("email")
         password = request.form.get("password")
         # Intento de next param para redirigir al origen tras login
-        next_url = request.form.get('next') or request.args.get('next') or '/'
+        next_url = request.form.get("next") or request.args.get("next") or "/"
 
         # Validar campos
         if not email or not password:
@@ -167,7 +167,7 @@ def Iniciar_Sesion():
             flash(f'¡Bienvenido, {user["nombre"]}!', "success")
             # Redirigir al next si es seguro (ruta interna)
             try:
-                if isinstance(next_url, str) and next_url.startswith('/'):
+                if isinstance(next_url, str) and next_url.startswith("/"):
                     return redirect(next_url)
             except Exception:
                 pass
