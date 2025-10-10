@@ -203,22 +203,25 @@ def Registro_Administrador():
 def Postular_Admin():
     from werkzeug.utils import secure_filename
     import os
+
     if request.method == "POST":
         nombre = request.form["nombre"]
         descripcion = request.form["descripcion"]
         imagen = request.files["imagen"]
         autor = session.get("user_name", "Anónimo")
         # Guardar la imagen en static/uploads/
-        uploads_dir = os.path.join(app.root_path, 'static', 'uploads')
+        uploads_dir = os.path.join(app.root_path, "static", "uploads")
         os.makedirs(uploads_dir, exist_ok=True)
         imagen_filename = secure_filename(imagen.filename)
         imagen.save(os.path.join(uploads_dir, imagen_filename))
-        mascotas.append({
-            "nombre": nombre,
-            "descripcion": descripcion,
-            "imagen": imagen_filename,
-            "autor": autor
-        })
+        mascotas.append(
+            {
+                "nombre": nombre,
+                "descripcion": descripcion,
+                "imagen": imagen_filename,
+                "autor": autor,
+            }
+        )
         return redirect("/adopcion")
     return render_template("main/postularADM.html", mascotas=mascotas)
 

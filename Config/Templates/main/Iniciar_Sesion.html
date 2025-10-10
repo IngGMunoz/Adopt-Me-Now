@@ -14,10 +14,9 @@
 
 {% block navbar %}
 <!--# Aca termina el bloque navbar #-->
-<!-- No navbar en login -->
-<!--# Aca empieza el bloque footer #-->
-{% endblock %}
 
+{% endblock %}
+<!--# Aca empieza el bloque footer #-->
 {% block footer %}
 <!--# Aca termina el bloque footer #-->
 <!-- No footer en login -->
@@ -62,13 +61,13 @@
             <a href="/registro">¿No tienes cuenta? Crear cuenta</a>
         </div>
     </div>
-<!--# Aca termina el bloque content #-->
+    <!--# Aca termina el bloque content #-->
 </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-        <script>
+<script>
     (function () {
         const form = document.getElementById('loginForm');
         const inputs = form.querySelectorAll('.form-input');
