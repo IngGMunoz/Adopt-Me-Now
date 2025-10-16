@@ -1,12 +1,12 @@
 from flask import (
-    Flask,
-    request,
-    jsonify,
-    redirect,
-    render_template,
-    url_for,
-    session,
-    flash,
+    Flask, # Importar Flask
+    request, # Para manejar solicitudes HTTP
+    jsonify, # Para respuestas JSON
+    redirect, # Para redireccionar a otras rutas
+    render_template, # Para renderizar plantillas HTML
+    url_for, # Para construir URLs
+    session, # Manejo de sesiones
+    flash, # Para mensajes flash (notificaciones)
 )
 from Config.db import app
 
