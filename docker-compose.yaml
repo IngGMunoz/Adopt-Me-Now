@@ -14,7 +14,7 @@ services:
       - db
     environment:
       - DB_HOST=db
-      - DB_PORT=3307
+      - DB_PORT=3306   # <-- puerto interno del contenedor MySQL antes (3307)
       - DB_USER=root
       - DB_PASSWORD=12345
       - DB_NAME=mysql1
@@ -24,10 +24,11 @@ services:
     image: mysql:8.0
     restart: always
     ports:
-      - "3307:3307"
+      - "3307:3306"    #cambiado a 3307 para evitar conflictos con MySQL local
     environment:
       MYSQL_ROOT_PASSWORD: 12345
-      MYSQL_DATABASE: mysql
+      MYSQL_DATABASE: mysql1   # Nombre de la base de datos se le agrego 1 antes (mysql)
+      MYSQL_ROOT_HOST: '%'   # Permitir conexiones remotas al root se agrego esto tambien
     volumes:
       - mysql_data:/var/lib/mysql
 
