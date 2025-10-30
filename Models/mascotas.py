@@ -1,5 +1,5 @@
 
-import datetime
+from datetime import datetime
 from Config.db import ma, db, app
 
 class Mascota(db.Model):
@@ -28,3 +28,13 @@ class Mascota(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
+    
+            # Schema de Marshmallow para serialización
+class MascotaSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Mascota
+        load_instance = True
+
+# Crear tablas automáticamente al importar el modelo
+with app.app_context():
+    db.create_all()

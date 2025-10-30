@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from Config.db import ma, db, app
 
 class Usuario(db.Model):

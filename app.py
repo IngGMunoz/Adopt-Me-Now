@@ -10,6 +10,10 @@ from flask import (
 )
 from Config.db import app
 
+from Config.controller.Usercontroller import routes_UserC
+
+
+
 # Lista global para mascotas subidas por el admin
 mascotas = []
 from functools import wraps
