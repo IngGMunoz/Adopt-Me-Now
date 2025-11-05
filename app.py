@@ -10,8 +10,19 @@ from flask import (
 )
 from Config.db import app
 
+# importar blueprints de controllers
+from Config.controller.Mascotascontroller import routes_MascotasC
 from Config.controller.Usercontroller import routes_UserC
+from Config.controller.PostularMascontroller import routes_PostularC
+from Config.controller.adoptar_mascontroller import Routes_adoptarC
+from Config.controller.Admincontroller import Routes_adminC
 
+# registrar blueprints
+app.register_blueprint(routes_MascotasC)
+app.register_blueprint(routes_UserC)
+app.register_blueprint(routes_PostularC)
+app.register_blueprint(Routes_adoptarC)
+app.register_blueprint(Routes_adminC)
 
 
 # Lista global para mascotas subidas por el admin
