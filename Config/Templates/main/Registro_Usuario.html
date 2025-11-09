@@ -105,7 +105,8 @@
         const btnText = document.getElementById('btnText');
 
         // Elementos de validación
-        const userInput = document.getElementById('user');
+        // CAMBIO: apuntar al id real del input (antes 'user' -> ahora 'nombre')
+        const userInput = document.getElementById('nombre');
         const passwordInput = document.getElementById('password');
         const emailInput = document.getElementById('email');
         const email2Input = document.getElementById('email2');
@@ -255,24 +256,57 @@
             const isEmailValid = validateEmail();
             const isEmail2Valid = validateEmailConfirmation();
 
-            return isUserValid && isPasswordValid && isEmailValid && isEmail2Valid;
+            return isUserValid && isPasswordValid && isEmail2Valid && isEmailValid;
         }
 
-        // Submit del formulario - UN SOLO EVENT LISTENER
+        // Submit del formulario - ENVIAR A LA API vía fetch (CAMBIO)
         form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
             // Validar todos los campos
             if (!isFormValid()) {
-                e.preventDefault();
                 // Enfocar el primer campo inválido
                 const firstInvalid = form.querySelector('.form-input.invalid');
                 if (firstInvalid) firstInvalid.focus();
                 return;
             }
 
-            // Mostrar loading visual, permitir submit normal para que el servidor procese el registro
+            // Mostrar loading visual
             submitBtn.disabled = true;
             loadingSpinner.style.display = 'inline-block';
             btnText.textContent = 'Creando cuenta...';
+
+            const payload = {
+                username: userInput.value.trim(),
+                email: emailInput.value.trim(),
+                password: passwordInput.value
+            };
+
+            fetch('/api/users/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            })
+            .then(async res => {
+                const body = await res.json().catch(()=> ({}));
+                if (res.status === 201 || res.ok) {
+                    // registro correcto: redirigir a login
+                    window.location.href = "{{ url_for('Iniciar_Sesion') }}";
+                } else {
+                    const msg = body.msg || body.error || JSON.stringify(body);
+                    alert('Error: ' + msg);
+                    submitBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    btnText.textContent = 'Crear Cuenta';
+                }
+            })
+            .catch(err => {
+                console.error('Network error', err);
+                alert('Error de red. Intenta nuevamente.');
+                submitBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                btnText.textContent = 'Crear Cuenta';
+            });
         });
 
         // Efecto de escritura en el título
