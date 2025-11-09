@@ -16,7 +16,7 @@ class Mascota(db.Model):
 
     def __repr__(self):
         return f"<Mascota {self.id} {self.nombre}>"
-
+      #detalles de la mascota toda la informacion
     def to_dict(self):
         return {
             "id": self.id,

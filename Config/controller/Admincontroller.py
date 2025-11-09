@@ -5,6 +5,9 @@ from Models.usuario import usuario, usuarioSchema
 from Models.mascotas import Mascota, MascotaSchema
 from Models.postular_mascotas import PostularMascotas, PostularMascotasSchema
 from werkzeug.security import generate_password_hash
+import os
+from flask import current_app, redirect, request, jsonify, url_for
+from werkzeug.utils import secure_filename
 
 # Blueprint del admin (url_prefix organizado)
 Routes_adminC = Blueprint("routes_adminC", __name__, url_prefix="/api/admin")
@@ -115,13 +118,61 @@ def admin_get_mascota(mid):
 
 @Routes_adminC.route("/mascotas", methods=["POST"])
 def admin_create_mascota():
-    data = request.get_json() or {}
-    nombre = data.get("nombre"); descripcion = data.get("descripcion")
-    if not all([nombre, descripcion]):
-        return jsonify({"ok": False, "msg": "Faltan campos"}), 400
-    m = Mascota(nombre=nombre, descripcion=descripcion, imagen=data.get("imagen",""), autor=data.get("autor"))
-    db.session.add(m); db.session.commit()
-    return jsonify(mascota_schema.dump(m)), 201
+    """
+    Acepta JSON (API) o multipart/form-data (form del admin).
+    Si viene file en form-data guarda en static/uploads y crea Mascota.
+    Devuelve JSON si la petición es JSON; si viene de formulario redirige al referrer.
+    """
+    # intentar JSON primero (API)
+    data = request.get_json(silent=True)
+    imagen_filename = ""
+    autor = None
+
+    if data:
+        # petición JSON
+        nombre = data.get("nombre")
+        descripcion = data.get("descripcion")
+        autor = data.get("autor") or "Administrador"
+        imagen_filename = data.get("imagen", "") or ""
+    else:
+        # fallback: form multipart/form-data (desde postularADM.html)
+        nombre = request.form.get("nombre")
+        descripcion = request.form.get("descripcion")
+        autor = request.form.get("autor") or "Administrador"
+        file = request.files.get("imagen")
+        if file and file.filename:
+            uploads_dir = os.path.join(current_app.static_folder, "uploads")
+            os.makedirs(uploads_dir, exist_ok=True)
+            imagen_filename = secure_filename(file.filename)
+            file.save(os.path.join(uploads_dir, imagen_filename))
+
+    if not nombre or not descripcion:
+        # responder JSON o redirigir con error simple
+        if data:
+            return jsonify({"ok": False, "msg": "Faltan campos: nombre y descripcion"}), 400
+        return redirect(request.referrer or "/postularADM")
+
+    # evitar duplicados simples
+    if Mascota.query.filter(Mascota.nombre == nombre, Mascota.autor == autor).first():
+        if data:
+            return jsonify({"ok": False, "msg": "Mascota ya registrada"}), 409
+        return redirect(request.referrer or "/postularADM")
+
+    m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen_filename, autor=autor)
+    db.session.add(m)
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        if data:
+            return jsonify({"ok": False, "msg": "Error al guardar en la BD", "error": str(e)}), 500
+        return redirect(request.referrer or "/postularADM")
+
+    if data:
+        return jsonify(mascota_schema.dump(m)), 201
+
+    # petición desde formulario: redirigir de vuelta a la página de postularADM
+    return redirect(request.referrer or "/postularADM")
 
 @Routes_adminC.route("/mascotas/<int:mid>", methods=["PUT"])
 def admin_update_mascota(mid):
@@ -192,4 +243,59 @@ def admin_unadopt_mascota(mid):
     m.is_adopted = False
     db.session.commit()
     return jsonify(mascota_schema.dump(m)), 200
+
+@Routes_adminC.route("/mascotas/form", methods=["POST"])
+def admin_create_mascota_form():
+    """
+   
+    """
+    # detecta si es request XHR (fetch con header X-Requested-With)
+    is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+    # obtiene datos desde form-data o JSON
+    data_json = request.get_json(silent=True)
+    if data_json:
+        nombre = data_json.get('nombre')
+        descripcion = data_json.get('descripcion')
+        autor = data_json.get('autor') or 'Administrador'
+        imagen_filename = data_json.get('imagen','')
+    else:
+        nombre = request.form.get('nombre')
+        descripcion = request.form.get('descripcion')
+        autor = request.form.get('autor') or 'Administrador'
+        file = request.files.get('imagen')
+        imagen_filename = ""
+        if file and file.filename:
+            uploads_dir = os.path.join(current_app.static_folder, "uploads")
+            os.makedirs(uploads_dir, exist_ok=True)
+            imagen_filename = secure_filename(file.filename)
+            file.save(os.path.join(uploads_dir, imagen_filename))
+
+    if not nombre or not descripcion:
+        if is_xhr:
+            return jsonify({"ok": False, "msg": "Faltan campos: nombre y descripcion"}), 400
+        return redirect('/postularADM')
+
+    # evitar duplicados simples
+    if Mascota.query.filter(Mascota.nombre == nombre, Mascota.autor == autor).first():
+        if is_xhr:
+            return jsonify({"ok": False, "msg": "Mascota ya registrada"}), 409
+        return redirect('/postularADM')
+
+    m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen_filename, autor=autor)
+    db.session.add(m)
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        if is_xhr:
+            return jsonify({"ok": False, "msg": "Error al guardar en la BD", "error": str(e)}), 500
+        return redirect('/postularADM')
+
+    # Si XHR: devolver JSON con el registro creado para que el frontend lo muestre inmediatamente.
+    if is_xhr:
+        return jsonify({"ok": True, "mascota": mascota_schema.dump(m)}), 201
+
+    # fallback: petición de formulario tradicional -> redirigir a la página que lista las mascotas
+    return redirect('/postularADM')
 

@@ -22,6 +22,7 @@ class PostularMascotas(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def to_dict(self):
+        #postulacion de mascotas fecha de postulado
         return {
             "id": self.id,
             "username": self.username,

@@ -1,6 +1,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/postular.css') }}">
 <h1>Subir Mascota para Adopción</h1>
-<form method="POST" enctype="multipart/form-data">
+
+<!-- Un único form: action -> /api/admin/mascotas/form (fallback sin JS).
+     Con JS interceptamos el submit y enviamos por fetch (FormData) para guardar en la BD
+     y luego insertamos la card en la página sin recargar. -->
+<form id="mascotaForm" method="POST" action="/api/admin/mascotas/form" enctype="multipart/form-data">
     <label>Nombre de la mascota:</label>
     <input type="text" name="nombre" required><br>
     <label>Descripción:</label>
@@ -28,3 +32,79 @@
     </section>
     {% endfor %}
 </div>
+
+<!-- script JS que intercepta el submit y muestra la card en la página -->
+<script>
+(function () {
+    const form = document.getElementById('mascotaForm');
+    const list = document.querySelector('.mascotas-list');
+
+    // Helper to build card node
+    function buildCard(m) {
+        const card = document.createElement('section');
+        card.className = 'card';
+        const imgSrc = m.imagen ? ( '/static/uploads/' + m.imagen ) : '';
+        card.innerHTML = `
+            <img src="${imgSrc}" alt="${m.nombre || ''}" />
+            <div class="card-content">
+                <h2 class="title">${m.nombre || ''}</h2>
+                <span class="by"><i class="fa-solid fa-user"></i> Creado por ${m.autor || 'Administrador'}</span>
+                <p>${m.descripcion || ''}</p>
+                <a class="cta" href="#" data-animate="true">
+                    <i class="fa-solid fa-envelope"></i> Contactar
+                </a>
+            </div>
+        `;
+        return card;
+    }
+
+    form.addEventListener('submit', async function (e) {
+        // si JS está activo interceptamos y enviamos por fetch multipart/form-data
+        e.preventDefault();
+
+        const fd = new FormData(form);
+        try {
+            const res = await fetch(form.action.replace(/\/form$/, ''), {
+                // enviamos al endpoint API (/api/admin/mascotas) que acepta multipart/JSON
+                method: 'POST',
+                body: fd,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // para que el servidor devuelva JSON cuando detecte XHR
+                },
+                credentials: 'same-origin'
+            });
+
+            // intentar parsear JSON
+            let body = {};
+            const ct = res.headers.get('content-type') || '';
+            if (ct.includes('application/json')) body = await res.json().catch(()=> ({}));
+            else {
+                // servidor pudo devolver redirect/html -> forzar fallback al submit normal (guardado server-side)
+                form.submit();
+                return;
+            }
+
+            if (res.ok) {
+                // servidor devuelve objeto creado en body.mascota o body (según implementación)
+                const m = body.mascota || body;
+                // insertar card nueva al inicio
+                const card = buildCard(m);
+                if (list.firstChild) list.insertBefore(card, list.firstChild);
+                else list.appendChild(card);
+                form.reset();
+                return;
+            } else {
+                // error desde API -> mostrar y fallback enviar form tradicional
+                alert(body.msg || body.error || ('Error ' + res.status));
+                // si quieres, puedes evitar el fallback y solo mostrar error; aquí hacemos fallback
+                form.submit();
+                return;
+            }
+        } catch (err) {
+            console.error('network error', err);
+            // fallback: submit tradicional para que el servidor procese y redirija
+            form.submit();
+        }
+    });
+})();
+</script>
