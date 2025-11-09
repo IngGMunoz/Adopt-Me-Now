@@ -92,12 +92,50 @@
             });
         });
 
-        // Submit del formulario: dejar que el servidor valide y redirija
+        // CAMBIO: enviar credenciales al endpoint API y permitir que Flask cree la sesión (cookie).
         form.addEventListener('submit', function (e) {
-            // Mostrar loading visualmente, pero permitir el submit normal
+            e.preventDefault();
+
             submitBtn.disabled = true;
             loadingSpinner.style.display = 'inline-block';
             btnText.textContent = 'Iniciando sesión...';
+
+            const payload = {
+                identifier: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value
+            };
+
+            fetch('/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin', // importante: incluir cookies de sesión
+                body: JSON.stringify(payload)
+            })
+            .then(async res => {
+                const body = await res.json().catch(()=> ({}));
+                if (res.ok) {
+                    // login exitoso, redirigir al 'next' o al home
+                    const params = new URLSearchParams(window.location.search);
+                    const next = params.get('next') || '/';
+                    window.location.href = next;
+                } else {
+                    const msg = body.msg || body.error || JSON.stringify(body);
+                    alert('Error: ' + msg);
+                    submitBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    btnText.textContent = 'Iniciar Sesión';
+                }
+            })
+            .catch(err => {
+                console.error('Network error', err);
+                alert('Error de red. Intenta nuevamente.');
+                submitBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                btnText.textContent = 'Iniciar Sesión';
+            });
         });
 
         // Efecto de escritura en el título
