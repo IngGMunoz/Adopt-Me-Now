@@ -51,14 +51,24 @@
     {# Mascotas subidas por el admin (dinámicas) #}
     {% for mascota in mascotas %}
     <section class="card" data-title="{{ mascota.nombre }}" data-author="{{ mascota.autor }}">
-        <img src="{{ url_for('static', filename='images/Perro.jpg') }}" alt="Cachorro" alt="{{ mascota.nombre }}" />
+        {% if mascota.imagen %}
+        <img src="{{ url_for('static', filename='uploads/' ~ mascota.imagen) }}" alt="{{ mascota.nombre }}" />
+        {% else %}
+        <img src="{{ url_for('static', filename='images/Perro.jpg') }}" alt="{{ mascota.nombre }}" />
+        {% endif %}
         <div class="card-content">
             <h2 class="title">{{ mascota.nombre }}</h2>
             <span class="by"><i class="fa-solid fa-user"></i> Creado por {{ mascota.autor }}</span>
             <p>{{ mascota.descripcion }}</p>
-            <a class="cta" href="#" data-animate="true">
+            {% if is_authenticated %}
+            <a class="cta" href="/formulario" data-animate="true">
                 <i class="fa-solid fa-envelope"></i> Contactar
             </a>
+            {% else %}
+            <button class="cta cta-locked" onclick="showAuthModal('{{ mascota.nombre|e }}', event)" data-animate="true">
+                <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
+            </button>
+            {% endif %}
         </div>
     </section>
     {% endfor %}

@@ -54,8 +54,8 @@
                 <div>
                     <label for="telefono">Teléfono</label>
                     <input type="tel" id="telefono" name="telefono" placeholder="(+57) 300 000 0000" inputmode="tel"
-                        pattern="\+?\d[\d\s-]{7,15}"
-                        title="Ingresa un teléfono válido (8 a 16 dígitos, puede incluir +, espacios o guiones)"
+                        pattern="\+?[0-9]{8,16}"
+                        title="Ingresa un teléfono válido (8 a 16 dígitos, puede iniciar con +)"
                         required />
                 </div>
                 <div>
@@ -97,9 +97,9 @@
             </div>
             <div class="actions">
                 <a class="btn btn-ghost" href="/adopcion"><i class="fa-solid fa-arrow-left"></i> Volver</a>
-                <button type="submit" class="btn btn-primary" data-animate="true"
+                <button id="submitAdoptionBtn" type="submit" class="btn btn-primary" data-animate="true"
                     data-loading-text="Enviando solicitud..." data-animation-type="submit" data-delay="800"
-                    data-restore-delay="1000">
+                    data-restore-delay="1000" aria-label="Enviar solicitud de adopción">
                     <i class="fa-solid fa-paper-plane"></i> Enviar solicitud
                 </button>
             </div>
@@ -115,6 +115,19 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        console.log('[Formulario] DOMContentLoaded: inicializando script del formulario');
+        // Mostrar alertas de errores JS para ayudar al debug en desarrollo
+        window.addEventListener('error', function (e) {
+            try {
+                console.error('[Formulario] Error capturado:', e.error || e.message || e);
+                // Intentar mostrar una alerta visible para facilitar debugging
+                if (typeof alert === 'function') {
+                    alert('Error JS en la página: ' + (e.message || e.error || e));
+                }
+            } catch (err) {
+                console.error('No se pudo mostrar el alert de error', err);
+            }
+        });
         const params = new URLSearchParams(window.location.search);
         const pet = params.get('pet');
         if (pet) {
@@ -128,9 +141,14 @@
         if (form && submitBtn) {
             // Función para validar completamente el formulario
             function validateForm() {
-                // Verificar validez nativa del formulario
-                if (!form.checkValidity()) {
-                    return false;
+                // Verificar validez nativa del formulario con try/catch para patrones inválidos
+                try {
+                    if (!form.checkValidity()) {
+                        return false;
+                    }
+                } catch (err) {
+                    console.warn('[Formulario] checkValidity lanzó error:', err);
+                    // Fallback: validar campos manualmente si el navegador falla por regex
                 }
 
                 // Validaciones adicionales personalizadas
@@ -145,7 +163,7 @@
                         return false;
                     }
 
-                    if (field.type === 'tel' && field.value.length < 8) {
+                    if (field.type === 'tel' && !/^\+?[0-9]{8,16}$/.test(field.value)) {
                         return false;
                     }
 
@@ -154,6 +172,11 @@
                     }
                 }
 
+                // Log extra para depurar valor de vivienda cuando es 'casa'
+                const viviendaSelect = form.querySelector('#vivienda');
+                if (viviendaSelect) {
+                    console.log('[DEBUG] valor vivienda:', viviendaSelect.value);
+                }
                 return true;
             }
 
@@ -206,39 +229,74 @@
                 }
 
                 // Si pasa la validación, permitir que la animación continúe
-                console.log('Formulario válido, iniciando animación...');
+                console.log('[Formulario] Formulario válido (click) — iniciando animación/submit programado...');
             }, true); // Usar capture para ejecutar primero
 
             // Manejar el envío del formulario con notificación
             form.addEventListener('submit', async (e) => {
-                e.preventDefault(); // Siempre prevenir el envío real
+                console.log('[Formulario] evento submit capturado en form (AJAX)');
+                e.preventDefault();
 
                 if (!validateForm()) {
                     form.classList.add('was-validated');
                     form.reportValidity();
+                    console.log('[Formulario] submit interrumpido: validación fallida');
                     return false;
                 }
 
-                // Si es válido, mostrar notificación de éxito después de la animación
-                console.log('Formulario válido, preparando notificación...');
+                const submitBtn = document.getElementById('submitAdoptionBtn');
+                // Mostrar estado visual de carga
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('loading');
+                }
 
-                // Esperar un momento para que el componente esté disponible
-                setTimeout(async () => {
-                    await showSuccessModal(
-                        '¡Formulario Enviado Correctamente!',
-                        'Tu solicitud de adopción ha sido recibida. Nos pondremos en contacto contigo muy pronto para continuar con el proceso.',
-                        {
-                            isForm: true, // Modo específico para formularios
-                            buttonText: '¡Perfecto!'
+                try {
+                    const fd = new FormData(form);
+                    // Enviar por fetch como multipart/form-data (FormData) para que Flask lo reciba en request.form
+                    const resp = await fetch(form.action || '/formulario', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: fd
+                    });
+
+                    let data = null;
+                    try {
+                        data = await resp.json();
+                    } catch (err) {
+                        console.warn('[Formulario] respuesta no JSON:', err);
+                    }
+
+                    if (resp.ok && data && data.ok !== false) {
+                        console.log('[Formulario] envío exitoso, mostrando modal');
+                        if (typeof showSuccessModal === 'function') {
+                            await showSuccessModal('¡Solicitud enviada!', data.msg || 'Tu solicitud fue recibida.');
+                        } else if (typeof window.showSuccessNotification === 'function') {
+                            await window.showSuccessNotification('¡Solicitud enviada!', data.msg || 'Tu solicitud fue recibida.');
+                        } else {
+                            alert(data.msg || 'Solicitud enviada correctamente');
                         }
-                    );
 
-                    // Limpiar todos los campos del formulario después de cerrar el modal
-                    clearFormFields();
-
-                    // Opcional: Redirigir después de cerrar la notificación
-                    // window.location.href = '/adopcion';
-                }, 100);
+                        // Redirigir a la lista de adopciones
+                        window.location.href = '/adopcion';
+                        return;
+                    } else {
+                        const msg = (data && data.msg) || `Error al enviar (status ${resp.status})`;
+                        console.error('[Formulario] Error en respuesta del servidor:', msg);
+                        alert(msg);
+                    }
+                } catch (err) {
+                    console.error('[Formulario] Error enviando datos al servidor:', err);
+                    alert('Ocurrió un error al enviar la solicitud. Revisa la consola para más detalles.');
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('loading');
+                    }
+                }
             });
         }
     });

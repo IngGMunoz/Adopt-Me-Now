@@ -25,9 +25,15 @@
             <h2 class="title">{{ mascota.nombre }}</h2>
             <span class="by"><i class="fa-solid fa-user"></i> Creado por {{ mascota.autor }}</span>
             <p>{{ mascota.descripcion }}</p>
-            <a class="cta" href="#" data-animate="true">
+            {% if is_authenticated %}
+            <a class="cta" href="/formulario" data-animate="true">
                 <i class="fa-solid fa-envelope"></i> Contactar
             </a>
+            {% else %}
+            <button class="cta cta-locked" onclick="showAuthModal('{{ mascota.nombre|e }}', event)" data-animate="true">
+                <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
+            </button>
+            {% endif %}
         </div>
     </section>
     {% endfor %}
@@ -35,7 +41,12 @@
 
 <!-- script JS que intercepta el submit y muestra la card en la página -->
 <script>
-(function () {
+    (function () {
+    {% if is_authenticated %}
+    const IS_AUTH = true;
+    {% else %}
+    const IS_AUTH = false;
+    {% endif %}
     const form = document.getElementById('mascotaForm');
     const list = document.querySelector('.mascotas-list');
 
@@ -44,15 +55,24 @@
         const card = document.createElement('section');
         card.className = 'card';
         const imgSrc = m.imagen ? ( '/static/uploads/' + m.imagen ) : '';
+
+        // build action node depending on auth
+        let actionHTML = '';
+        if (IS_AUTH) {
+            actionHTML = `<a class="cta" href="/formulario" data-animate="true"><i class="fa-solid fa-envelope"></i> Contactar</a>`;
+        } else {
+            // escape name lightly for insertion
+            const safeName = (m.nombre || '').replace(/'/g, "\'").replace(/"/g, '\\"');
+            actionHTML = `<button class="cta cta-locked" onclick="showAuthModal('${safeName}', event)" data-animate="true"><i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar</button>`;
+        }
+
         card.innerHTML = `
             <img src="${imgSrc}" alt="${m.nombre || ''}" />
             <div class="card-content">
                 <h2 class="title">${m.nombre || ''}</h2>
                 <span class="by"><i class="fa-solid fa-user"></i> Creado por ${m.autor || 'Administrador'}</span>
                 <p>${m.descripcion || ''}</p>
-                <a class="cta" href="#" data-animate="true">
-                    <i class="fa-solid fa-envelope"></i> Contactar
-                </a>
+                ${actionHTML}
             </div>
         `;
         return card;

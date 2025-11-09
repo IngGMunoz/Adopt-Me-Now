@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash
 import os
 from flask import current_app, redirect, request, jsonify, url_for
 from werkzeug.utils import secure_filename
+import uuid
 
 # Blueprint del admin (url_prefix organizado)
 Routes_adminC = Blueprint("routes_adminC", __name__, url_prefix="/api/admin")
@@ -143,7 +144,8 @@ def admin_create_mascota():
         if file and file.filename:
             uploads_dir = os.path.join(current_app.static_folder, "uploads")
             os.makedirs(uploads_dir, exist_ok=True)
-            imagen_filename = secure_filename(file.filename)
+            safe_name = secure_filename(file.filename)
+            imagen_filename = f"{uuid.uuid4().hex}_{safe_name}"
             file.save(os.path.join(uploads_dir, imagen_filename))
 
     if not nombre or not descripcion:
@@ -158,8 +160,11 @@ def admin_create_mascota():
             return jsonify({"ok": False, "msg": "Mascota ya registrada"}), 409
         return redirect(request.referrer or "/postularADM")
 
+    # Crear registro en Mascota y también crear una entrada espejo en PostularMascotas
     m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen_filename, autor=autor)
+    p = PostularMascotas(username=autor, nombre=nombre, descripcion=descripcion, imagen=imagen_filename)
     db.session.add(m)
+    db.session.add(p)
     try:
         db.session.commit()
     except Exception as e:
@@ -268,7 +273,8 @@ def admin_create_mascota_form():
         if file and file.filename:
             uploads_dir = os.path.join(current_app.static_folder, "uploads")
             os.makedirs(uploads_dir, exist_ok=True)
-            imagen_filename = secure_filename(file.filename)
+            safe_name = secure_filename(file.filename)
+            imagen_filename = f"{uuid.uuid4().hex}_{safe_name}"
             file.save(os.path.join(uploads_dir, imagen_filename))
 
     if not nombre or not descripcion:
@@ -282,8 +288,11 @@ def admin_create_mascota_form():
             return jsonify({"ok": False, "msg": "Mascota ya registrada"}), 409
         return redirect('/postularADM')
 
+    # Also create a PostularMascotas row so admin posts appear there as well
     m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen_filename, autor=autor)
+    p = PostularMascotas(username=autor, nombre=nombre, descripcion=descripcion, imagen=imagen_filename)
     db.session.add(m)
+    db.session.add(p)
     try:
         db.session.commit()
     except Exception as e:

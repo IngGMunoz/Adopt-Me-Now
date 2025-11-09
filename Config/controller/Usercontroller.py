@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, session
 from Config.db import db
 from Models.usuario import usuario, usuarioSchema
+from Models.admins import admin as AdminModel
 from werkzeug.security import generate_password_hash, check_password_hash
 
 routes_UserC = Blueprint("routes_UserC", __name__, url_prefix="/api/users")
@@ -10,6 +11,10 @@ usuarios_schema = usuarioSchema(many=True)
 
 
 def find_user(identifier):
+    # intentar buscar en admins primero (permitir login de admin desde la misma pantalla)
+    a = AdminModel.query.filter((AdminModel.username == identifier) | (AdminModel.email == identifier)).first()
+    if a:
+        return a
     return usuario.query.filter(
         (usuario.username == identifier) | (usuario.email == identifier)
     ).first()
@@ -67,7 +72,17 @@ def login():
 
     session.clear()
     session["user_id"] = u.id
+    # si es instancia de admin, marcar la sesión
+    if isinstance(u, AdminModel):
+        session["is_admin"] = True
+        session["username"] = u.username
+        session["user_email"] = u.email
+        # serializar admin manualmente para evitar usar usuario schema
+        admin_data = {"id": u.id, "username": u.username, "email": u.email, "role": getattr(u, "role", "admin")}
+        return jsonify({"ok": True, "user": admin_data}), 200
+
     session["username"] = u.username
+    session["user_email"] = u.email
     return jsonify({"ok": True, "user": usuario_schema.dump(u)}), 200
 
 
