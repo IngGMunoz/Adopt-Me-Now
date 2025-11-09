@@ -296,54 +296,64 @@
             return isUserValid && isPasswordValid && isEmailValid && isEmail2Valid && isNitValid;
         }
 
-        // Submit del formulario
+        // Submit del formulario CONEXION BACKEND
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            // Validar todos los campos
-            if (isFormValid()) {
-                // Mostrar loading
-                submitBtn.disabled = true;
-                loadingSpinner.style.display = 'inline-block';
-                btnText.textContent = 'Creando cuenta administrativa...';
-
-                // Simular proceso de registro administrativo (2.5 segundos)
-                setTimeout(() => {
-                    // Ocultar spinner
-                    loadingSpinner.style.display = 'none';
-                    btnText.textContent = '🛡️ Crear Cuenta Administrativa';
-                    submitBtn.disabled = false;
-
-                    // Mostrar modal de éxito en modo administrador
-                    showSuccessModal(
-                        `¡Bienvenido, Administrador ${userInput.value}!`,
-                        `Tu cuenta administrativa ha sido creada exitosamente. Ahora tienes acceso completo para gestionar las adopciones y fundaciones en Adopt Me.`,
-                        {
-                            isAdmin: true,
-                            buttonText: '¡Acceder al Panel!'
-                        }
-                    ).then(() => {
-                        // Redirigir al panel administrativo o login
-                        console.log('Administrador confirmó la creación de cuenta');
-                        window.location.href = '/postularADM';
-                    });
-
-                    // Aquí es donde se guardaría en la base de datos
-                    console.log('Datos del administrador:', {
-                        usuario: userInput.value,
-                        email: emailInput.value,
-                        nit: nitInput.value,
-                        rol: 'administrador',
-                        timestamp: new Date().toISOString()
-                    });
-                }, 2500);
-            } else {
-                // Enfocar el primer campo inválido
+            if (!isFormValid()) {
                 const firstInvalid = form.querySelector('.admin-form-input.invalid');
-                if (firstInvalid) {
-                    firstInvalid.focus();
-                }
+                if (firstInvalid) firstInvalid.focus();
+                return;
             }
+
+            submitBtn.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            btnText.textContent = 'Creando cuenta administrativa...';
+
+            const adminData = {
+                username: userInput.value.trim(),
+                email: emailInput.value.trim(),
+                password: passwordInput.value,
+                nit: nitInput.value.trim()
+            };
+
+            // Log payload para depuración
+            console.log("POST /api/admin/admins payload:", adminData);
+
+            // CAMBIO: usar URL relativa y manejo de respuesta detallado
+            fetch('/api/admin/admins', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify(adminData)
+            })
+            .then(async res => {
+                const text = await res.text().catch(()=> '');
+                let body = {};
+                try { body = text ? JSON.parse(text) : {}; } catch(err) { body = { raw: text }; }
+
+                console.log("Response status:", res.status, "body:", body);
+
+                if (res.ok) {
+                    // éxito: redirigir
+                    window.location.href = '/postularADM';
+                    return;
+                }
+
+                // Mostrar mensaje de error detallado si existe
+                const msg = body.msg || body.error || body.message || body.raw || JSON.stringify(body);
+                alert('Error al crear administrador: ' + msg);
+                submitBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                btnText.textContent = '🛡️ Crear Cuenta Administrativa';
+            })
+            .catch(err => {
+                console.error('Network error', err);
+                alert('Error de red. Revisa la consola y el servidor Flask.');
+                submitBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                btnText.textContent = '🛡️ Crear Cuenta Administrativa';
+            });
         });
 
         // Efecto de escritura en el título
