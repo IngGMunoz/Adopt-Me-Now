@@ -247,9 +247,7 @@ def admin_unadopt_mascota(mid):
 @Routes_adminC.route("/mascotas/form", methods=["POST"])
 def admin_create_mascota_form():
     """
-    Handler para formulario HTML (fallback) y para peticiones XHR (FormData fetch).
-    - Si la petición viene con X-Requested-With: XMLHttpRequest devuelve JSON con la mascota creada.
-    - Si viene como submit normal redirige a /postularADM.
+   
     """
     # detecta si es request XHR (fetch con header X-Requested-With)
     is_xhr = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
