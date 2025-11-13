@@ -1,4 +1,4 @@
-<nav class="navbar">
+﻿<nav class="navbar">
     <div class="navbar__container">
         <a href="{{ url_for('Pagina_Principal') }}" class="navbar__logo">Adopt Me</a>
 
@@ -8,8 +8,12 @@
         </ul>
 
         <div class="navbar__auth-buttons">
-            <a href="{{ url_for('Iniciar_Sesion') }}" class="navbar__btn navbar__btn--login">Iniciar sesión</a>
-            <a href="{{ url_for('Registro_Usuario') }}" class="navbar__btn navbar__btn--register">Registro</a>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('logout') }}" class="navbar__btn navbar__btn--login">Cerrar sesión</a>
+            {% else %}
+                <a href="{{ url_for('Iniciar_Sesion') }}" class="navbar__btn navbar__btn--login">Iniciar sesión</a>
+                <a href="{{ url_for('Registro_Usuario') }}" class="navbar__btn navbar__btn--register">Registro</a>
+            {% endif %}
         </div>
 
         <a href="#" class="navbar__profile">

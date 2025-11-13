@@ -11,9 +11,9 @@
 <!-- Header personalizado para página de adopción -->
 <header class="topbar">
     <div class="topbar-inner">
-        <div class="brand">
+        <a href="{{ url_for('Pagina_Principal') }}" class="brand">
             <i class="fa-solid fa-paw"></i> Adopt Me
-        </div>
+        </a>
         <nav class="nav" aria-label="Navegación principal">
             <a href="/"><i class="fa-solid fa-house"></i> Inicio</a> <!-- Esto siempre va a ser /, no /index y es para mantener la coherencia en la navegación -->
             <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a> <!-- Esto es para la ruta de adopción, para que se pueda desplegar la pagina -->
@@ -22,21 +22,19 @@
         <div class="user" title="Perfil">
             <i class="fa-regular fa-user"></i>
         </div>
+        <div class="topbar-auth">
+            {% if is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="navbar__btn navbar__btn--login">Cerrar sesión</a>
+            {% else %}
+                <a href="{{ url_for('Iniciar_Sesion') }}" class="navbar__btn navbar__btn--login">Iniciar sesión</a>
+                <a href="{{ url_for('Registro_Usuario') }}" class="navbar__btn navbar__btn--register">Registro</a>
+            {% endif %}
+        </div>
     </div>
 </header>
 {% endblock %} <!-- Aca termina el bloque navbar -->
 
 {% block content %}
-{% if is_authenticated %}
-<div class="user-info">
-    <i class="fa-solid fa-user-check"></i>
-    ¡Hola, {{ current_user.nombre }}! Ya puedes contactar a las mascotas para adopción.
-    <a href="/logout" style="margin-left: 1rem; color: #e08c2b; text-decoration: none;">
-        <i class="fa-solid fa-sign-out-alt"></i> Cerrar Sesión
-    </a>
-</div>
-{% endif %}
-
 <div class="toolbar">
     <label for="sortSelect" class="visually-hidden">Ordenar por</label>
     <select id="sortSelect" class="sort-btn" aria-label="Ordenar por">
