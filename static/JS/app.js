@@ -21,6 +21,47 @@
         window.matchMedia('(min-width: 981px)').addEventListener('change', () => setOpen(false));
     }
 
+    /* ---------- Menú desplegable de usuario ---------- */
+    function initUserMenu() {
+        const menu = $('.user-menu');
+        if (!menu) return;
+        const button = $('.user-chip', menu);
+        const panel = $('.user-menu__panel', menu);
+        const items = () => $$('.user-menu__item', panel);
+
+        const setOpen = (open, focusFirst = false) => {
+            panel.hidden = !open;
+            button.setAttribute('aria-expanded', String(open));
+            // Los avisos flotantes quedarían encima del menú: se cierran al abrirlo
+            if (open) $$('.toast').forEach(dismissToast);
+            if (open && focusFirst) items()[0]?.focus();
+        };
+
+        button.addEventListener('click', () => setOpen(panel.hidden));
+        button.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setOpen(true, true);
+            }
+        });
+        // Navegación con flechas dentro del menú; Escape lo cierra y devuelve el foco
+        panel.addEventListener('keydown', (e) => {
+            const list = items();
+            const i = list.indexOf(document.activeElement);
+            if (e.key === 'ArrowDown') { e.preventDefault(); list[(i + 1) % list.length].focus(); }
+            if (e.key === 'ArrowUp') { e.preventDefault(); list[(i - 1 + list.length) % list.length].focus(); }
+            if (e.key === 'Escape') { setOpen(false); button.focus(); }
+        });
+        // Cerrar al hacer clic fuera, al elegir una opción o al salir del menú con Tab
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target)) setOpen(false);
+        });
+        panel.addEventListener('click', (e) => e.target.closest('a') && setOpen(false));
+        menu.addEventListener('focusout', (e) => {
+            if (e.relatedTarget && !menu.contains(e.relatedTarget)) setOpen(false);
+        });
+    }
+
     /* ---------- Avisos (toasts) ---------- */
     const TOAST_ICONS = {
         success: 'fa-circle-check',
@@ -196,7 +237,7 @@
                 });
             });
             form.addEventListener('submit', (e) => {
-                if (!validateForm(form)) {
+                if (!validateForm(form) || (form.dataset.confirm && !window.confirm(form.dataset.confirm))) {
                     e.preventDefault();
                     e.stopImmediatePropagation();
                     return;
@@ -239,6 +280,51 @@
         });
     }
 
+    /* ---------- Pestañas accesibles ([role=tablist]) ---------- */
+    // La pestaña activa se guarda en la URL (#seccion) para poder enlazarla y volver a ella.
+    function initTabs() {
+        $$('[role="tablist"]').forEach((list) => {
+            const tabs = $$('[role="tab"]', list);
+            const select = (tab, focus = true) => {
+                tabs.forEach((t) => {
+                    const on = t === tab;
+                    t.setAttribute('aria-selected', String(on));
+                    t.tabIndex = on ? 0 : -1;
+                    document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+                });
+                if (focus) tab.focus();
+                history.replaceState(null, '', location.pathname + location.search + '#' + tab.id.replace('tab-', ''));
+            };
+            tabs.forEach((tab, i) => {
+                tab.addEventListener('click', () => select(tab));
+                tab.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight') select(tabs[(i + 1) % tabs.length]);
+                    if (e.key === 'ArrowLeft') select(tabs[(i - 1 + tabs.length) % tabs.length]);
+                });
+            });
+            const fromHash = () => tabs.find((t) => t.id === 'tab-' + location.hash.slice(1));
+            const initial = fromHash();
+            if (initial) select(initial, false);
+            window.addEventListener('hashchange', () => {
+                const tab = fromHash();
+                if (tab) {
+                    select(tab, false);
+                    list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        // Enlaces internos a una pestaña (p. ej. "Ver configuración")
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('[data-open-tab]');
+            const tab = link && document.getElementById('tab-' + link.dataset.openTab);
+            if (tab) {
+                e.preventDefault();
+                tab.click();
+                tab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
     /* ---------- Catálogo: búsqueda y orden ---------- */
     function initCatalog() {
         const grid = $('[data-catalog]');
@@ -272,9 +358,11 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         initNav();
+        initUserMenu();
         initAuthModal();
         initForms();
         initCatalog();
+        initTabs();
         $$('.toast').forEach(wireToast);
         // Aviso guardado antes de recargar la página (p. ej. acciones del panel)
         try {

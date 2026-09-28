@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session
 
+from Config.actividad import registrar
 from Config.auth import check_admin, check_login, is_admin
 from Config.db import db
 from Models.usuario import usuario
@@ -66,6 +67,8 @@ def register():
     u = usuario(username=username, email=email)
     u.set_password(password)
     db.session.add(u)
+    db.session.flush()
+    registrar(u.id, "registro", "Creaste tu cuenta en Adopt Me", commit=False)
     db.session.commit()
     return jsonify(usuario_schema.dump(u)), 201
 
@@ -96,6 +99,7 @@ def login():
         admin_data = {"id": u.id, "username": u.username, "email": u.email, "role": u.role}
         return jsonify({"ok": True, "user": admin_data, "redirect": "/postularADM"}), 200
 
+    registrar(u.id, "inicio_sesion", "Iniciaste sesión")
     return jsonify({"ok": True, "user": usuario_schema.dump(u), "redirect": "/"}), 200
 
 

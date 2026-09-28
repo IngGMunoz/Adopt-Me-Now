@@ -256,12 +256,148 @@ textarea {
 }
 
 .user-chip {
+    padding: 4px 12px 4px 4px;
+    border-radius: var(--radius-pill);
+    transition: background .2s;
     display: inline-flex;
     align-items: center;
     gap: 10px;
     font-weight: 600;
     color: var(--text-soft);
     max-width: 220px;
+}
+
+.user-chip:hover,
+.user-chip[aria-current="page"],
+.user-chip[aria-expanded="true"] {
+    background: var(--accent-soft);
+}
+
+/* El chip es el botón que abre el menú de usuario */
+button.user-chip {
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.user-chip__caret {
+    margin-left: 2px;
+    font-size: .75rem;
+    color: var(--brand);
+    transition: transform .2s;
+}
+
+.user-chip[aria-expanded="true"] .user-chip__caret {
+    transform: rotate(180deg);
+}
+
+/* ---------- Menú desplegable de usuario ---------- */
+.user-menu {
+    position: relative;
+}
+
+.user-menu__panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 950;
+    width: 270px;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 40px rgba(34, 34, 59, 0.16);
+    animation: menuIn .16s ease-out both;
+}
+
+/* Flecha que apunta al botón */
+.user-menu__panel::before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    right: 26px;
+    width: 12px;
+    height: 12px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    transform: rotate(45deg);
+}
+
+@keyframes menuIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+}
+
+.user-menu__header {
+    display: grid;
+    padding: 10px 12px 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.35;
+}
+
+.user-menu__header strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-menu__header span {
+    font-size: .85rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-menu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.user-menu__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    color: var(--text);
+    transition: background .15s, color .15s;
+}
+
+.user-menu__item i {
+    width: 18px;
+    text-align: center;
+    color: var(--brand);
+}
+
+.user-menu__item:hover,
+.user-menu__item:focus-visible {
+    background: var(--accent-soft);
+    color: var(--brand-strong);
+    outline: none;
+}
+
+.user-menu__footer {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+}
+
+.user-menu__item--danger,
+.user-menu__item--danger i {
+    color: var(--danger);
+}
+
+.user-menu__item--danger:hover,
+.user-menu__item--danger:focus-visible {
+    background: var(--danger-bg);
+    color: var(--danger);
 }
 
 .user-chip__avatar {
@@ -1148,6 +1284,78 @@ select.input {
 }
 
 /* ==========================================================================
+   Huellas decorativas a los costados
+   Fijas mientras se hace scroll, centradas en el margen libre a cada lado del
+   contenido. Solo aparecen cuando ese margen es lo bastante ancho.
+   ========================================================================== */
+.side-paws {
+    display: none;
+}
+
+@media (min-width: 1300px) {
+    .side-paws {
+        --paw-size: 64px;
+        /* ancho del margen libre entre el borde de la pantalla y el contenido */
+        --gutter: calc((100vw - var(--container)) / 2 + 32px);
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .side-paw {
+        position: absolute;
+        width: var(--paw-size);
+        height: var(--paw-size);
+        background: url('../images/huellas.png') center / contain no-repeat;
+        filter: drop-shadow(0 2px 3px rgba(109, 76, 65, .12));
+        opacity: .9;
+        animation: pawIn .8s ease-out both;
+    }
+
+    /* Columna izquierda: pisadas que suben */
+    .side-paw--l1,
+    .side-paw--l2,
+    .side-paw--l3 {
+        left: calc(var(--gutter) / 2 - var(--paw-size) / 2);
+    }
+
+    /* Columna derecha: la misma imagen reflejada, a otra altura */
+    .side-paw--r1,
+    .side-paw--r2,
+    .side-paw--r3 {
+        right: calc(var(--gutter) / 2 - var(--paw-size) / 2);
+    }
+
+    .side-paw--l1 { top: 20%; transform: rotate(-14deg); animation-delay: .1s; }
+    .side-paw--l2 { top: 50%; transform: rotate(8deg);   animation-delay: .25s; }
+    .side-paw--l3 { top: 80%; transform: rotate(-6deg);  animation-delay: .4s; }
+    .side-paw--r1 { top: 33%; transform: scaleX(-1) rotate(-10deg); animation-delay: .2s; }
+    .side-paw--r2 { top: 63%; transform: scaleX(-1) rotate(12deg);  animation-delay: .35s; }
+    .side-paw--r3 { top: 90%; transform: scaleX(-1) rotate(-4deg);  animation-delay: .5s; }
+
+    /* El contenido va por encima de las huellas */
+    .site-main,
+    .site-footer {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+@media (min-width: 1600px) {
+    .side-paws {
+        --paw-size: 84px;
+    }
+}
+
+@keyframes pawIn {
+    from {
+        opacity: 0;
+    }
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 @media (max-width: 980px) {
@@ -1198,6 +1406,29 @@ select.input {
         flex: 1;
     }
 
+    /* En el menú móvil el desplegable se abre en línea, no flotando */
+    .user-menu,
+    button.user-chip {
+        width: 100%;
+        max-width: none;
+    }
+
+    .user-chip__caret {
+        margin-left: auto;
+    }
+
+    .user-menu__panel {
+        position: static;
+        width: 100%;
+        margin-top: 8px;
+        box-shadow: none;
+        background: #fffcf8;
+    }
+
+    .user-menu__panel::before {
+        display: none;
+    }
+
     .site-footer__inner {
         grid-template-columns: 1fr 1fr;
     }
@@ -1205,7 +1436,8 @@ select.input {
 
 @media (max-width: 640px) {
     .container {
-        padding: 0 16px;
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .site-footer__bottom::before {

@@ -13,6 +13,8 @@ from Config.auth import (
 )
 from Config.schema import init_db
 from Config.catalogo import MASCOTAS_DESTACADAS
+from Config.actividad import registrar
+import Config.filtros  # noqa: F401  (filtros de fecha para las plantillas)
 
 # Modelos
 from Models.mascotas import Mascota
@@ -20,6 +22,7 @@ from Models.postular_mascotas import PostularMascotas
 from Models.admins import admin as AdminModel
 from Models.adoptar_mascotas import adoptar_mascotas
 from Models.usuario import usuario
+from Models.actividad import Actividad  # noqa: F401
 
 # Blueprints (API)
 from Config.controller.Mascotascontroller import routes_MascotasC
@@ -27,12 +30,14 @@ from Config.controller.Usercontroller import routes_UserC
 from Config.controller.PostularMascontroller import routes_PostularC
 from Config.controller.adoptar_mascontroller import Routes_adoptarC
 from Config.controller.Admincontroller import Routes_adminC
+from Config.controller.Cuentacontroller import routes_CuentaC
 
 app.register_blueprint(routes_MascotasC)
 app.register_blueprint(routes_UserC)
 app.register_blueprint(routes_PostularC)
 app.register_blueprint(Routes_adoptarC)
 app.register_blueprint(Routes_adminC)
+app.register_blueprint(routes_CuentaC)
 
 # Crear tablas y ajustar el esquema al iniciar la app
 with app.app_context():
@@ -46,6 +51,12 @@ def _wants_json():
         return True
     best = request.accept_mimetypes.best_match(["text/html", "application/json"])
     return best == "application/json"
+
+
+def _enlace_mascota(nombre):
+    """Perfil de una mascota destacada a partir de su nombre, si tiene uno."""
+    slug = next((s for s, m in MASCOTAS_DESTACADAS.items() if m["nombre"] == nombre), None)
+    return url_for("Detalle_Mascota", slug=slug) if slug else None
 
 
 def get_current_user():
@@ -165,6 +176,8 @@ def Registro_Usuario():
         u = usuario(username=nombre, email=email)
         u.set_password(password)
         db.session.add(u)
+        db.session.flush()  # obtener u.id para el historial
+        registrar(u.id, "registro", "Creaste tu cuenta en Adopt Me", commit=False)
         db.session.commit()
 
         flash("¡Registro exitoso! Ahora puedes iniciar sesión", "success")
@@ -202,6 +215,7 @@ def Iniciar_Sesion():
             session["user_id"] = user.id
             session["user_email"] = user.email
             session["user_name"] = user.username
+            registrar(user.id, "inicio_sesion", "Iniciaste sesión")
             flash(f"¡Bienvenido, {user.username}!", "success")
             return redirect(next_url or "/")
 
@@ -285,6 +299,12 @@ def Formulario_Para_Adoptar():
 
     try:
         db.session.add(solicitud)
+        if solicitud.adopter_id:
+            registrar(
+                solicitud.adopter_id, "solicitud_enviada",
+                f"Enviaste una solicitud para adoptar a {solicitud.pet_name or 'una mascota'}",
+                enlace=_enlace_mascota(solicitud.pet_name), commit=False,
+            )
         db.session.commit()
     except Exception:
         db.session.rollback()
@@ -364,6 +384,8 @@ def Postular_Mascotas():
         )
         try:
             db.session.add(p)
+            registrar(p.usuario_id, "postulacion_enviada",
+                      f"Postulaste a {p.nombre or 'una mascota'} para darla en adopción", commit=False)
             db.session.commit()
             flash("¡Gracias! Revisaremos la información de la mascota.", "success")
         except Exception:

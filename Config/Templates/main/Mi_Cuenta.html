@@ -1,0 +1,202 @@
+{% extends "layouts/base.html" %}
+{% from "components/forms.html" import field, submit %}
+
+{% block title %}Mi cuenta{% endblock %}
+
+{% block content %}
+{% set aprobadas = solicitudes|selectattr('is_confirmed')|list %}
+{% set publicadas = postulaciones|selectattr('mascota_id')|list %}
+<div class="container">
+    <header class="account-hero card animate-in">
+        <div class="account-hero__avatar" aria-hidden="true">{{ u.username[0] }}</div>
+        <div class="account-hero__info">
+            <span class="eyebrow">Mi cuenta</span>
+            <h1 class="account-hero__name">{{ u.username }}</h1>
+            <p class="account-hero__meta">
+                <span><i class="fa-solid fa-envelope" aria-hidden="true"></i> {{ u.email }}</span>
+                <span><i class="fa-solid fa-calendar" aria-hidden="true"></i> Miembro desde {{ u.created_at|fecha(false) }}</span>
+            </p>
+        </div>
+        <div class="account-hero__actions">
+            <a href="{{ url_for('Pagina_Adopcion') }}" class="btn btn--primary"><i class="fa-solid fa-paw" aria-hidden="true"></i> Ver mascotas</a>
+            <a href="#configuracion" class="btn btn--secondary" data-open-tab="configuracion"><i class="fa-solid fa-gear" aria-hidden="true"></i> Configuración</a>
+        </div>
+    </header>
+
+    <section class="stats" aria-label="Resumen de tu actividad">
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Solicitudes enviadas</span>
+            <div class="stat__value">{{ solicitudes|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Solicitudes aprobadas</span>
+            <div class="stat__value">{{ aprobadas|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Mascotas postuladas</span>
+            <div class="stat__value">{{ postulaciones|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-paw" aria-hidden="true"></i> Ya publicadas</span>
+            <div class="stat__value">{{ publicadas|length }}</div>
+        </div>
+    </section>
+
+    <div class="account-body">
+        <div class="tabs" role="tablist" aria-label="Mi cuenta">
+            <button class="tab" role="tab" id="tab-actividad" aria-controls="panel-actividad" aria-selected="true">
+                <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Actividad
+            </button>
+            <button class="tab" role="tab" id="tab-solicitudes" aria-controls="panel-solicitudes" aria-selected="false" tabindex="-1">
+                <i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Mis solicitudes <span class="badge">{{ solicitudes|length }}</span>
+            </button>
+            <button class="tab" role="tab" id="tab-postulaciones" aria-controls="panel-postulaciones" aria-selected="false" tabindex="-1">
+                <i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Mis postulaciones <span class="badge">{{ postulaciones|length }}</span>
+            </button>
+            <button class="tab" role="tab" id="tab-configuracion" aria-controls="panel-configuracion" aria-selected="false" tabindex="-1">
+                <i class="fa-solid fa-gear" aria-hidden="true"></i> Configuración
+            </button>
+        </div>
+
+        {# ---------------- Actividad ---------------- #}
+        <section class="tab-panel" id="panel-actividad" role="tabpanel" aria-labelledby="tab-actividad">
+            <form class="timeline-filter" method="get" action="{{ url_for('routes_CuentaC.mi_cuenta') }}#actividad">
+                <label for="tipo" class="timeline-filter__label">Mostrar</label>
+                <select id="tipo" name="tipo" class="input" onchange="this.form.submit()">
+                    <option value="">Toda la actividad</option>
+                    {% for clave, info in tipos.items() %}
+                    <option value="{{ clave }}" {% if clave == tipo_actual %}selected{% endif %}>{{ info[1] }}</option>
+                    {% endfor %}
+                </select>
+                <noscript><button type="submit" class="btn btn--secondary btn--sm">Filtrar</button></noscript>
+                <span class="timeline-filter__count">{{ total_actividades }} evento{{ 's' if total_actividades != 1 }}</span>
+            </form>
+
+            {% for titulo, items in grupos %}
+            <h2 class="timeline-day">{{ titulo }}</h2>
+            <ol class="timeline">
+                {% for a in items %}
+                <li class="timeline__item timeline__item--{{ a.tipo }}">
+                    <span class="timeline__icon" aria-hidden="true"><i class="fa-solid {{ a.icono }}"></i></span>
+                    <div class="timeline__body">
+                        <p class="timeline__text">{{ a.descripcion }}</p>
+                        <p class="timeline__meta">
+                            <span>{{ a.etiqueta }}</span> ·
+                            <time datetime="{{ a.created_at.isoformat() }}Z" title="{{ a.created_at|fecha }}">{{ a.created_at|hace }}</time>
+                            {% if a.enlace %} · <a href="{{ a.enlace }}">Ver</a>{% endif %}
+                        </p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+                <p>{% if tipo_actual %}No hay actividad de este tipo.{% else %}Aún no tienes actividad registrada.{% endif %}</p>
+            </div>
+            {% endfor %}
+        </section>
+
+        {# ---------------- Solicitudes ---------------- #}
+        <section class="tab-panel list" id="panel-solicitudes" role="tabpanel" aria-labelledby="tab-solicitudes" hidden>
+            {% for s in solicitudes %}
+            <article class="list-item">
+                {% if s.mascota and s.mascota.imagen %}
+                <img class="list-item__thumb" src="{{ url_for('static', filename='uploads/' ~ s.mascota.imagen) }}" alt="">
+                {% else %}
+                <span class="list-item__thumb" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+                {% endif %}
+                <div class="list-item__body">
+                    <div class="list-item__title">
+                        {{ s.mascota.nombre if s.mascota else (s.pet_name or 'Mascota') }}
+                        {% if s.is_confirmed %}<span class="badge badge--success"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Aprobada</span>
+                        {% else %}<span class="badge"><i class="fa-solid fa-hourglass-half" aria-hidden="true"></i> En revisión</span>{% endif %}
+                    </div>
+                    <p class="list-item__text">
+                        Enviada {{ s.created_at|hace }}{% if s.vivienda %} · Vivienda: {{ s.vivienda }}{% endif %}{% if s.telefono %} · Tel. {{ s.telefono }}{% endif %}
+                    </p>
+                    {% if s.is_confirmed %}
+                    <p class="list-item__text list-item__text--success">La fundación aprobó tu solicitud y se pondrá en contacto contigo.</p>
+                    {% endif %}
+                </div>
+            </article>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-envelope-open" aria-hidden="true"></i>
+                <p>Todavía no has enviado solicitudes de adopción.</p>
+                <a href="{{ url_for('Pagina_Adopcion') }}" class="btn btn--primary btn--sm">Buscar una mascota</a>
+            </div>
+            {% endfor %}
+        </section>
+
+        {# ---------------- Postulaciones ---------------- #}
+        <section class="tab-panel list" id="panel-postulaciones" role="tabpanel" aria-labelledby="tab-postulaciones" hidden>
+            {% for p in postulaciones %}
+            <article class="list-item">
+                {% if p.imagen %}
+                <img class="list-item__thumb" src="{{ url_for('static', filename='uploads/' ~ p.imagen) }}" alt="">
+                {% else %}
+                <span class="list-item__thumb" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+                {% endif %}
+                <div class="list-item__body">
+                    <div class="list-item__title">
+                        {{ p.nombre or 'Sin nombre' }}
+                        {% if p.aprobada %}<span class="badge badge--success"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Publicada</span>
+                        {% else %}<span class="badge"><i class="fa-solid fa-hourglass-half" aria-hidden="true"></i> Por revisar</span>{% endif %}
+                    </div>
+                    <p class="list-item__text">
+                        {{ [p.especie|capitalize if p.especie, p.raza, p.edad, p.ubicacion]|select|join(' · ') }} · Enviada {{ p.created_at|hace }}
+                    </p>
+                </div>
+                {% if p.aprobada %}
+                <div class="list-item__actions">
+                    <a href="{{ url_for('Pagina_Adopcion') }}" class="btn btn--secondary btn--sm">Ver en el catálogo</a>
+                </div>
+                {% endif %}
+            </article>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
+                <p>No has postulado mascotas. ¿Conoces una que necesite hogar?</p>
+                <a href="{{ url_for('Postular_Mascotas') }}" class="btn btn--primary btn--sm">Dar en adopción</a>
+            </div>
+            {% endfor %}
+        </section>
+
+        {# ---------------- Configuración ---------------- #}
+        <section class="tab-panel settings" id="panel-configuracion" role="tabpanel" aria-labelledby="tab-configuracion" hidden>
+            <form class="form-card settings__card" method="post" action="{{ url_for('routes_CuentaC.actualizar_perfil') }}" data-validate>
+                <h2 class="settings__title"><i class="fa-solid fa-user-pen" aria-hidden="true"></i> Perfil</h2>
+                <p class="settings__text">Este es el nombre y el correo que verán las fundaciones en tus solicitudes.</p>
+                {{ field('username', 'Nombre de usuario', 'text', 'fa-user', value=u.username, attrs={'minlength': 3, 'autocomplete': 'username'}) }}
+                {{ field('email', 'Correo electrónico', 'email', 'fa-envelope', value=u.email, attrs={'autocomplete': 'email'}) }}
+                {{ submit('Guardar cambios', 'fa-floppy-disk', 'Guardando…', 'btn btn--primary') }}
+            </form>
+
+            <form class="form-card settings__card" method="post" action="{{ url_for('routes_CuentaC.cambiar_contrasena') }}" data-validate>
+                <h2 class="settings__title"><i class="fa-solid fa-key" aria-hidden="true"></i> Contraseña</h2>
+                <p class="settings__text">Usa una contraseña de al menos 8 caracteres que no uses en otros sitios.</p>
+                {{ field('actual', 'Contraseña actual', 'password', 'fa-lock', attrs={'autocomplete': 'current-password'}) }}
+                {% call field('nueva', 'Nueva contraseña', 'password', 'fa-lock', 'Mínimo 8 caracteres',
+                              attrs={'autocomplete': 'new-password', 'minlength': 8, 'data-strength': '#settingsStrength'}) %}
+                <div class="strength" aria-hidden="true"><div id="settingsStrength" class="strength__bar"></div></div>
+                {% endcall %}
+                {{ field('confirmacion', 'Confirma la nueva contraseña', 'password', 'fa-lock',
+                         attrs={'autocomplete': 'new-password', 'data-match': '#nueva', 'data-match-message': 'Las contraseñas no coinciden.'}) }}
+                {{ submit('Cambiar contraseña', 'fa-key', 'Guardando…', 'btn btn--primary') }}
+            </form>
+
+            <form class="form-card settings__card settings__card--danger" method="post" action="{{ url_for('routes_CuentaC.eliminar_cuenta') }}"
+                data-validate data-confirm="¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.">
+                <h2 class="settings__title"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Eliminar cuenta</h2>
+                <p class="settings__text">
+                    Se borrarán tu cuenta y tu historial de actividad. Las solicitudes que enviaste se conservan para que la
+                    fundación pueda cerrar sus procesos, pero ya no estarán asociadas a ti.
+                </p>
+                {{ field('password', 'Confirma con tu contraseña', 'password', 'fa-lock', id='delete_password', attrs={'autocomplete': 'current-password'}) }}
+                {{ submit('Eliminar mi cuenta', 'fa-trash-can', 'Eliminando…', 'btn btn--danger') }}
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

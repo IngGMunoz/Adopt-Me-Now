@@ -10,6 +10,7 @@ from Models.usuario import usuario
 from Models.mascotas import Mascota
 from Models.postular_mascotas import PostularMascotas
 from Models.adoptar_mascotas import adoptar_mascotas  # noqa: F401  (registra el modelo para las relaciones)
+from Models.actividad import Actividad  # noqa: F401
 
 
 class adminSchema(ma.SQLAlchemyAutoSchema):

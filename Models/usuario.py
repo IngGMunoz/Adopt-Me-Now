@@ -15,6 +15,14 @@ class usuario(db.Model):
     # Relaciones
     solicitudes = db.relationship("adoptar_mascotas", back_populates="adoptante")
     postulaciones = db.relationship("PostularMascotas", back_populates="usuario")
+    # El historial pertenece al usuario: el ORM lo borra junto con su cuenta
+    # (sin depender de que el motor aplique ON DELETE CASCADE, p. ej. SQLite)
+    actividades = db.relationship(
+        "Actividad",
+        back_populates="usuario",
+        cascade="all, delete-orphan",
+        order_by="Actividad.created_at.desc(), Actividad.id.desc()",
+    )
 
     def set_password(self, password: str):
         self.password_hash = generate_password_hash(password)

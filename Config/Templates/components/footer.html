@@ -18,6 +18,7 @@
             <h4>Tu cuenta</h4>
             <ul>
                 {% if current_user %}
+                {% if not current_user.is_admin %}<li><a href="{{ url_for('routes_CuentaC.mi_cuenta') }}">Mi cuenta y actividad</a></li>{% endif %}
                 <li><a href="{{ url_for('Postular_Mascotas') }}">Dar en adopción</a></li>
                 <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
                 {% else %}

@@ -196,6 +196,34 @@ def migrate_mysql():
         migrate_postular_mascotas()
 
 
+def backfill_actividad():
+    """Genera el historial de los usuarios creados antes de que existiera `actividad_usuario`.
+
+    Solo actúa sobre usuarios sin ningún evento, así que es seguro ejecutarlo en cada arranque.
+    """
+    from Models.actividad import Actividad
+    from Models.usuario import usuario
+
+    con_historial = db.session.query(Actividad.usuario_id).distinct()
+    pendientes = usuario.query.filter(~usuario.id.in_(con_historial)).all()
+    for u in pendientes:
+        eventos = [Actividad(usuario_id=u.id, tipo="registro", descripcion="Creaste tu cuenta en Adopt Me",
+                             created_at=u.created_at)]
+        for s in u.solicitudes:
+            nombre = s.mascota.nombre if s.mascota else (s.pet_name or "una mascota")
+            eventos.append(Actividad(usuario_id=u.id, tipo="solicitud_enviada",
+                                     descripcion=f"Enviaste una solicitud para adoptar a {nombre}",
+                                     created_at=s.created_at or u.created_at))
+        for p in u.postulaciones:
+            eventos.append(Actividad(usuario_id=u.id, tipo="postulacion_enviada",
+                                     descripcion=f"Postulaste a {p.nombre or 'una mascota'} para darla en adopción",
+                                     created_at=p.created_at))
+        db.session.add_all(eventos)
+    if pendientes:
+        db.session.commit()
+        app.logger.info("Historial generado para %s usuario(s) existentes", len(pendientes))
+
+
 def init_db():
     """Crea las tablas que falten y, en MySQL, migra el esquema heredado."""
     db.create_all()
@@ -205,3 +233,8 @@ def init_db():
         except Exception:
             db.session.rollback()
             app.logger.exception("No se pudo migrar el esquema de la base de datos")
+    try:
+        backfill_actividad()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("No se pudo generar el historial de actividad")

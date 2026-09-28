@@ -3,6 +3,7 @@ import os
 
 from flask import Blueprint, current_app, jsonify, redirect, request, session
 
+from Config.actividad import notificar_postulacion_descartada, registrar
 from Config.auth import check_admin, is_admin, save_uploaded_image
 from Config.db import db
 from Models.admins import admin
@@ -236,6 +237,7 @@ def admin_update_postular(pid):
 @Routes_adminC.route("/postulares/<int:pid>", methods=["DELETE"])
 def admin_delete_postular(pid):
     p = db.get_or_404(PostularMascotas, pid)
+    notificar_postulacion_descartada(p)
     db.session.delete(p); db.session.commit()
     return "", 204
 
@@ -254,6 +256,8 @@ def admin_aprobar_postular(pid):
     )
     p.mascota = m
     db.session.add(m)
+    registrar(p.usuario_id, "postulacion_publicada",
+              f"¡{m.nombre} ya está publicada en el catálogo gracias a tu postulación!", enlace="/adopcion", commit=False)
     db.session.commit()
     return jsonify({"ok": True, "mascota": mascota_schema.dump(m), "postulacion": postular_schema.dump(p)}), 201
 
@@ -277,6 +281,9 @@ def admin_confirmar_solicitud(sid):
     s.is_confirmed = True
     if s.mascota:
         s.mascota.is_adopted = True
+    nombre = s.mascota.nombre if s.mascota else (s.pet_name or "la mascota")
+    registrar(s.adopter_id, "solicitud_aprobada",
+              f"¡La fundación aprobó tu solicitud para adoptar a {nombre}! Pronto te contactarán.", commit=False)
     db.session.commit()
     return jsonify({"ok": True, "solicitud": s.to_dict()}), 200
 

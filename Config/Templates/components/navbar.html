@@ -26,16 +26,54 @@
 
             <div class="nav__actions">
                 {% if current_user %}
-                <span class="user-chip">
-                    <span class="user-chip__avatar" aria-hidden="true">{{ (current_user.nombre or '?')[0] }}</span>
-                    <span class="user-chip__name">
-                        {% if current_user.is_admin %}<span class="user-chip__role">Administrador</span>{% endif %}
-                        {{ current_user.nombre }}
-                    </span>
-                </span>
-                <a href="{{ url_for('logout') }}" class="btn btn--secondary btn--sm">
-                    <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i> Salir
-                </a>
+                {% if current_user.is_admin %}
+                    {% set base = url_for('Postular_Admin') %}
+                    {% set items = [
+                        ('mascotas', 'fa-dog', 'Mascotas publicadas'),
+                        ('solicitudes', 'fa-envelope-open-text', 'Solicitudes de adopción'),
+                        ('postulaciones', 'fa-bullhorn', 'Postulaciones'),
+                    ] %}
+                {% else %}
+                    {% set base = url_for('routes_CuentaC.mi_cuenta') %}
+                    {% set items = [
+                        ('actividad', 'fa-clock-rotate-left', 'Mi actividad'),
+                        ('solicitudes', 'fa-envelope-open-text', 'Mis solicitudes'),
+                        ('postulaciones', 'fa-bullhorn', 'Mis postulaciones'),
+                        ('configuracion', 'fa-gear', 'Configuración'),
+                    ] %}
+                {% endif %}
+                <div class="user-menu">
+                    <button type="button" class="user-chip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu"
+                        {% if request.endpoint in ['routes_CuentaC.mi_cuenta', 'Postular_Admin'] %}aria-current="page"{% endif %}>
+                        <span class="user-chip__avatar" aria-hidden="true">{{ (current_user.nombre or '?')[0] }}</span>
+                        <span class="user-chip__name">
+                            <span class="user-chip__role">{{ 'Administrador' if current_user.is_admin else 'Mi cuenta' }}</span>
+                            {{ current_user.nombre }}
+                        </span>
+                        <i class="user-chip__caret fa-solid fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+
+                    <div id="userMenu" class="user-menu__panel" hidden>
+                        <div class="user-menu__header">
+                            <strong>{{ current_user.nombre }}</strong>
+                            <span>{{ current_user.email }}</span>
+                        </div>
+                        <ul class="user-menu__list">
+                            {% for seccion, icono, texto in items %}
+                            <li>
+                                <a class="user-menu__item" href="{{ base }}#{{ seccion }}">
+                                    <i class="fa-solid {{ icono }}" aria-hidden="true"></i> {{ texto }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="user-menu__footer">
+                            <a class="user-menu__item user-menu__item--danger" href="{{ url_for('logout') }}">
+                                <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i> Cerrar sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
                 {% else %}
                 <a href="{{ url_for('Iniciar_Sesion') }}" class="btn btn--ghost btn--sm">Iniciar sesión</a>
                 <a href="{{ url_for('Registro_Usuario') }}" class="btn btn--primary btn--sm">Crear cuenta</a>

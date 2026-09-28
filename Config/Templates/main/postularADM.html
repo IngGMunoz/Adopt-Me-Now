@@ -171,27 +171,7 @@
 {% block scripts %}
 <script>
     (function () {
-        // Pestañas accesibles
-        const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
-        function select(tab) {
-            tabs.forEach((t) => {
-                const on = t === tab;
-                t.setAttribute('aria-selected', String(on));
-                t.tabIndex = on ? 0 : -1;
-                document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-            });
-            tab.focus();
-            history.replaceState(null, '', '#' + tab.id.replace('tab-', ''));
-        }
-        tabs.forEach((tab, i) => {
-            tab.addEventListener('click', () => select(tab));
-            tab.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowRight') select(tabs[(i + 1) % tabs.length]);
-                if (e.key === 'ArrowLeft') select(tabs[(i - 1 + tabs.length) % tabs.length]);
-            });
-        });
-        const initial = document.getElementById('tab-' + location.hash.slice(1));
-        if (initial) select(initial);
+        // Las pestañas se manejan en JS/app.js (initTabs)
 
         // Acciones sobre la API de administración
         document.addEventListener('click', async (e) => {

@@ -30,6 +30,7 @@ Las fundaciones publican las mascotas que tienen en adopción. Los usuarios las 
 - **Catálogo de mascotas en adopción**, con búsqueda y orden instantáneos y un perfil por mascota. Las ya adoptadas se ocultan.
 - **Registro e inicio de sesión** con contraseñas cifradas (hash PBKDF2 de Werkzeug) y sesiones firmadas.
 - **Solicitud de adopción.** Es un formulario con validación en cliente y servidor. Queda asociado al usuario y a la mascota elegida, y se envía sin recargar la página.
+- **Mi cuenta.** Cada usuario tiene su historial de actividad agrupado por día (registro, inicios de sesión, solicitudes, postulaciones, y las decisiones de la fundación sobre ellas), el estado de sus solicitudes y postulaciones, y la configuración de su perfil y contraseña, además de la opción de eliminar su cuenta.
 - **Panel de administración** con métricas, publicación de mascotas con foto, aprobación de solicitudes de adopción y revisión de las mascotas que proponen los usuarios.
 - **Roles y permisos.** Usuario, administrador y superadministrador. La API de administración está protegida, y el registro de nuevos administradores exige un código de invitación.
 - **Postulación de mascotas.** Un usuario puede proponer una mascota (especie, raza, edad, tamaño y ubicación) para que la fundación la revise.
@@ -79,6 +80,7 @@ erDiagram
     mascotas ||--o{ adoptar_mascotas : "recibe"
     usuarios ||--o{ postular_mascotas : "propone"
     postular_mascotas |o--o| mascotas : "al aprobarse se publica como"
+    usuarios ||--o{ actividad_usuario : "genera"
 
     admins {
         int id PK
@@ -120,6 +122,13 @@ erDiagram
         string raza
         string ubicacion
     }
+    actividad_usuario {
+        int id PK
+        int usuario_id FK
+        string tipo
+        string descripcion
+        datetime created_at
+    }
 ```
 
 **Flujo de datos:**
@@ -127,8 +136,9 @@ erDiagram
 1. Un **admin** publica una **mascota**, o aprueba la **postulación** que envió un **usuario**. En ese caso la postulación queda enlazada a la mascota creada.
 2. Un **usuario** envía una **solicitud de adopción** para una mascota.
 3. El admin **confirma** la solicitud y la mascota queda marcada como adoptada, así que sale del catálogo.
+4. Cada paso queda en la **actividad** del usuario, que la consulta en `/mi-cuenta`.
 
-Todas las llaves foráneas usan `ON DELETE SET NULL`: si se elimina un usuario o una mascota, el historial de solicitudes y postulaciones se conserva. Al iniciar, [`Config/schema.py`](Config/schema.py) migra automáticamente las bases MySQL de versiones anteriores. Agrega las columnas y las llaves foráneas que faltan, y enlaza los registros antiguos que guardaban nombres en texto.
+Las llaves foráneas de solicitudes y postulaciones usan `ON DELETE SET NULL`: si se elimina un usuario o una mascota, ese historial se conserva para la fundación. La actividad personal (`actividad_usuario`) sí se borra junto con la cuenta. Al iniciar, [`Config/schema.py`](Config/schema.py) migra automáticamente las bases MySQL de versiones anteriores. Agrega las columnas y las llaves foráneas que faltan, y enlaza los registros antiguos que guardaban nombres en texto.
 
 ## 🚀 Cómo ejecutarlo
 
@@ -201,13 +211,14 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
-Los 36 tests usan una base SQLite temporal, así que no necesitan MySQL. Cubren:
+Los 47 tests usan una base SQLite temporal, así que no necesitan MySQL. Cubren:
 
 - Registro, inicio de sesión y redirección segura (protección contra *open redirect*).
 - Permisos por rol: acceso anónimo, de usuario y de administrador a cada endpoint protegido.
 - Registro de administradores con código de invitación.
 - Envío y validación de solicitudes de adopción.
 - Publicación de mascotas con imagen y ocultamiento de las ya adoptadas.
+- Mi cuenta: registro de la actividad en cada acción, filtros, edición del perfil, cambio de contraseña y eliminación de la cuenta.
 - Relaciones del modelo: admin → mascota, usuario → solicitud → mascota, postulación → mascota aprobada, y conservación del historial al borrar registros.
 
 ## 🔌 API REST
@@ -228,11 +239,14 @@ Los 36 tests usan una base SQLite temporal, así que no necesitan MySQL. Cubren:
 | `POST` | `/api/admin/postulares/<id>/aprobar` | Admin | Publicar la mascota propuesta y enlazarla a la postulación |
 | `GET` | `/api/admin/solicitudes?mascota_id=` | Admin | Solicitudes de adopción con adoptante y mascota |
 | `POST` | `/api/admin/solicitudes/<id>/confirmar` | Admin | Aprobar una solicitud (la mascota pasa a adoptada) |
+| `GET` | `/mi-cuenta/?tipo=` | Usuario | Actividad, solicitudes, postulaciones y configuración (HTML) |
+| `POST` | `/mi-cuenta/perfil` · `/contrasena` · `/eliminar` | Usuario | Editar el perfil, cambiar la contraseña o eliminar la cuenta |
 
 ## 🔒 Seguridad
 
 - Contraseñas guardadas con hash, nunca en texto plano. Los schemas de la API excluyen `password_hash`.
 - Decoradores `login_required` y `admin_required`. La API responde `401` o `403` en JSON y las páginas redirigen al login.
+- Cambiar la contraseña o eliminar la cuenta exige la contraseña actual.
 - Validación del parámetro `next` para evitar redirecciones a sitios externos.
 - Las imágenes subidas se validan por extensión, se guardan con nombre único (UUID) y tienen un límite de 5 MB.
 - El contenido que viene de usuarios se inserta en el DOM con `textContent`, nunca con `innerHTML`, para evitar XSS.
@@ -248,7 +262,10 @@ Adopt-Me-Now/
 │   ├── db.py               # Configuración de Flask, SQLAlchemy y variables de entorno
 │   ├── auth.py             # Decoradores de permisos, redirección segura y subida de imágenes
 │   ├── schema.py           # Creación y migración del esquema
-│   ├── controller/         # Blueprints de la API REST
+│   ├── actividad.py        # Registro del historial de actividad de los usuarios
+│   ├── catalogo.py         # Mascotas destacadas con perfil propio
+│   ├── filtros.py          # Filtros de fecha en español para las plantillas
+│   ├── controller/         # Blueprints: API REST y área "Mi cuenta"
 │   └── Templates/          # Vistas Jinja2 (layouts, components, main)
 ├── Models/                 # Modelos SQLAlchemy y schemas Marshmallow
 ├── static/                 # CSS, JS, imágenes y uploads
@@ -259,7 +276,6 @@ Adopt-Me-Now/
 
 ## 🗺️ Próximos pasos
 
-- [ ] Pantallas en el panel de administración para las solicitudes y postulaciones (la API ya existe).
 - [ ] Notificaciones por correo al adoptante cuando cambie el estado de su solicitud.
 - [ ] Filtros del catálogo por especie, tamaño y ubicación.
 - [ ] Protección CSRF en formularios (Flask-WTF) y límite de intentos de inicio de sesión.

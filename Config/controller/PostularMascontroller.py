@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 
+from Config.actividad import notificar_postulacion_descartada
 from Config.auth import check_admin
 from Config.db import db
 from Models.postular_mascotas import PostularMascotas
@@ -32,6 +33,7 @@ def get_postulacion(item_id):
 @routes_PostularC.route("/<int:item_id>", methods=["DELETE"])
 def delete_postulacion(item_id):
     item = db.get_or_404(PostularMascotas, item_id)
+    notificar_postulacion_descartada(item)
     db.session.delete(item)
     db.session.commit()
     return "", 204
