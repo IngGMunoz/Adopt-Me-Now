@@ -1,23 +1,46 @@
-﻿<nav class="navbar">
-    <div class="navbar__container">
-        <a href="{{ url_for('Pagina_Principal') }}" class="navbar__logo">Adopt Me</a>
+{% macro nav_link(url, icon, label, endpoints) -%}
+<a href="{{ url }}" class="nav__link" {% if request.endpoint in endpoints %}aria-current="page"{% endif %}>
+    <i class="fa-solid {{ icon }}" aria-hidden="true"></i> {{ label }}
+</a>
+{%- endmacro %}
 
-        <ul class="navbar__menu">
-            <li><a href="{{ url_for('Mascotas_Alias') }}" class="navbar__link">Mascotas</a></li>
-            <li><a href="{{ url_for('Pagina_Fundacion') }}" class="navbar__link">Fundaciones</a></li>
-        </ul>
-
-        <div class="navbar__auth-buttons">
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('logout') }}" class="navbar__btn navbar__btn--login">Cerrar sesión</a>
-            {% else %}
-                <a href="{{ url_for('Iniciar_Sesion') }}" class="navbar__btn navbar__btn--login">Iniciar sesión</a>
-                <a href="{{ url_for('Registro_Usuario') }}" class="navbar__btn navbar__btn--register">Registro</a>
-            {% endif %}
-        </div>
-
-        <a href="#" class="navbar__profile">
-            <span class="navbar__icon">&#128100;</span>
+<header class="site-header">
+    <div class="container site-header__inner">
+        <a href="{{ url_for('Pagina_Principal') }}" class="brand" aria-label="Adopt Me, ir al inicio">
+            <i class="fa-solid fa-paw" aria-hidden="true"></i> Adopt Me
         </a>
+
+        <button class="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Abrir menú">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <nav id="site-nav" class="nav" aria-label="Navegación principal">
+            {{ nav_link(url_for('Pagina_Principal'), 'fa-house', 'Inicio', ['Pagina_Principal']) }}
+            {{ nav_link(url_for('Pagina_Adopcion'), 'fa-dog', 'Mascotas', ['Pagina_Adopcion', 'Detalle_Mascota', 'Formulario_Para_Adoptar']) }}
+            {{ nav_link(url_for('Pagina_Fundacion'), 'fa-hand-holding-heart', 'Fundaciones', ['Pagina_Fundacion', 'Pagina_Funcuan']) }}
+            {% if current_user and current_user.is_admin %}
+                {{ nav_link(url_for('Postular_Admin'), 'fa-gauge', 'Panel', ['Postular_Admin']) }}
+            {% elif current_user %}
+                {{ nav_link(url_for('Postular_Mascotas'), 'fa-bullhorn', 'Dar en adopción', ['Postular_Mascotas']) }}
+            {% endif %}
+
+            <div class="nav__actions">
+                {% if current_user %}
+                <span class="user-chip">
+                    <span class="user-chip__avatar" aria-hidden="true">{{ (current_user.nombre or '?')[0] }}</span>
+                    <span class="user-chip__name">
+                        {% if current_user.is_admin %}<span class="user-chip__role">Administrador</span>{% endif %}
+                        {{ current_user.nombre }}
+                    </span>
+                </span>
+                <a href="{{ url_for('logout') }}" class="btn btn--secondary btn--sm">
+                    <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i> Salir
+                </a>
+                {% else %}
+                <a href="{{ url_for('Iniciar_Sesion') }}" class="btn btn--ghost btn--sm">Iniciar sesión</a>
+                <a href="{{ url_for('Registro_Usuario') }}" class="btn btn--primary btn--sm">Crear cuenta</a>
+                {% endif %}
+            </div>
+        </nav>
     </div>
-</nav>
+</header>

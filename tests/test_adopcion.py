@@ -60,3 +60,15 @@ def test_mascota_adoptada_no_se_lista(client, admin_user):
     mascota = Mascota.query.one()
     assert client.post(f"/api/admin/mascotas/{mascota.id}/adopt").status_code == 200
     assert b"Luna" not in client.get("/adopcion").data
+
+
+def test_formulario_html_redirige_con_mensaje(client, user):
+    # Un envío normal del navegador (Accept: */*) debe redirigir, no devolver JSON
+    login(client, "ana", "secreta123")
+    res = client.post(
+        "/formulario?pet=Michi",
+        data={"nombre": "Ana", "email": "ana@example.com"},
+        headers={"Accept": "text/html,application/xhtml+xml,*/*;q=0.8"},
+    )
+    assert res.status_code == 302
+    assert res.headers["Location"] == "/adopcion"

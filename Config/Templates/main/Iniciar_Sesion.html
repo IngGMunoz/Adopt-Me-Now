@@ -1,160 +1,31 @@
 {% extends "layouts/base.html" %}
+{% from "components/forms.html" import field, submit %}
 
-{% block title %}Iniciar Sesión - Adopt Me{% endblock %} <!--# Aca sobreescribimos el titulo-->
-
-<!--# Aca empieza el bloque background_effects #-->
-{% set page_class = "login-page" %}
-
-{% block background_effects %}
-{% include 'components/particles.html' %}
-<!--# Aca termina el bloque background_effects #-->
-{% include 'components/paws.html' %}
-<!--# Aca empieza el bloque navbar #-->
-{% endblock %}
-
-{% block navbar %}
-<!--# Aca termina el bloque navbar #-->
-
-{% endblock %}
-<!--# Aca empieza el bloque footer #-->
-{% block footer %}
-<!--# Aca termina el bloque footer #-->
-<!-- No footer en login -->
-<!--# Aca empieza el bloque content #-->
-{% endblock %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block content %}
-<div class="login-container">
-    <div class="login-card">
+<section class="auth">
+    {% include 'components/paws.html' %}
+
+    <div class="auth__card animate-in">
         {% include 'components/university_logo.html' %}
+        <h1 class="auth__title">Iniciar sesión</h1>
+        <p class="auth__subtitle">Qué bueno verte de nuevo. Tu próximo mejor amigo te espera.</p>
 
-        <h1 class="login-title">Iniciar Sesión</h1>
-
-        <form method="post" action="{{ url_for('Iniciar_Sesion') }}" id="loginForm">
-            {# Preserve next parameter so server can redirect back after login #}
-            <input type="hidden" name="next" value="{{ request.args.get('next','/') }}">
-            <div class="form-group">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <div style="position: relative;">
-                    <input type="email" id="email" name="email" class="form-input" placeholder="ejemplo@correo.com"
-                        autocomplete="email" required />
-                    <i class="fas fa-envelope input-icon"></i>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="password" class="form-label">Contraseña</label>
-                <div style="position: relative;">
-                    <input type="password" id="password" name="password" class="form-input"
-                        placeholder="Ingresa tu contraseña" autocomplete="current-password" required />
-                    <i class="fas fa-lock input-icon"></i>
-                </div>
-            </div>
-
-            <button type="submit" class="login-btn" id="submitBtn">
-                <div class="loading-spinner" id="loadingSpinner"></div>
-                <span id="btnText">Iniciar Sesión</span>
-            </button>
+        <form method="post" action="{{ url_for('Iniciar_Sesion', next=request.args.get('next')) }}" data-validate>
+            <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+            {{ field('email', 'Correo o usuario', 'text', 'fa-envelope', 'ejemplo@correo.com',
+                     attrs={'autocomplete': 'username', 'autofocus': 'autofocus'}) }}
+            {{ field('password', 'Contraseña', 'password', 'fa-lock', 'Tu contraseña',
+                     attrs={'autocomplete': 'current-password'}) }}
+            {{ submit('Iniciar sesión', 'fa-right-to-bracket', 'Ingresando…', 'btn btn--primary btn--block') }}
         </form>
 
-        <div class="register-link">
-            <a href="/registro">¿No tienes cuenta? Crear cuenta</a>
+        <div class="auth__footer">
+            <span>¿No tienes cuenta? <a href="{{ url_for('Registro_Usuario', next=request.args.get('next')) }}">Crea una gratis</a></span>
+            <span>¿Representas una fundación? <a href="{{ url_for('Registro_Administrador') }}">Regístrala aquí</a></span>
         </div>
     </div>
-    <!--# Aca termina el bloque content #-->
-</div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    (function () {
-        const form = document.getElementById('loginForm');
-        const inputs = form.querySelectorAll('.form-input');
-        const submitBtn = document.getElementById('submitBtn');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const btnText = document.getElementById('btnText');
-
-        // Efectos de focus para los iconos
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                const icon = input.nextElementSibling;
-                if (icon && icon.classList.contains('input-icon')) {
-                    icon.style.color = '#e08c2b';
-                }
-            });
-
-            input.addEventListener('blur', () => {
-                const icon = input.nextElementSibling;
-                if (icon && icon.classList.contains('input-icon') && !input.value) {
-                    icon.style.color = '#eeb807';
-                }
-            });
-        });
-
-        // CAMBIO: enviar credenciales al endpoint API y permitir que Flask cree la sesión (cookie).
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            submitBtn.disabled = true;
-            loadingSpinner.style.display = 'inline-block';
-            btnText.textContent = 'Iniciando sesión...';
-
-            const payload = {
-                identifier: document.getElementById('email').value.trim(),
-                password: document.getElementById('password').value
-            };
-
-            fetch('/api/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                credentials: 'same-origin', // importante: incluir cookies de sesión
-                body: JSON.stringify(payload)
-            })
-            .then(async res => {
-                const body = await res.json().catch(()=> ({}));
-                if (res.ok) {
-                    // login exitoso: redirigir al 'next' (solo rutas internas) o a la página del rol
-                    const params = new URLSearchParams(window.location.search);
-                    const next = params.get('next') || '';
-                    const isInternal = next.startsWith('/') && !next.startsWith('//') && !next.includes('\\');
-                    window.location.href = isInternal ? next : (body.redirect || '/');
-                } else {
-                    const msg = body.msg || body.error || JSON.stringify(body);
-                    alert('Error: ' + msg);
-                    submitBtn.disabled = false;
-                    loadingSpinner.style.display = 'none';
-                    btnText.textContent = 'Iniciar Sesión';
-                }
-            })
-            .catch(err => {
-                console.error('Network error', err);
-                alert('Error de red. Intenta nuevamente.');
-                submitBtn.disabled = false;
-                loadingSpinner.style.display = 'none';
-                btnText.textContent = 'Iniciar Sesión';
-            });
-        });
-
-        // Efecto de escritura en el título
-        const title = document.querySelector('.login-title');
-        const titleText = title.textContent;
-        title.textContent = '';
-
-        setTimeout(() => {
-            let i = 0;
-            const typeWriter = () => {
-                if (i < titleText.length) {
-                    title.textContent += titleText.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, 100);
-                }
-            };
-            typeWriter();
-        }, 800);
-    })();
-</script>
+</section>
 {% endblock %}

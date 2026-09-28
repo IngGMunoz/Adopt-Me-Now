@@ -1,0 +1,55 @@
+{# Tarjetas de mascota reutilizables (catálogo e inicio) #}
+
+{# Mascota publicada por un administrador (tabla mascotas) #}
+{% macro pet_card(mascota, user) -%}
+<article class="pet-card" data-name="{{ mascota.nombre|lower }}"
+    data-search="{{ (mascota.nombre ~ ' ' ~ mascota.descripcion ~ ' ' ~ mascota.autor)|lower }}">
+    <div class="pet-card__media">
+        {% if mascota.imagen %}
+        <img src="{{ url_for('static', filename='uploads/' ~ mascota.imagen) }}" alt="Foto de {{ mascota.nombre }}" loading="lazy">
+        {% else %}
+        <img src="{{ url_for('static', filename='images/Perro.jpg') }}" alt="" loading="lazy">
+        {% endif %}
+        <span class="badge"><i class="fa-solid fa-star" aria-hidden="true"></i> Nuevo</span>
+    </div>
+    <div class="pet-card__body">
+        <h3 class="pet-card__title">{{ mascota.nombre }}</h3>
+        <p class="pet-card__meta"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i> Publicado por {{ mascota.autor }}</p>
+        <p class="pet-card__text">{{ mascota.descripcion }}</p>
+        <div class="pet-card__actions">
+            {% if user %}
+            <a class="btn btn--primary" href="{{ url_for('Formulario_Para_Adoptar', mascota=mascota.id, pet=mascota.nombre) }}">
+                <i class="fa-solid fa-heart" aria-hidden="true"></i> Quiero adoptar
+            </a>
+            {% else %}
+            <button type="button" class="btn btn--locked" data-auth-required="{{ mascota.nombre }}">
+                <i class="fa-solid fa-lock" aria-hidden="true"></i> Inicia sesión para adoptar
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</article>
+{%- endmacro %}
+
+{# Mascota destacada con página de perfil propia (Config/catalogo.py) #}
+{% macro featured_card(slug, mascota) -%}
+<article class="pet-card" data-name="{{ mascota.nombre|lower }}"
+    data-search="{{ (mascota.nombre ~ ' ' ~ mascota.resumen ~ ' ' ~ mascota.especie ~ ' ' ~ mascota.autor)|lower }}">
+    <div class="pet-card__media">
+        <img src="{{ url_for('static', filename=mascota.imagen) }}" alt="Foto de {{ mascota.nombre }}" loading="lazy">
+        <span class="badge">
+            <i class="fa-solid {{ 'fa-cat' if mascota.especie == 'Gato' else 'fa-dog' }}" aria-hidden="true"></i> {{ mascota.especie }}
+        </span>
+    </div>
+    <div class="pet-card__body">
+        <h3 class="pet-card__title">{{ mascota.nombre }}</h3>
+        <p class="pet-card__meta"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> {{ mascota.ubicacion.split(' · ')[0] }}</p>
+        <p class="pet-card__text">{{ mascota.resumen }}</p>
+        <div class="pet-card__actions">
+            <a class="btn btn--primary" href="{{ url_for('Detalle_Mascota', slug=slug) }}">
+                Conocer a {{ mascota.nombre }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+</article>
+{%- endmacro %}

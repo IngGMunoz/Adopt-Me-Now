@@ -1,113 +1,45 @@
 {% extends "layouts/base.html" %}
+{% from "components/forms.html" import field, select, submit %}
 
-<!--# Aca empieza el bloque title #-->
-{% block title %}Postular Mascota - Adopt Me{% endblock %}
-<!--# Aca termina el bloque title #-->
-
-<!--# Aca empieza el bloque stylesheets #-->
-{% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-{% endblock %}
-<!--# Aca termina el bloque stylesheets #-->
-
-<!--# Aca empieza el bloque navbar #-->
-{% block navbar %}
-{% include "components/navbar.html" %}
-{% endblock %}
-<!--# Aca termina el bloque navbar #-->
+{% block title %}Dar en adopción{% endblock %}
 
 {% block content %}
-<main class="main-content">
-    <div class="form-container">
-        <h1 class="form-title">Postular Nueva Adopción</h1>
-        <p class="form-subtitle">Datos de la mascota</p>
+<div class="container form-page">
+    <header class="page-header animate-in">
+        <span class="page-header__eyebrow">Dar en adopción</span>
+        <h1 class="page-header__title">Ayúdanos a encontrarle un hogar</h1>
+        <p class="page-header__subtitle">
+            Cuéntanos sobre la mascota. Una fundación aliada revisará la información y, si todo está en orden, la
+            publicará en el catálogo.
+        </p>
+    </header>
 
-        <form method="POST" action="/postular" class="pet-form" enctype="multipart/form-data">
-            <div class="form-section">
-                <h3>Información Básica</h3>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre" name="nombre" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="especie">Especie:</label>
-                        <select id="especie" name="especie" required>
-                            <option value="">Seleccionar</option>
-                            <option value="perro">Perro</option>
-                            <option value="gato">Gato</option>
-                            <option value="otro">Otro</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="raza">Raza:</label>
-                        <input type="text" id="raza" name="raza" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="edad">Edad:</label>
-                        <input type="text" id="edad" name="edad" placeholder="ej: 2 años, 6 meses" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="sexo">Sexo:</label>
-                        <select id="sexo" name="sexo" required>
-                            <option value="">Seleccionar</option>
-                            <option value="macho">Macho</option>
-                            <option value="hembra">Hembra</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tamaño">Tamaño:</label>
-                        <select id="tamaño" name="tamaño" required>
-                            <option value="">Seleccionar</option>
-                            <option value="pequeño">Pequeño</option>
-                            <option value="mediano">Mediano</option>
-                            <option value="grande">Grande</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="color">Color:</label>
-                        <input type="text" id="color" name="color" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ubicacion">Ubicación:</label>
-                        <input type="text" id="ubicacion" name="ubicacion" placeholder="Ciudad, Barrio" required>
-                    </div>
-                </div>
+    <form class="form-card" method="post" action="{{ url_for('Postular_Mascotas') }}" enctype="multipart/form-data" data-validate>
+        <fieldset class="form-section">
+            <legend class="form-section__title"><i class="fa-solid fa-paw" aria-hidden="true"></i> Información básica</legend>
+            <div class="form-grid">
+                {{ field('nombre', 'Nombre', 'text', None, 'Cómo se llama') }}
+                {{ select('especie', 'Especie', [('perro', 'Perro'), ('gato', 'Gato'), ('otro', 'Otro')]) }}
+                {{ field('raza', 'Raza', 'text', None, 'Criollo, labrador…') }}
+                {{ field('edad', 'Edad', 'text', None, 'Ej: 2 años, 6 meses') }}
+                {{ select('sexo', 'Sexo', [('macho', 'Macho'), ('hembra', 'Hembra')]) }}
+                {{ select('tamaño', 'Tamaño', [('pequeño', 'Pequeño'), ('mediano', 'Mediano'), ('grande', 'Grande')], id='tamano') }}
+                {{ field('color', 'Color', 'text', None, 'Blanco con manchas cafés') }}
+                {{ field('ubicacion', 'Ubicación', 'text', 'fa-location-dot', 'Ciudad, barrio') }}
             </div>
+        </fieldset>
 
-            <div class="form-section">
-                <h3>Imagen</h3>
-                <div class="form-group">
-                    <label for="imagen">Subir imagen:</label>
-                    <input type="file" id="imagen" name="imagen" accept="image/*" required>
-                </div>
-            </div>
+        <fieldset class="form-section">
+            <legend class="form-section__title"><i class="fa-solid fa-camera" aria-hidden="true"></i> Foto</legend>
+            {{ field('imagen', 'Foto de la mascota', 'file', None,
+                     hint='JPG, PNG o WEBP de máximo 5 MB. Una foto clara ayuda a que la adopten más rápido.',
+                     attrs={'accept': 'image/png,image/jpeg,image/webp,image/gif'}) }}
+        </fieldset>
 
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-paw"></i> Postular
-                </button>
-                <a href="/" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
-    </div>
-</main>
-{% endblock %}
-
-{% block footer %}
-{% include "components/footer.html" %}
+        <div class="form-actions">
+            <a href="{{ url_for('Pagina_Adopcion') }}" class="btn btn--ghost">Cancelar</a>
+            {{ submit('Enviar postulación', 'fa-bullhorn', 'Enviando…') }}
+        </div>
+    </form>
+</div>
 {% endblock %}

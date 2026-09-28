@@ -48,12 +48,15 @@ def _add_index(table, name, columns, unique=False):
 
 
 def _add_fk(table, name, column, ref_table, on_delete="SET NULL"):
+    # Se busca cualquier FK sobre la columna (no solo por nombre): en bases nuevas
+    # create_all ya las crea con nombres automáticos como mascotas_ibfk_1.
     exists = _scalar(
         """
-        SELECT COUNT(1) FROM information_schema.REFERENTIAL_CONSTRAINTS
-        WHERE CONSTRAINT_SCHEMA = DATABASE() AND CONSTRAINT_NAME = :n
+        SELECT COUNT(1) FROM information_schema.KEY_COLUMN_USAGE
+        WHERE table_schema = DATABASE() AND table_name = :t AND column_name = :c
+          AND referenced_table_name = :r
         """,
-        n=name,
+        t=table, c=column, r=ref_table,
     )
     if not exists:
         _run(

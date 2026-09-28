@@ -13,23 +13,29 @@ Las fundaciones publican las mascotas que tienen en adopción. Los usuarios las 
 
 <p align="center">
   <img src="docs/screenshots/inicio.png" alt="Página de inicio" width="49%">
-  <img src="docs/screenshots/adopcion.png" alt="Listado de mascotas en adopción" width="49%">
-  <img src="docs/screenshots/login.png" alt="Inicio de sesión" width="49%">
-  <img src="docs/screenshots/fundacion.png" alt="Página de la fundación" width="49%">
+  <img src="docs/screenshots/adopcion.png" alt="Catálogo de mascotas con búsqueda" width="49%">
+  <img src="docs/screenshots/detalle.png" alt="Perfil de una mascota" width="49%">
+  <img src="docs/screenshots/panel.png" alt="Panel de administración" width="49%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/login.png" alt="Inicio de sesión" width="60%">
+  <img src="docs/screenshots/movil.png" alt="Vista móvil del catálogo" width="19%">
 </p>
 
 ---
 
 ## ✨ Funcionalidades
 
-- **Catálogo de mascotas en adopción.** Las mascotas publicadas por los administradores aparecen automáticamente. Las ya adoptadas se ocultan.
+- **Catálogo de mascotas en adopción**, con búsqueda y orden instantáneos y un perfil por mascota. Las ya adoptadas se ocultan.
 - **Registro e inicio de sesión** con contraseñas cifradas (hash PBKDF2 de Werkzeug) y sesiones firmadas.
 - **Solicitud de adopción.** Es un formulario con validación en cliente y servidor. Queda asociado al usuario y a la mascota elegida, y se envía sin recargar la página.
-- **Panel de administración** para publicar mascotas con foto. La tarjeta aparece al instante.
+- **Panel de administración** con métricas, publicación de mascotas con foto, aprobación de solicitudes de adopción y revisión de las mascotas que proponen los usuarios.
 - **Roles y permisos.** Usuario, administrador y superadministrador. La API de administración está protegida, y el registro de nuevos administradores exige un código de invitación.
 - **Postulación de mascotas.** Un usuario puede proponer una mascota (especie, raza, edad, tamaño y ubicación) para que la fundación la revise.
 - **API REST** para gestionar usuarios, administradores, mascotas y postulaciones, con serialización mediante Marshmallow.
-- **Chatbot** (Landbot) integrado para orientar a los adoptantes.
+- **Diseño responsive y accesible.** Es un sistema de diseño propio (tokens, componentes y una macro de formularios), con navegación por teclado, validación en línea y avisos no intrusivos.
+- **Chatbot** (Landbot) integrado para orientar a los adoptantes; se carga de forma diferida.
 - **Entorno reproducible** con Docker Compose (app + MySQL con healthcheck).
 - **Tests automatizados** con pytest, ejecutados en GitHub Actions en cada push.
 
@@ -39,7 +45,7 @@ Las fundaciones publican las mascotas que tienen en adopción. Los usuarios las 
 | --- | --- |
 | Backend | Python 3.12, Flask 3, Blueprints |
 | Datos | MySQL 8, SQLAlchemy (ORM), Marshmallow |
-| Frontend | Jinja2, HTML5, CSS3, JavaScript (Fetch API), Font Awesome |
+| Frontend | Jinja2 (macros y componentes), HTML5 semántico, CSS3 (custom properties, grid), JavaScript sin frameworks, Font Awesome |
 | Infraestructura | Docker, Docker Compose, variables de entorno (`.env`) |
 | Calidad | pytest, GitHub Actions |
 
@@ -126,26 +132,46 @@ Todas las llaves foráneas usan `ON DELETE SET NULL`: si se elimina un usuario o
 
 ## 🚀 Cómo ejecutarlo
 
-### Opción 1: Docker (recomendada)
+### 1. Crear el archivo `.env`
+
+La configuración vive en un archivo `.env` en la raíz del proyecto. Git no lo sube, para no publicar secretos. Créalo con este contenido y cambia los valores:
+
+```ini
+SECRET_KEY=una-clave-larga-y-aleatoria
+ADMIN_REGISTRATION_CODE=codigo-para-registrar-fundaciones
+
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_USER=root
+DB_PASSWORD=claveSegura123
+DB_NAME=adoptme
+
+PORT=5100
+FLASK_DEBUG=false
+```
+
+> Usa solo letras, números y guiones en `DB_PASSWORD`: PyMySQL falla con tildes o con la letra ñ en la contraseña.
+> Para generar una `SECRET_KEY`, ejecuta: `python -c "import secrets; print(secrets.token_hex(32))"`
+
+### 2a. Con Docker (recomendado)
 
 ```bash
 git clone https://github.com/IngGMunoz/Adopt-Me-Now.git
 cd Adopt-Me-Now
-cp .env.example .env        # edita las contraseñas y claves
+# crea el .env del paso 1
 docker compose up --build
 ```
 
 La app queda en **http://localhost:5100**. MySQL se expone en el puerto `3307` del host.
 
-### Opción 2: Local
+### 2b. Local
 
-Requiere Python 3.10+ y un servidor MySQL.
+Requiere Python 3.10+ y un servidor MySQL. En el `.env` apunta `DB_HOST`, `DB_PORT` y `DB_PASSWORD` a tu MySQL.
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env           # ajusta DB_HOST, DB_PORT, DB_PASSWORD...
 python app.py
 ```
 

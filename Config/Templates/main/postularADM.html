@@ -1,148 +1,221 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/postular.css') }}">
-<h1>Subir Mascota para Adopción</h1>
+{% extends "layouts/base.html" %}
+{% from "components/forms.html" import field, submit %}
 
-<!-- Un único form: action -> /api/admin/mascotas/form (fallback sin JS).
-     Con JS interceptamos el submit y enviamos por fetch (FormData) para guardar en la BD
-     y luego insertamos la card en la página sin recargar. -->
-<form id="mascotaForm" method="POST" action="/api/admin/mascotas/form" enctype="multipart/form-data">
-    <label>Nombre de la mascota:</label>
-    <input type="text" name="nombre" required><br>
-    <label>Descripción:</label>
-    <textarea name="descripcion" required></textarea><br>
-    <label>Imagen:</label>
-    <input type="file" name="imagen" accept="image/*" required><br>
-    <button type="submit">Subir Mascota</button>
-</form>
+{% block title %}Panel de administración{% endblock %}
 
-<hr>
+{% block content %}
+{% set solicitudes_pendientes = solicitudes|rejectattr('is_confirmed')|list %}
+{% set postulaciones_pendientes = postulaciones|selectattr('mascota_id', 'none')|list %}
+<div class="container">
+    <header class="page-header">
+        <span class="page-header__eyebrow">Panel de administración</span>
+        <h1 class="page-header__title">Hola, {{ current_user.nombre }}</h1>
+        <p class="page-header__subtitle">Publica mascotas, revisa las solicitudes de adopción y las mascotas que proponen los usuarios.</p>
+    </header>
 
-<h2>Mascotas en Adopción</h2>
-<div class="mascotas-list">
-    {% for mascota in mascotas %}
-    <section class="card" data-title="{{ mascota.nombre }}" data-author="{{ mascota.autor }}">
-        <img src="{{ url_for('static', filename='uploads/' ~ mascota.imagen) }}" alt="{{ mascota.nombre }}" />
-        <div class="card-content">
-            <h2 class="title">{{ mascota.nombre }}</h2>
-            <span class="by"><i class="fa-solid fa-user"></i> Creado por {{ mascota.autor }}</span>
-            <p>{{ mascota.descripcion }}</p>
-            {% if is_authenticated %}
-            <a class="cta" href="{{ url_for('Formulario_Para_Adoptar', mascota=mascota.id, pet=mascota.nombre) }}" data-animate="true">
-                <i class="fa-solid fa-envelope"></i> Contactar
-            </a>
-            {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal({{ mascota.nombre|tojson|forceescape }}, event)" data-animate="true">
-                <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
-            </button>
-            {% endif %}
+    <section class="stats" aria-label="Resumen">
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-dog" aria-hidden="true"></i> En adopción</span>
+            <div class="stat__value">{{ mascotas|rejectattr('is_adopted')|list|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-house-chimney" aria-hidden="true"></i> Adoptadas</span>
+            <div class="stat__value">{{ mascotas|selectattr('is_adopted')|list|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Solicitudes pendientes</span>
+            <div class="stat__value">{{ solicitudes_pendientes|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Postulaciones por revisar</span>
+            <div class="stat__value">{{ postulaciones_pendientes|length }}</div>
         </div>
     </section>
-    {% endfor %}
-</div>
 
-<!-- script JS que intercepta el submit y muestra la card en la página -->
+    <div class="admin-layout">
+        <form class="form-card" method="post" action="{{ url_for('Postular_Admin') }}" enctype="multipart/form-data" data-validate>
+            <h2><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> Publicar mascota</h2>
+            {{ field('nombre', 'Nombre', 'text', None, 'Nombre de la mascota') }}
+            {{ field('descripcion', 'Descripción', 'textarea', None, 'Edad, carácter, salud y lo que necesita en su nuevo hogar', attrs={'minlength': 10}) }}
+            {{ field('imagen', 'Foto', 'file', None, hint='JPG, PNG o WEBP, máximo 5 MB.', attrs={'accept': 'image/png,image/jpeg,image/webp,image/gif'}) }}
+            {{ submit('Publicar en el catálogo', 'fa-paw', 'Publicando…', 'btn btn--primary btn--block') }}
+        </form>
+
+        <div>
+            <div class="tabs" role="tablist" aria-label="Gestión">
+                <button class="tab" role="tab" id="tab-mascotas" aria-controls="panel-mascotas" aria-selected="true">
+                    <i class="fa-solid fa-dog" aria-hidden="true"></i> Mascotas <span class="badge">{{ mascotas|length }}</span>
+                </button>
+                <button class="tab" role="tab" id="tab-solicitudes" aria-controls="panel-solicitudes" aria-selected="false" tabindex="-1">
+                    <i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Solicitudes <span class="badge">{{ solicitudes_pendientes|length }}</span>
+                </button>
+                <button class="tab" role="tab" id="tab-postulaciones" aria-controls="panel-postulaciones" aria-selected="false" tabindex="-1">
+                    <i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Postulaciones <span class="badge">{{ postulaciones_pendientes|length }}</span>
+                </button>
+            </div>
+
+            {# Mascotas publicadas #}
+            <section class="tab-panel list" id="panel-mascotas" role="tabpanel" aria-labelledby="tab-mascotas">
+                {% for m in mascotas %}
+                <article class="list-item">
+                    {% if m.imagen %}
+                    <img class="list-item__thumb" src="{{ url_for('static', filename='uploads/' ~ m.imagen) }}" alt="">
+                    {% else %}
+                    <span class="list-item__thumb" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+                    {% endif %}
+                    <div class="list-item__body">
+                        <div class="list-item__title">
+                            {{ m.nombre }}
+                            {% if m.is_adopted %}<span class="badge badge--success">Adoptada</span>
+                            {% else %}<span class="badge">En adopción</span>{% endif %}
+                            {% if m.solicitudes %}<span class="badge badge--muted">{{ m.solicitudes|length }} solicitud{{ 'es' if m.solicitudes|length != 1 }}</span>{% endif %}
+                        </div>
+                        <p class="list-item__text">{{ m.descripcion }}</p>
+                    </div>
+                    <div class="list-item__actions">
+                        {% if not m.is_adopted %}
+                        <button class="btn btn--secondary btn--sm" data-action="POST" data-url="/api/admin/mascotas/{{ m.id }}/adopt"
+                            data-success="{{ m.nombre }} quedó marcada como adoptada.">
+                            <i class="fa-solid fa-house-chimney" aria-hidden="true"></i> Adoptada
+                        </button>
+                        {% endif %}
+                        <button class="btn btn--danger btn--sm" data-action="DELETE" data-url="/api/admin/mascotas/{{ m.id }}"
+                            data-confirm="¿Eliminar a {{ m.nombre }} del catálogo? Esta acción no se puede deshacer."
+                            data-success="{{ m.nombre }} fue eliminada." aria-label="Eliminar {{ m.nombre }}">
+                            <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </article>
+                {% else %}
+                <div class="empty-state"><i class="fa-solid fa-paw" aria-hidden="true"></i><p>Aún no has publicado mascotas. Usa el formulario para publicar la primera.</p></div>
+                {% endfor %}
+            </section>
+
+            {# Solicitudes de adopción #}
+            <section class="tab-panel list" id="panel-solicitudes" role="tabpanel" aria-labelledby="tab-solicitudes" hidden>
+                {% for s in solicitudes %}
+                <article class="list-item">
+                    <span class="list-item__thumb" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
+                    <div class="list-item__body">
+                        <div class="list-item__title">
+                            {{ s.username }} <span class="list-item__muted">quiere adoptar a</span>
+                            {{ s.mascota.nombre if s.mascota else (s.pet_name or 'una mascota') }}
+                            {% if s.is_confirmed %}<span class="badge badge--success">Aprobada</span>
+                            {% else %}<span class="badge">Pendiente</span>{% endif %}
+                        </div>
+                        <p class="list-item__text">
+                            <i class="fa-solid fa-envelope" aria-hidden="true"></i> {{ s.email }}
+                            {% if s.telefono %} · <i class="fa-solid fa-phone" aria-hidden="true"></i> {{ s.telefono }}{% endif %}
+                            {% if s.vivienda %} · {{ s.vivienda|capitalize }}{% endif %}
+                        </p>
+                        {% if s.motivo %}<p class="list-item__text" title="{{ s.motivo }}">“{{ s.motivo }}”</p>{% endif %}
+                    </div>
+                    {% if not s.is_confirmed %}
+                    <div class="list-item__actions">
+                        <button class="btn btn--primary btn--sm" data-action="POST" data-url="/api/admin/solicitudes/{{ s.id }}/confirmar"
+                            data-confirm="¿Aprobar la solicitud de {{ s.username }}?{% if s.mascota %} {{ s.mascota.nombre }} saldrá del catálogo.{% endif %}"
+                            data-success="Solicitud aprobada.">
+                            <i class="fa-solid fa-check" aria-hidden="true"></i> Aprobar
+                        </button>
+                    </div>
+                    {% endif %}
+                </article>
+                {% else %}
+                <div class="empty-state"><i class="fa-solid fa-envelope-open" aria-hidden="true"></i><p>No hay solicitudes de adopción todavía.</p></div>
+                {% endfor %}
+            </section>
+
+            {# Postulaciones de usuarios #}
+            <section class="tab-panel list" id="panel-postulaciones" role="tabpanel" aria-labelledby="tab-postulaciones" hidden>
+                {% for p in postulaciones %}
+                <article class="list-item">
+                    {% if p.imagen %}
+                    <img class="list-item__thumb" src="{{ url_for('static', filename='uploads/' ~ p.imagen) }}" alt="">
+                    {% else %}
+                    <span class="list-item__thumb" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+                    {% endif %}
+                    <div class="list-item__body">
+                        <div class="list-item__title">
+                            {{ p.nombre or 'Sin nombre' }}
+                            {% if p.aprobada %}<span class="badge badge--success">Publicada</span>
+                            {% else %}<span class="badge">Por revisar</span>{% endif %}
+                        </div>
+                        <p class="list-item__text">
+                            {{ [p.especie, p.raza, p.edad, p.ubicacion]|select|join(' · ') }}
+                            {% if p.usuario %} · Propuesta por {{ p.usuario.username }}{% endif %}
+                        </p>
+                    </div>
+                    {% if not p.aprobada %}
+                    <div class="list-item__actions">
+                        <button class="btn btn--primary btn--sm" data-action="POST" data-url="/api/admin/postulares/{{ p.id }}/aprobar"
+                            data-success="{{ p.nombre or 'La mascota' }} ya está publicada en el catálogo.">
+                            <i class="fa-solid fa-check" aria-hidden="true"></i> Publicar
+                        </button>
+                        <button class="btn btn--danger btn--sm" data-action="DELETE" data-url="/postular/{{ p.id }}"
+                            data-confirm="¿Descartar esta postulación?" data-success="Postulación descartada."
+                            aria-label="Descartar postulación">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    {% endif %}
+                </article>
+                {% else %}
+                <div class="empty-state"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i><p>Nadie ha propuesto mascotas todavía.</p></div>
+                {% endfor %}
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
 <script>
     (function () {
-    {% if is_authenticated %}
-    const IS_AUTH = true;
-    {% else %}
-    const IS_AUTH = false;
-    {% endif %}
-    const form = document.getElementById('mascotaForm');
-    const list = document.querySelector('.mascotas-list');
-
-    // Crea un elemento y asigna su texto con textContent (nunca innerHTML con datos del usuario)
-    function el(tag, className, text) {
-        const node = document.createElement(tag);
-        if (className) node.className = className;
-        if (text !== undefined) node.textContent = text;
-        return node;
-    }
-
-    // Helper to build card node
-    function buildCard(m) {
-        const card = el('section', 'card');
-        const nombre = m.nombre || '';
-
-        const img = el('img');
-        if (m.imagen) img.src = '/static/uploads/' + encodeURIComponent(m.imagen);
-        img.alt = nombre;
-        card.appendChild(img);
-
-        const content = el('div', 'card-content');
-        content.appendChild(el('h2', 'title', nombre));
-        const by = el('span', 'by');
-        by.appendChild(el('i', 'fa-solid fa-user'));
-        by.appendChild(document.createTextNode(' Creado por ' + (m.autor || 'Administrador')));
-        content.appendChild(by);
-        content.appendChild(el('p', '', m.descripcion || ''));
-
-        // botón de acción según autenticación
-        let action;
-        if (IS_AUTH) {
-            action = el('a', 'cta');
-            action.href = '/formulario?mascota=' + encodeURIComponent(m.id) + '&pet=' + encodeURIComponent(nombre);
-            action.appendChild(el('i', 'fa-solid fa-envelope'));
-            action.appendChild(document.createTextNode(' Contactar'));
-        } else {
-            action = el('button', 'cta cta-locked');
-            action.addEventListener('click', (e) => showAuthModal(nombre, e));
-            action.appendChild(el('i', 'fa-solid fa-lock'));
-            action.appendChild(document.createTextNode(' Iniciar Sesión para Contactar'));
-        }
-        action.dataset.animate = 'true';
-        content.appendChild(action);
-
-        card.appendChild(content);
-        return card;
-    }
-
-    form.addEventListener('submit', async function (e) {
-        // si JS está activo interceptamos y enviamos por fetch multipart/form-data
-        e.preventDefault();
-
-        const fd = new FormData(form);
-        try {
-            const res = await fetch(form.action.replace(/\/form$/, ''), {
-                // enviamos al endpoint API (/api/admin/mascotas) que acepta multipart/JSON
-                method: 'POST',
-                body: fd,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest' // para que el servidor devuelva JSON cuando detecte XHR
-                },
-                credentials: 'same-origin'
+        // Pestañas accesibles
+        const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+        function select(tab) {
+            tabs.forEach((t) => {
+                const on = t === tab;
+                t.setAttribute('aria-selected', String(on));
+                t.tabIndex = on ? 0 : -1;
+                document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
             });
-
-            // intentar parsear JSON
-            let body = {};
-            const ct = res.headers.get('content-type') || '';
-            if (ct.includes('application/json')) body = await res.json().catch(()=> ({}));
-            else {
-                // servidor pudo devolver redirect/html -> forzar fallback al submit normal (guardado server-side)
-                form.submit();
-                return;
-            }
-
-            if (res.ok) {
-                // servidor devuelve objeto creado en body.mascota o body (según implementación)
-                const m = body.mascota || body;
-                // insertar card nueva al inicio
-                const card = buildCard(m);
-                if (list.firstChild) list.insertBefore(card, list.firstChild);
-                else list.appendChild(card);
-                form.reset();
-                return;
-            } else {
-                // error desde API -> mostrar y fallback enviar form tradicional
-                alert(body.msg || body.error || ('Error ' + res.status));
-                // si quieres, puedes evitar el fallback y solo mostrar error; aquí hacemos fallback
-                form.submit();
-                return;
-            }
-        } catch (err) {
-            console.error('network error', err);
-            // fallback: submit tradicional para que el servidor procese y redirija
-            form.submit();
+            tab.focus();
+            history.replaceState(null, '', '#' + tab.id.replace('tab-', ''));
         }
-    });
-})();
+        tabs.forEach((tab, i) => {
+            tab.addEventListener('click', () => select(tab));
+            tab.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') select(tabs[(i + 1) % tabs.length]);
+                if (e.key === 'ArrowLeft') select(tabs[(i - 1 + tabs.length) % tabs.length]);
+            });
+        });
+        const initial = document.getElementById('tab-' + location.hash.slice(1));
+        if (initial) select(initial);
+
+        // Acciones sobre la API de administración
+        document.addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            if (btn.dataset.confirm && !window.confirm(btn.dataset.confirm)) return;
+            btn.disabled = true;
+            try {
+                const res = await fetch(btn.dataset.url, {
+                    method: btn.dataset.action,
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                if (!res.ok) {
+                    const body = await res.json().catch(() => ({}));
+                    throw new Error(body.msg || 'No se pudo completar la acción.');
+                }
+                sessionStorage.setItem('adoptme:toast', JSON.stringify({ message: btn.dataset.success, category: 'success' }));
+                location.reload();
+            } catch (err) {
+                AdoptMe.toast(err.message, 'error');
+                btn.disabled = false;
+            }
+        });
+    })();
 </script>
+{% endblock %}

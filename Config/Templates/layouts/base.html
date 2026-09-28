@@ -1,68 +1,44 @@
 <!DOCTYPE html>
-<html lang="es" {% if page_class %}class="{{ page_class }}" {% endif %}>
+<html lang="es">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--# Aca empieza el bloque title #-->
-    <title>{% block title %}Adopt Me{% endblock %}</title>
-    <!--# Aca termina el bloque title #-->
+    <title>{% block title %}Adopt Me{% endblock %} · Adopt Me</title>
+    <meta name="description" content="{% block description %}Adopt Me conecta fundaciones y rescatistas con personas responsables que quieren adoptar una mascota.{% endblock %}">
+    <meta name="theme-color" content="#d49a4a">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
 
-    <!-- Fuentes base -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
-    <!-- CSS específico por página -->
-    <!--# Aca empieza el bloque stylesheets #-->
-    {% block stylesheets %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/principal.css') }}">
-    {% endblock %}
-    <!--# Aca termina el bloque stylesheets #-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+    {% block stylesheets %}{% endblock %}
 </head>
 
-<body>
-    <!-- Efectos de fondo si son necesarios -->
-    <!--# Aca empieza el bloque background_effects #-->
-    {% block background_effects %}{% endblock %}
-    <!--# Aca termina el bloque background_effects #-->
+<body class="{% block body_class %}{% endblock %}">
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
-    <!-- Navegación -->
-    <!--# Aca empieza el bloque navbar #-->
-    {% block navbar %}
-    {% include 'components/navbar.html' %}
-    {% endblock %}
-    <!--# Aca termina el bloque navbar #-->
+    {% block navbar %}{% include 'components/navbar.html' %}{% endblock %}
 
-    <!-- Contenido principal -->
-    <main {% if main_class %}class="{{ main_class }}" {% endif %}>
-        <!--# Aca empieza el bloque content #-->
+    {% include 'components/flash_messages.html' %}
+
+    <main id="contenido" class="site-main">
         {% block content %}{% endblock %}
-        <!--# Aca termina el bloque content #-->
     </main>
 
-    <!-- Footer -->
-    <!--# Aca empieza el bloque footer #-->
-    {% block footer %}
-    {% include 'components/footer.html' %}
-    {% endblock %}
-    <!--# Aca termina el bloque footer #-->
+    {% block footer %}{% include 'components/footer.html' %}{% endblock %}
 
+    {% include 'components/auth-modal.html' %}
 
-    <!-- Scripts base -->
-    <!--# Aca empieza el bloque scripts #-->
+    <script src="{{ url_for('static', filename='JS/app.js') }}"></script>
     {% block scripts %}{% endblock %}
-    <!--# Aca termina el bloque scripts #-->
-
-
-    <!-- Chatbot -->
-    <!--# Aca empieza el bloque chatbot #-->
     {% block chatbot %}
-    <script src="{{ url_for('static', filename='js/IA_adoptme.js') }}"></script>
+    <script src="{{ url_for('static', filename='JS/IA_adoptme.js') }}" defer></script>
     {% endblock %}
-    <!--# Aca termina el bloque chatbot #-->
-
-
 </body>
 
 </html>

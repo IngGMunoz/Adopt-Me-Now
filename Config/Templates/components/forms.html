@@ -1,0 +1,62 @@
+{# Campos de formulario reutilizables. La validación en vivo está en JS/app.js (form[data-validate]). #}
+
+{#
+  field(name, label, type='text', icon=None, placeholder='', required=True, hint=None, full=False,
+        value='', attrs={})
+  attrs: atributos HTML extra, p. ej. {'minlength': 3, 'autocomplete': 'email'}
+#}
+{% macro field(name, label, type='text', icon=None, placeholder='', required=True, hint=None, full=False, value='', attrs={}, id=None) -%}
+{% set fid = id or name %}
+<div class="field{% if full %} field--full{% endif %}">
+    <label class="field__label" for="{{ fid }}">
+        {{ label }}{% if not required %} <span class="optional">(opcional)</span>{% endif %}
+    </label>
+    <div class="field__control">
+        {% if icon %}<i class="field__icon fa-solid {{ icon }}" aria-hidden="true"></i>{% endif %}
+        {% if type == 'textarea' %}
+        <textarea id="{{ fid }}" name="{{ name }}" class="input" placeholder="{{ placeholder }}"
+            {% if required %}required{% endif %}
+            {% for k, v in attrs.items() %} {{ k }}="{{ v }}"{% endfor %}>{{ value }}</textarea>
+        {% else %}
+        <input id="{{ fid }}" name="{{ name }}" type="{{ type }}" class="input" placeholder="{{ placeholder }}"
+            value="{{ value }}" {% if required %}required{% endif %}
+            {% for k, v in attrs.items() %} {{ k }}="{{ v }}"{% endfor %}>
+        {% if type == 'password' %}
+        <button type="button" class="password-toggle" aria-label="Mostrar contraseña"><i class="fa-regular fa-eye"></i></button>
+        {% endif %}
+        {% endif %}
+    </div>
+    {% if caller is defined %}{{ caller() }}{% endif %}
+    {% if hint %}<p class="field__hint">{{ hint }}</p>{% endif %}
+    <p class="field__error" id="{{ fid }}-error"></p>
+</div>
+{%- endmacro %}
+
+{# select(name, label, options=[(valor, texto)], ...) #}
+{% macro select(name, label, options, icon=None, required=True, full=False, placeholder='Selecciona una opción', id=None) -%}
+{% set fid = id or name %}
+<div class="field{% if full %} field--full{% endif %}">
+    <label class="field__label" for="{{ fid }}">
+        {{ label }}{% if not required %} <span class="optional">(opcional)</span>{% endif %}
+    </label>
+    <div class="field__control">
+        {% if icon %}<i class="field__icon fa-solid {{ icon }}" aria-hidden="true"></i>{% endif %}
+        <select id="{{ fid }}" name="{{ name }}" class="input" {% if required %}required{% endif %}>
+            <option value="">{{ placeholder }}</option>
+            {% for value, text in options %}
+            <option value="{{ value }}">{{ text }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <p class="field__error" id="{{ fid }}-error"></p>
+</div>
+{%- endmacro %}
+
+{# Botón de envío con estado de carga #}
+{% macro submit(label, icon='fa-paper-plane', loading='Enviando…', classes='btn btn--primary', id=None) -%}
+<button type="submit" class="{{ classes }}" data-loading-text="{{ loading }}" {% if id %}id="{{ id }}"{% endif %}>
+    <span class="spinner" aria-hidden="true"></span>
+    <i class="btn__icon fa-solid {{ icon }}" aria-hidden="true"></i>
+    <span class="btn__label">{{ label }}</span>
+</button>
+{%- endmacro %}

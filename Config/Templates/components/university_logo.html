@@ -1,5 +1,1 @@
-<div style="text-align:center; margin-bottom:18px;">
-    <img src="{{ url_for('static', filename='images/favicon.svg') }}" alt="Adopt Me" {% if
-        logo_class %}class="{{ logo_class }}" {% endif %} {% if logo_style %}style="{{ logo_style }}" {% else
-        %}style="width: 60px; height: auto;" {% endif %} />
-</div>
+<img class="auth__logo" src="{{ url_for('static', filename='images/favicon.svg') }}" alt="Adopt Me" width="60" height="60">

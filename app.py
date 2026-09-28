@@ -1,6 +1,7 @@
 import os
+from datetime import date
 
-from flask import flash, jsonify, redirect, render_template, request, session, url_for
+from flask import abort, flash, jsonify, redirect, render_template, request, session, url_for
 
 from Config.db import app, db
 from Config.auth import (
@@ -11,6 +12,7 @@ from Config.auth import (
     save_uploaded_image,
 )
 from Config.schema import init_db
+from Config.catalogo import MASCOTAS_DESTACADAS
 
 # Modelos
 from Models.mascotas import Mascota
@@ -38,7 +40,12 @@ with app.app_context():
 
 
 def _wants_json():
-    return request.headers.get("X-Requested-With") == "XMLHttpRequest" or request.accept_mimetypes.accept_json
+    # Los navegadores envían "Accept: */*", así que accept_json siempre sería True:
+    # solo se responde JSON a peticiones fetch/XHR o que prefieran JSON sobre HTML.
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return True
+    best = request.accept_mimetypes.best_match(["text/html", "application/json"])
+    return best == "application/json"
 
 
 def get_current_user():
@@ -60,7 +67,11 @@ def get_current_user():
 # Información de autenticación disponible en todas las plantillas
 @app.context_processor
 def inject_auth():
-    return {"is_authenticated": is_authenticated(), "current_user": get_current_user()}
+    return {
+        "is_authenticated": is_authenticated(),
+        "current_user": get_current_user(),
+        "now_year": date.today().year,
+    }
 
 
 @app.errorhandler(413)
@@ -75,7 +86,21 @@ def file_too_large(_error):
 
 @app.route("/")
 def Pagina_Principal():
-    return render_template("main/Pagina_Principal.html")
+    # Últimas mascotas publicadas para la sección "Recién llegados"
+    try:
+        recientes = Mascota.query.filter_by(is_adopted=False).order_by(Mascota.id.desc()).limit(3).all()
+        total = Mascota.query.filter_by(is_adopted=False).count() + len(MASCOTAS_DESTACADAS)
+        adoptadas = Mascota.query.filter_by(is_adopted=True).count()
+    except Exception:
+        app.logger.exception("No se pudieron cargar las mascotas")
+        recientes, total, adoptadas = [], len(MASCOTAS_DESTACADAS), 0
+    return render_template(
+        "main/Pagina_Principal.html",
+        recientes=recientes,
+        destacadas=MASCOTAS_DESTACADAS,
+        total_disponibles=total,
+        total_adoptadas=adoptadas,
+    )
 
 
 @app.route("/adopcion")
@@ -86,7 +111,7 @@ def Pagina_Adopcion():
     except Exception:
         app.logger.exception("No se pudieron cargar las mascotas")
         mascotas_db = []
-    return render_template("main/Pagina1_Adopcion.html", mascotas=mascotas_db)
+    return render_template("main/Pagina1_Adopcion.html", mascotas=mascotas_db, destacadas=MASCOTAS_DESTACADAS)
 
 
 # Alias para compatibilidad: /mascotas -> /adopcion
@@ -95,19 +120,15 @@ def Mascotas_Alias():
     return redirect("/adopcion")
 
 
-@app.route("/cachorro")
-def Pagina2_Cachorro():
-    return render_template("main/Pagina2_Cachorro.html")
-
-
-@app.route("/michi")
-def Pagina_Michi():
-    return render_template("main/Pagina_Michi.html")
-
-
-@app.route("/rocky")
-def Pagina_perro2():
-    return render_template("main/Pagina_perro2.html")
+# Perfil de las mascotas destacadas: /cachorro, /michi, /rocky
+@app.route("/cachorro", defaults={"slug": "cachorro"})
+@app.route("/michi", defaults={"slug": "michi"})
+@app.route("/rocky", defaults={"slug": "rocky"})
+def Detalle_Mascota(slug):
+    mascota = MASCOTAS_DESTACADAS.get(slug)
+    if not mascota:
+        abort(404)
+    return render_template("main/Detalle_Mascota.html", mascota=mascota, slug=slug)
 
 
 @app.route("/fundaciones")
@@ -210,7 +231,19 @@ def Registro_Administrador():
 @login_required
 def Formulario_Para_Adoptar():
     if request.method == "GET":
-        return render_template("main/Formulario_Para_Adoptar.html")
+        # Datos de la mascota elegida para mostrarla en el encabezado del formulario
+        pet = None
+        mascota_id = request.args.get("mascota", type=int)
+        pet_name = request.args.get("pet")
+        mascota = db.session.get(Mascota, mascota_id) if mascota_id else None
+        if mascota:
+            imagen = url_for("static", filename="uploads/" + mascota.imagen) if mascota.imagen else None
+            pet = {"nombre": mascota.nombre, "imagen": imagen}
+        elif pet_name:
+            destacada = next((m for m in MASCOTAS_DESTACADAS.values() if m["nombre"] == pet_name), None)
+            imagen = url_for("static", filename=destacada["imagen"]) if destacada else None
+            pet = {"nombre": pet_name, "imagen": imagen}
+        return render_template("main/Formulario_Para_Adoptar.html", pet=pet)
 
     nombre = request.form.get("nombre") or request.form.get("username")
     email = request.form.get("email")
@@ -272,13 +305,16 @@ def Formulario_Para_Adoptar():
 # Publicación de mascotas
 # ---------------------------------------------------------------------------
 
-# Panel del administrador: publicar mascotas que aparecen en /adopcion
+# Panel del administrador: publicar mascotas y gestionar solicitudes y postulaciones
 @app.route("/postularADM", methods=["GET", "POST"])
 @admin_required
 def Postular_Admin():
     if request.method == "POST":
-        nombre = request.form.get("nombre") or "Sin nombre"
-        descripcion = request.form.get("descripcion") or ""
+        nombre = (request.form.get("nombre") or "").strip()
+        descripcion = (request.form.get("descripcion") or "").strip()
+        if not nombre or not descripcion:
+            flash("El nombre y la descripción son obligatorios", "error")
+            return redirect(url_for("Postular_Admin"))
         imagen = save_uploaded_image(request.files.get("imagen"))
         try:
             db.session.add(Mascota(
@@ -289,14 +325,22 @@ def Postular_Admin():
                 publicado_por_id=session["user_id"],
             ))
             db.session.commit()
+            flash(f"¡{nombre} ya aparece en el catálogo de adopción!", "success")
         except Exception:
             db.session.rollback()
             app.logger.exception("Error al publicar la mascota")
             flash("No se pudo publicar la mascota", "error")
-        return redirect("/adopcion")
+        return redirect(url_for("Postular_Admin"))
 
     mascotas_db = Mascota.query.order_by(Mascota.id.desc()).all()
-    return render_template("main/postularADM.html", mascotas=mascotas_db)
+    solicitudes = adoptar_mascotas.query.order_by(adoptar_mascotas.is_confirmed, adoptar_mascotas.id.desc()).all()
+    postulaciones = PostularMascotas.query.order_by(PostularMascotas.id.desc()).all()
+    return render_template(
+        "main/postularADM.html",
+        mascotas=mascotas_db,
+        solicitudes=solicitudes,
+        postulaciones=postulaciones,
+    )
 
 
 # Formulario para que un usuario proponga una mascota en adopción

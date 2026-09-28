@@ -1,209 +1,60 @@
 {% extends "layouts/base.html" %}
+{% from "components/pet_card.html" import pet_card, featured_card %}
 
-{% block title %}Adopt Me - Mascotas y Fundaciones{% endblock %}
-
-{% block stylesheets %}
-{{ super() }}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/Adopcion.css') }}">
-{% endblock %}
-
-{% block navbar %} <!--# Aca empieza el bloque navbar #-->
-<!-- Header personalizado para página de adopción -->
-<header class="topbar">
-    <div class="topbar-inner">
-        <a href="{{ url_for('Pagina_Principal') }}" class="brand">
-            <i class="fa-solid fa-paw"></i> Adopt Me
-        </a>
-        <nav class="nav" aria-label="Navegación principal">
-            <a href="/"><i class="fa-solid fa-house"></i> Inicio</a> <!-- Esto siempre va a ser /, no /index y es para mantener la coherencia en la navegación -->
-            <a href="/adopcion"><i class="fa-solid fa-dog"></i> Mascotas</a> <!-- Esto es para la ruta de adopción, para que se pueda desplegar la pagina -->
-            <a href="/fundaciones"><i class="fa-solid fa-hand-holding-heart"></i> Fundaciones</a> <!-- Esto es para la ruta de fundaciones, para que se pueda desplegar la pagina-->
-        </nav>
-        <div class="user" title="Perfil">
-            <i class="fa-regular fa-user"></i>
-        </div>
-        <div class="topbar-auth">
-            {% if is_authenticated %}
-                <a href="{{ url_for('logout') }}" class="navbar__btn navbar__btn--login">Cerrar sesión</a>
-            {% else %}
-                <a href="{{ url_for('Iniciar_Sesion') }}" class="navbar__btn navbar__btn--login">Iniciar sesión</a>
-                <a href="{{ url_for('Registro_Usuario') }}" class="navbar__btn navbar__btn--register">Registro</a>
-            {% endif %}
-        </div>
-    </div>
-</header>
-{% endblock %} <!-- Aca termina el bloque navbar -->
+{% block title %}Mascotas en adopción{% endblock %}
 
 {% block content %}
-<div class="toolbar">
-    <label for="sortSelect" class="visually-hidden">Ordenar por</label>
-    <select id="sortSelect" class="sort-btn" aria-label="Ordenar por">
-        <option value="default">Orden recomendado</option>
-        <option value="title-asc">Nombre (A-Z)</option>
-        <option value="author-asc">Autor (A-Z)</option>
-    </select>
-</div>
+<div class="container">
+    <header class="page-header animate-in">
+        <span class="page-header__eyebrow">Adopta, no compres</span>
+        <h1 class="page-header__title">Encuentra a tu nuevo mejor amigo</h1>
+        <p class="page-header__subtitle">
+            Todas estas mascotas fueron rescatadas y esperan una familia responsable. Conoce su historia y envía tu
+            solicitud de adopción.
+        </p>
+    </header>
 
-
-<main class="content">
-    {# Mascotas subidas por el admin (dinámicas) #}
-    {% for mascota in mascotas %}
-    <section class="card" data-title="{{ mascota.nombre }}" data-author="{{ mascota.autor }}">
-        {% if mascota.imagen %}
-        <img src="{{ url_for('static', filename='uploads/' ~ mascota.imagen) }}" alt="{{ mascota.nombre }}" />
-        {% else %}
-        <img src="{{ url_for('static', filename='images/Perro.jpg') }}" alt="{{ mascota.nombre }}" />
-        {% endif %}
-        <div class="card-content">
-            <h2 class="title">{{ mascota.nombre }}</h2>
-            <span class="by"><i class="fa-solid fa-user"></i> Creado por {{ mascota.autor }}</span>
-            <p>{{ mascota.descripcion }}</p>
-            {% if is_authenticated %}
-            <a class="cta" href="{{ url_for('Formulario_Para_Adoptar', mascota=mascota.id, pet=mascota.nombre) }}" data-animate="true">
-                <i class="fa-solid fa-envelope"></i> Contactar
-            </a>
-            {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal({{ mascota.nombre|tojson|forceescape }}, event)" data-animate="true">
-                <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
-            </button>
-            {% endif %}
-        </div>
-    </section>
-    {% endfor %}
-
-    {# Mascotas fijas (hardcodeadas) #}
-    <!-- Card 1 -->
-    <section class="card" data-title="Cachorro" data-author="Daniel">
-        <img src="{{ url_for('static', filename='images/Cachorro.png') }}" alt="Cachorro" />
-        <div class="card-content">
-            <h2 class="title">Cachorro</h2>
-            <span class="by"><i class="fa-solid fa-user"></i> Creado por Daniel</span>
-            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas
-                con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y
-                facilitando el proceso de adopción de forma rápida y segura.</p>
-            {% if is_authenticated %}
-            <a class="cta" href="/cachorro" data-animate="true" data-loading-text="Conectando..."
-                data-animation-type="contact" data-delay="600" data-restore-delay="800">
-                <i class="fa-solid fa-envelope"></i> Contactar
-            </a>
-            {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal('Cachorro', event)" data-animate="true"
-                data-loading-text="Debes iniciar sesión..." data-animation-type="auth" data-delay="300"
-                data-restore-delay="600">
-                <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
-            </button>
-            {% endif %}
-        </div>
-    </section>
-
-    <!-- Card 2 -->
-    <section class="card" data-title="Funcuan" data-author="David">
-        <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo Fundación FUNCUAN"
-            style="object-fit: contain;" />
-        <div class="card-content">
-            <h2 class="title">Funcuan</h2>
-            <span class="by"><i class="fa-solid fa-user"></i> Creado por David</span>
-            <p>En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas
-                con personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y
-                facilitando el proceso de adopción de forma rápida y segura.</p>
-            <a class="cta" href="/funcuan" data-animate="true" data-loading-text="Redireccionando..."
-                data-animation-type="redirect" data-delay="700" data-restore-delay="900">
-                <i class="fa-solid fa-envelope"></i> Contactar
-            </a>
-        </div>
-    </section>
-
-    <!-- Card 3 - Michi -->
-    <section class="card" data-title="Michi" data-author="Ana">
-        <img src="{{ url_for('static', filename='images/michi.jpg') }}" alt="Michi" />
-        <div class="card-content">
-            <h2 class="title">Michi</h2>
-            <span class="by"><i class="fa-solid fa-user"></i> Creado por Ana</span>
-            <p>Michi es un gatito adorable y muy cariñoso. Le encanta jugar y recibir mimos. Es perfecto para familias
-                que buscan una compañía tierna y llena de amor. Está vacunado y listo para encontrar su hogar para
-                siempre.</p>
-            {% if is_authenticated %}
-            <a class="cta" href="/michi" data-animate="true" data-loading-text="Conectando..."
-                data-animation-type="contact" data-delay="600" data-restore-delay="800">
-                <i class="fa-solid fa-envelope"></i> Contactar
-            </a>
-            {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal('Michi', event)" data-animate="true"
-                data-loading-text="Debes iniciar sesión..." data-animation-type="auth" data-delay="300"
-                data-restore-delay="600">
-                <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
-            </button>
-            {% endif %}
-        </div>
-    </section>
-
-    <!-- Card 4 - Rocky -->
-    <section class="card" data-title="Rocky" data-author="Andrea">
-        <img src="{{ url_for('static', filename='images/chiki.jpg') }}" alt="Rocky" />
-        <div class="card-content">
-            <h2 class="title">Rocky</h2>
-            <span class="by"><i class="fa-solid fa-user"></i> Creado por Andrea</span>
-            <p>Rocky es un perro mestizo de tamaño mini, muy noble y protector. Le encanta jugar al aire libre y
-                convivir con personas y otros animales. Está vacunado, desparasitado y listo para encontrar una familia
-                que lo quiera y cuide para siempre.</p>
-            {% if is_authenticated %}
-            <a class="cta" href="/rocky" data-animate="true" data-loading-text="Conectando..."
-                data-animation-type="contact" data-delay="600" data-restore-delay="800">
-                <i class="fa-solid fa-envelope"></i> Contactar
-            </a>
-            {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal('Rocky', event)" data-animate="true"
-                data-loading-text="Debes iniciar sesión..." data-animation-type="auth" data-delay="300"
-                data-restore-delay="600">
-                <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
-            </button>
-            {% endif %}
-        </div>
-    </section>
-</main>
-
-<!-- Footer local (nota: el layout ya agrega uno global mediante el bloque footer) -->
-<footer class="footer">
-    <div class="footer-inner">
-        <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
-        <div class="footer-grid">
-            <div>
-                <h4>Contáctanos</h4>
-                <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
-                <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-                <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
+    <div class="toolbar">
+        <p class="toolbar__count">
+            <strong id="petCount">{{ mascotas|length + destacadas|length }}</strong> mascotas disponibles
+        </p>
+        <div class="toolbar__controls">
+            <div class="field__control">
+                <i class="field__icon fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <label for="petSearch" class="visually-hidden">Buscar mascota</label>
+                <input id="petSearch" type="search" class="input" placeholder="Buscar por nombre, especie…" autocomplete="off">
             </div>
-            <div>
-                <h4>Adopción</h4>
-                <a href="#">¿Cómo adoptar?</a>
-                <a href="#">Requisitos</a>
-                <a href="#">Historias felices</a>
-            </div>
-            <div>
-                <h4>Fundaciones</h4>
-                <a href="#">Unirse</a>
-                <a href="#">Recursos</a>
-                <a href="#">Eventos</a>
-            </div>
-            <div>
-                <h4>Legal</h4>k
-                <a href="#">Términos</a>
-                <a href="#">Privacidad</a>
-                <a href="#">Ayuda</a>
-            </div>
+            <label for="petSort" class="visually-hidden">Ordenar</label>
+            <select id="petSort" class="input">
+                <option value="default">Más recientes</option>
+                <option value="name-asc">Nombre (A-Z)</option>
+                <option value="name-desc">Nombre (Z-A)</option>
+            </select>
         </div>
     </div>
-</footer>
 
-<!-- Incluir componentes necesarios -->
-{% include 'components/boton_animado.html' %}
-{% include 'components/auth-modal.html' %}
-{% endblock %}
+    <div class="pet-grid" data-catalog>
+        {% for mascota in mascotas %}
+            {{ pet_card(mascota, current_user) }}
+        {% endfor %}
+        {% for slug, mascota in destacadas.items() %}
+            {{ featured_card(slug, mascota) }}
+        {% endfor %}
+        <div id="petEmpty" class="empty-state" hidden>
+            <i class="fa-solid fa-paw" aria-hidden="true"></i>
+            <p>No encontramos mascotas con esa búsqueda.</p>
+        </div>
+    </div>
 
-{% block footer %}
-<!-- Footer sobrescrito para usar el footer local del content -->
-{% endblock %}
-
-{% block scripts %}
-<!-- Los estilos y scripts ahora están incluidos en los componentes -->
+    <aside class="foundation-banner">
+        <img src="{{ url_for('static', filename='images/v5_101.png') }}" alt="Logo de la Fundación Cuidado Animal (Funcuan)">
+        <div class="foundation-banner__text">
+            <h2>Conoce a Funcuan, nuestra fundación aliada</h2>
+            <p>Una entidad sin ánimo de lucro que trabaja contra el maltrato animal en Barranquilla.</p>
+        </div>
+        <a href="{{ url_for('Pagina_Fundacion') }}" class="btn btn--secondary">
+            Ver fundación <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+    </aside>
+</div>
 {% endblock %}

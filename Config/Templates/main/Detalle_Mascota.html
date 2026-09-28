@@ -1,0 +1,75 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ mascota.nombre }} busca hogar{% endblock %}
+{% block description %}{{ mascota.resumen }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <a href="{{ url_for('Pagina_Adopcion') }}">Mascotas</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ mascota.nombre }}</span>
+    </nav>
+
+    <article class="detail animate-in">
+        <div class="detail__media">
+            <img src="{{ url_for('static', filename=mascota.imagen) }}" alt="Foto de {{ mascota.nombre }}">
+        </div>
+
+        <div>
+            <h1 class="detail__title">{{ mascota.nombre }}</h1>
+            <div class="detail__meta">
+                <span class="badge">
+                    <i class="fa-solid {{ 'fa-cat' if mascota.especie == 'Gato' else 'fa-dog' }}" aria-hidden="true"></i>
+                    {{ mascota.especie }}
+                </span>
+                <span class="badge badge--muted"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> {{ mascota.ubicacion }}</span>
+                <span class="badge badge--muted"><i class="fa-solid fa-user" aria-hidden="true"></i> Publicado por {{ mascota.autor }}</span>
+            </div>
+
+            <p class="detail__summary">{{ mascota.resumen }}</p>
+
+            <dl class="facts">
+                {% for label, value in mascota.datos %}
+                <div class="fact">
+                    <dt>{{ label }}</dt>
+                    <dd>{{ value }}</dd>
+                </div>
+                {% endfor %}
+            </dl>
+
+            <div class="detail__block">
+                <h3><i class="fa-solid fa-heart-pulse" aria-hidden="true"></i> Salud</h3>
+                <p>{{ mascota.salud }}</p>
+            </div>
+            <div class="detail__block">
+                <h3><i class="fa-solid fa-face-smile" aria-hidden="true"></i> Carácter</h3>
+                <p>{{ mascota.caracter }}</p>
+            </div>
+            <div class="detail__block">
+                <h3><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> Requisitos para adoptar</h3>
+                <p>{{ mascota.requisitos }}</p>
+            </div>
+            <div class="detail__block">
+                <h3><i class="fa-solid fa-phone" aria-hidden="true"></i> Contacto</h3>
+                <p>{{ mascota.contacto }}</p>
+            </div>
+
+            <div class="detail__actions">
+                {% if current_user %}
+                <a class="btn btn--primary" href="{{ url_for('Formulario_Para_Adoptar', pet=mascota.nombre) }}">
+                    <i class="fa-solid fa-paw" aria-hidden="true"></i> Postularme para adoptar
+                </a>
+                {% else %}
+                <button type="button" class="btn btn--locked" data-auth-required="{{ mascota.nombre }}">
+                    <i class="fa-solid fa-lock" aria-hidden="true"></i> Inicia sesión para adoptar
+                </button>
+                {% endif %}
+                <a class="btn btn--ghost" href="{{ url_for('Pagina_Adopcion') }}">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Ver más mascotas
+                </a>
+            </div>
+        </div>
+    </article>
+</div>
+{% endblock %}

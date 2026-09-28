@@ -1,28 +1,97 @@
 {% extends "layouts/base.html" %}
+{% from "components/pet_card.html" import pet_card, featured_card %}
 
-<!--# Aca empieza el bloque title #-->
-{% block title %}Adopt Me - Sobre Nosotros{% endblock %}
-<!--# Aca termina el bloque title #-->
+{% block title %}Adopta, no compres{% endblock %}
 
-<!--# Aca empieza el bloque content #-->
 {% block content %}
-<section class="about">
-    <div class="about__text">
-        <h1>Sobre nosotros</h1>
-        <h2 class="about__subtitle">ADOPTA, NO COMPRES</h2>
-        <p>
-            En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y rescatistas con
-            personas responsables que buscan adoptar, brindando visibilidad a quienes más lo necesitan y facilitando el
-            proceso de adopción de forma rápida y segura.
-        </p>
-        <a href="{{ url_for('Pagina_Adopcion') }}" class="about__cta">¡Adóptame!</a>
+<section class="hero">
+    <div class="container">
+        <div class="hero__card animate-in">
+            <div>
+                <h1 class="hero__title">Sobre nosotros</h1>
+                <p class="hero__subtitle">Adopta, no compres</p>
+                <p class="hero__text">
+                    En Adopt Me creemos que cada mascota merece un hogar lleno de amor. Conectamos fundaciones y
+                    rescatistas con personas responsables que buscan adoptar, dándole visibilidad a quienes más lo
+                    necesitan y haciendo el proceso de adopción rápido y seguro.
+                </p>
+                <div class="hero__actions">
+                    <a href="{{ url_for('Pagina_Adopcion') }}" class="btn btn--primary btn--pill">
+                        <i class="fa-solid fa-paw" aria-hidden="true"></i> ¡Adóptame!
+                    </a>
+                    <a href="#como-funciona" class="btn btn--secondary btn--pill">¿Cómo funciona?</a>
+                </div>
+                <div class="hero__stats">
+                    <div class="hero__stat"><strong>{{ total_disponibles }}</strong><span>mascotas buscan hogar</span></div>
+                    <div class="hero__stat"><strong>{{ total_adoptadas }}</strong><span>adopciones logradas</span></div>
+                    <div class="hero__stat"><strong>1</strong><span>fundación aliada</span></div>
+                </div>
+            </div>
+            <div class="hero__images">
+                <img src="{{ url_for('static', filename='images/Cachorro.png') }}" alt="Cachorro schnauzer en adopción">
+                <img src="{{ url_for('static', filename='images/v34_9.png') }}" alt="Voluntaria cargando a un perro rescatado">
+            </div>
+        </div>
     </div>
-    <div class="about__images">
-        <img src="{{ url_for('static', filename='images/Cachorro.png') }}" alt="Cachorro adorable en adopción"
-            class="about__img about__img--small">
-        <img src="{{ url_for('static', filename='images/v34_9.png') }}" alt="Perro feliz rescatado"
-            class="about__img about__img--large">
+</section>
+
+<section id="como-funciona" class="section">
+    <div class="container">
+        <span class="eyebrow">Adoptar es sencillo</span>
+        <h2 class="section-title">¿Cómo funciona?</h2>
+        <div class="steps">
+            <article class="step">
+                <div class="step__icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <h3>Encuentra a tu compañero</h3>
+                <p>Explora las mascotas que publican las fundaciones y conoce su historia, carácter y cuidados.</p>
+            </article>
+            <article class="step">
+                <div class="step__icon" aria-hidden="true"><i class="fa-solid fa-file-signature"></i></div>
+                <h3>Envía tu solicitud</h3>
+                <p>Crea tu cuenta y cuéntanos sobre tu hogar. Toma solo unos minutos.</p>
+            </article>
+            <article class="step">
+                <div class="step__icon" aria-hidden="true"><i class="fa-solid fa-house-chimney-window"></i></div>
+                <h3>Dale un hogar</h3>
+                <p>La fundación revisa tu solicitud, se pone en contacto contigo y coordinan la adopción.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <span class="eyebrow">Buscan familia</span>
+                <h2 class="section-title">Recién llegados</h2>
+            </div>
+            <a href="{{ url_for('Pagina_Adopcion') }}" class="btn btn--ghost">
+                Ver todas <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+        <div class="pet-grid" style="margin-top: 28px;">
+            {% for mascota in recientes %}
+                {{ pet_card(mascota, current_user) }}
+            {% endfor %}
+            {% for slug, mascota in (destacadas.items()|list)[:3 - recientes|length] %}
+                {{ featured_card(slug, mascota) }}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="cta-band">
+            <div>
+                <h2>¿Conoces una mascota que necesita un hogar?</h2>
+                <p>Cuéntanos sobre ella y una fundación aliada revisará su caso para publicarla.</p>
+            </div>
+            <a href="{{ url_for('Postular_Mascotas') }}" class="btn btn--pill">
+                <i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Dar en adopción
+            </a>
+        </div>
     </div>
 </section>
 {% endblock %}
-<!--# Aca termina el bloque content #-->

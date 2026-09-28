@@ -1,31 +1,42 @@
-<footer class="footer">
-        <div class="footer-inner"> 
-            <div class="footer-brand"><i class="fa-solid fa-paw"></i> Adopt Me</div>
-            <div class="footer-grid">
-                <div>
-                    <h4>Contáctanos</h4>
-                    <a href="#"><i class="fa-solid fa-envelope"></i> Email</a>
-                    <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-                    <a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
-                </div>
-                <div>
-                    <h4>Adopción</h4>
-                    <a href="#">¿Cómo adoptar?</a>
-                    <a href="#">Requisitos</a>
-                    <a href="#">Historias felices</a>
-                </div>
-                <div>
-                    <h4>Fundaciones</h4>
-                    <a href="#">Unirse</a>
-                    <a href="#">Recursos</a>
-                    <a href="#">Eventos</a>
-                </div>
-                <div>
-                    <h4>Legal</h4>
-                    <a href="#">Términos</a>
-                    <a href="#">Privacidad</a>
-                    <a href="#">Ayuda</a>
-                </div>
-            </div>
+<footer class="site-footer">
+    <div class="container site-footer__inner">
+        <div>
+            <a href="{{ url_for('Pagina_Principal') }}" class="brand"><i class="fa-solid fa-paw" aria-hidden="true"></i> Adopt Me</a>
+            <p class="site-footer__about">
+                Conectamos fundaciones y rescatistas con personas responsables que quieren darle un hogar a una mascota.
+            </p>
         </div>
-    </footer>
+        <div>
+            <h4>Explorar</h4>
+            <ul>
+                <li><a href="{{ url_for('Pagina_Adopcion') }}">Mascotas en adopción</a></li>
+                <li><a href="{{ url_for('Pagina_Fundacion') }}">Fundaciones aliadas</a></li>
+                <li><a href="{{ url_for('Pagina_Principal') }}#como-funciona">¿Cómo adoptar?</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Tu cuenta</h4>
+            <ul>
+                {% if current_user %}
+                <li><a href="{{ url_for('Postular_Mascotas') }}">Dar en adopción</a></li>
+                <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+                {% else %}
+                <li><a href="{{ url_for('Iniciar_Sesion') }}">Iniciar sesión</a></li>
+                <li><a href="{{ url_for('Registro_Usuario') }}">Crear cuenta</a></li>
+                <li><a href="{{ url_for('Registro_Administrador') }}">Soy una fundación</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div>
+            <h4>Fundación aliada</h4>
+            <ul>
+                <li><a href="{{ url_for('Pagina_Fundacion') }}"><i class="fa-solid fa-heart" aria-hidden="true"></i> Funcuan</a></li>
+                <li><a href="https://funcuan.com.co/contactanos/" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Contactar a Funcuan</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="container site-footer__bottom">
+        <span>© {{ now_year }} Adopt Me · Adopta, no compres.</span>
+        <span>Desarrollado por Daniel Utria</span>
+    </div>
+</footer>
