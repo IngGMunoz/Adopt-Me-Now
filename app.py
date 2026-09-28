@@ -26,17 +26,11 @@ from Models.actividad import Actividad
 from sqlalchemy import func
 
 # Blueprints (API)
-from Config.controller.Mascotascontroller import routes_MascotasC
 from Config.controller.Usercontroller import routes_UserC
-from Config.controller.PostularMascontroller import routes_PostularC
-from Config.controller.adoptar_mascontroller import Routes_adoptarC
 from Config.controller.Admincontroller import Routes_adminC
 from Config.controller.Cuentacontroller import routes_CuentaC
 
-app.register_blueprint(routes_MascotasC)
 app.register_blueprint(routes_UserC)
-app.register_blueprint(routes_PostularC)
-app.register_blueprint(Routes_adoptarC)
 app.register_blueprint(Routes_adminC)
 app.register_blueprint(routes_CuentaC)
 
@@ -126,12 +120,6 @@ def Pagina_Adopcion():
     return render_template("main/Pagina1_Adopcion.html", mascotas=mascotas_db, destacadas=MASCOTAS_DESTACADAS)
 
 
-# Alias para compatibilidad: /mascotas -> /adopcion
-@app.route("/mascotas")
-def Mascotas_Alias():
-    return redirect("/adopcion")
-
-
 # Perfil de las mascotas destacadas: /cachorro, /michi, /rocky
 @app.route("/cachorro", defaults={"slug": "cachorro"})
 @app.route("/michi", defaults={"slug": "michi"})
@@ -145,12 +133,6 @@ def Detalle_Mascota(slug):
 
 @app.route("/fundaciones")
 def Pagina_Fundacion():
-    return render_template("main/Pagina_Fundacion.html")
-
-
-# Página de la fundación Funcuan (reutiliza la plantilla de fundaciones)
-@app.route("/funcuan")
-def Pagina_Funcuan():
     return render_template("main/Pagina_Fundacion.html")
 
 
@@ -206,7 +188,6 @@ def Iniciar_Sesion():
             session["user_email"] = admin_user.email
             session["user_name"] = admin_user.username
             session["is_admin"] = True
-            session["role"] = admin_user.role
             flash(f"¡Bienvenido, {admin_user.username} (admin)!", "success")
             return redirect(next_url or "/postularADM")
 

@@ -66,7 +66,7 @@ Las fundaciones publican las mascotas que tienen en adopción y revisan las soli
 - **Interfaz responsive y accesible**, construida sobre un sistema de diseño propio (tokens de color y tipografía, componentes y macros de formulario Jinja2), sin frameworks de CSS ni de JavaScript. Incluye menú de usuario desplegable, pestañas con navegación por teclado, validación en línea y avisos no intrusivos.
 - **API REST** en JSON para usuarios, administradores, mascotas, postulaciones y solicitudes.
 - **Entorno reproducible** con Docker Compose (aplicación + MySQL con *healthcheck*).
-- **55 tests automatizados** con pytest, ejecutados en GitHub Actions en cada *push*.
+- **53 tests automatizados** con pytest, ejecutados en GitHub Actions en cada *push*.
 
 ## Stack
 
@@ -84,7 +84,7 @@ Las fundaciones publican las mascotas que tienen en adopción y revisan las soli
 flowchart LR
     U[Navegador] -->|HTML y formularios| P[app.py<br/>páginas públicas, adopción,<br/>panel de administración]
     U -->|HTML| C[Blueprint /mi-cuenta]
-    U -->|JSON| A[Blueprints de API<br/>/api/users · /api/admin<br/>/mascotas · /postular]
+    U -->|JSON| A[Blueprints de API<br/>/api/users · /api/admin]
     P & C & A -.-> AUTH[Config/auth.py<br/>login_required · admin_required]
     P & C & A --> ACT[Config/actividad.py<br/>historial de usuario]
     P & C & A --> ORM[SQLAlchemy + Marshmallow]
@@ -244,7 +244,7 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
-Los tests usan una base SQLite temporal, así que no necesitan MySQL ni Docker. Son 55 casos agrupados por área:
+Los tests usan una base SQLite temporal, así que no necesitan MySQL ni Docker. Son 53 casos agrupados por área:
 
 | Archivo | Qué verifica |
 | --- | --- |
@@ -283,8 +283,6 @@ Los endpoints protegidos responden `401` sin sesión y `403` sin permisos.
 | `POST` | `/api/users/login` · `/api/users/logout` | Público | Iniciar o cerrar sesión |
 | `GET` | `/api/users/` | Administrador | Listar usuarios |
 | `GET` `PUT` `DELETE` | `/api/users/<id>` | El propio usuario o un administrador | Ver, editar o eliminar una cuenta |
-| `GET` | `/mascotas/api` | Público | Listar mascotas |
-| `POST` `PUT` `DELETE` | `/mascotas/api[/<id>]` | Administrador | Crear, editar o eliminar mascotas |
 | `POST` | `/api/admin/admins` | Administrador o código de registro | Crear administrador |
 | `GET` `PUT` `DELETE` | `/api/admin/admins[/<id>]` | Administrador | Gestionar administradores |
 | `GET` `PUT` `DELETE` | `/api/admin/users[/<id>]` | Administrador | Gestionar usuarios |
@@ -295,7 +293,6 @@ Los endpoints protegidos responden `401` sin sesión y `403` sin permisos.
 | `POST` | `/api/admin/solicitudes/<id>/confirmar` | Administrador | Aprobar una solicitud |
 | `GET` `PUT` `DELETE` | `/api/admin/postulares[/<id>]` | Administrador | Gestionar postulaciones |
 | `POST` | `/api/admin/postulares/<id>/aprobar` | Administrador | Publicar la mascota propuesta |
-| `GET` `DELETE` | `/postular/[<id>]` | Administrador | Consultar o descartar postulaciones |
 
 ## Seguridad
 

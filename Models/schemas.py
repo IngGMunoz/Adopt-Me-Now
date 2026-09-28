@@ -16,28 +16,22 @@ from Models.actividad import Actividad  # noqa: F401
 class adminSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = admin
-        load_instance = True
         exclude = ("password_hash",)
-        dump_only = ("id", "created_at", "updated_at")
 
 
 class usuarioSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = usuario
-        load_instance = True
         exclude = ("password_hash",)
-        dump_only = ("id", "created_at", "updated_at")
 
 
 class MascotaSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Mascota
-        load_instance = True
         include_fk = True
 
 
 class PostularMascotasSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = PostularMascotas
-        load_instance = True
         include_fk = True

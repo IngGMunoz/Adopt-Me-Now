@@ -623,11 +623,6 @@ button.user-chip {
     font-weight: 800;
 }
 
-.section-subtitle {
-    margin-top: 8px;
-    color: var(--text-soft);
-}
-
 .badge {
     display: inline-flex;
     align-items: center;
@@ -1027,11 +1022,6 @@ select.input {
 .alert--error {
     background: var(--danger-bg);
     color: var(--danger);
-}
-
-.alert--success {
-    background: var(--success-bg);
-    color: var(--success);
 }
 
 .toast-stack {

@@ -13,16 +13,6 @@ usuario_schema = usuarioSchema()
 usuarios_schema = usuarioSchema(many=True)
 
 
-def find_user(identifier):
-    # buscar primero en admins (permite el login de admin desde la misma pantalla)
-    a = AdminModel.query.filter((AdminModel.username == identifier) | (AdminModel.email == identifier)).first()
-    if a:
-        return a
-    return usuario.query.filter(
-        (usuario.username == identifier) | (usuario.email == identifier)
-    ).first()
-
-
 def _check_self_or_admin(user_id):
     """Un usuario solo puede ver/editar/borrar su propia cuenta; un admin, cualquiera."""
     denied = check_login()
@@ -81,7 +71,9 @@ def login():
     if not all([identifier, password]):
         return jsonify({"ok": False, "msg": "Faltan credenciales"}), 400
 
-    u = find_user(identifier)
+    # Primero administradores (mismo login para ambos) y luego usuarios
+    u = (AdminModel.query.filter((AdminModel.username == identifier) | (AdminModel.email == identifier)).first()
+         or usuario.query.filter((usuario.username == identifier) | (usuario.email == identifier)).first())
     if not u or not u.check_password(password):
         return jsonify({"ok": False, "msg": "Credenciales inválidas"}), 401
 
@@ -95,7 +87,6 @@ def login():
             session.clear()
             return jsonify({"ok": False, "msg": "Cuenta de administrador desactivada"}), 403
         session["is_admin"] = True
-        session["role"] = u.role
         admin_data = {"id": u.id, "username": u.username, "email": u.email, "role": u.role}
         return jsonify({"ok": True, "user": admin_data, "redirect": "/postularADM"}), 200
 

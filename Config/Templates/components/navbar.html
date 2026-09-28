@@ -17,7 +17,7 @@
         <nav id="site-nav" class="nav" aria-label="Navegación principal">
             {{ nav_link(url_for('Pagina_Principal'), 'fa-house', 'Inicio', ['Pagina_Principal']) }}
             {{ nav_link(url_for('Pagina_Adopcion'), 'fa-dog', 'Mascotas', ['Pagina_Adopcion', 'Detalle_Mascota', 'Formulario_Para_Adoptar']) }}
-            {{ nav_link(url_for('Pagina_Fundacion'), 'fa-hand-holding-heart', 'Fundaciones', ['Pagina_Fundacion', 'Pagina_Funcuan']) }}
+            {{ nav_link(url_for('Pagina_Fundacion'), 'fa-hand-holding-heart', 'Fundaciones', ['Pagina_Fundacion']) }}
             {% if current_user and current_user.is_admin %}
                 {{ nav_link(url_for('Postular_Admin'), 'fa-gauge', 'Panel', ['Postular_Admin', 'Admin_Usuario']) }}
             {% elif current_user %}

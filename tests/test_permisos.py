@@ -7,9 +7,8 @@ ADMIN_ENDPOINTS = [
     ("get", "/api/admin/users"),
     ("delete", "/api/admin/users/1"),
     ("post", "/api/admin/mascotas"),
-    ("get", "/postular/"),
+    ("get", "/api/admin/postulares"),
     ("get", "/api/users/"),
-    ("post", "/mascotas/api"),
 ]
 
 

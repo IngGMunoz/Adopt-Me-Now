@@ -25,16 +25,3 @@ class Mascota(db.Model):
 
     def __repr__(self):
         return f"<Mascota {self.id} {self.nombre}>"
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "nombre": self.nombre,
-            "descripcion": self.descripcion,
-            "imagen": self.imagen,
-            "autor": self.autor,
-            "is_adopted": self.is_adopted,
-            "publicado_por_id": self.publicado_por_id,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-        }

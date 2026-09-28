@@ -1,7 +1,7 @@
 import hmac
 import os
 
-from flask import Blueprint, current_app, jsonify, redirect, request, session
+from flask import Blueprint, current_app, jsonify, request, session
 
 from Config.actividad import notificar_postulacion_descartada, registrar
 from Config.auth import check_admin, is_admin, save_uploaded_image
@@ -13,7 +13,6 @@ from Models.postular_mascotas import PostularMascotas
 from Models.schemas import MascotaSchema, PostularMascotasSchema, adminSchema, usuarioSchema
 from Models.adoptar_mascotas import adoptar_mascotas
 
-# Blueprint del admin (url_prefix organizado)
 Routes_adminC = Blueprint("routes_adminC", __name__, url_prefix="/api/admin")
 
 # Schemas
@@ -149,61 +148,34 @@ def admin_get_mascota(mid):
     return jsonify(mascota_schema.dump(m)), 200
 
 
-def _create_mascota():
-    """Crea una Mascota publicada por el admin en sesión, desde JSON o multipart/form-data.
-
-    Devuelve (mascota, error): error es (mensaje, status) si algo falló.
-    """
+@Routes_adminC.route("/mascotas", methods=["POST"])
+def admin_create_mascota():
+    """Publica una mascota desde JSON o multipart/form-data."""
     data = request.get_json(silent=True)
     if data:
-        nombre = data.get("nombre")
-        descripcion = data.get("descripcion")
-        imagen_filename = data.get("imagen", "") or ""
+        imagen = data.get("imagen") or ""
     else:
-        nombre = request.form.get("nombre")
-        descripcion = request.form.get("descripcion")
-        imagen_filename = save_uploaded_image(request.files.get("imagen"))
+        data = request.form
+        imagen = save_uploaded_image(request.files.get("imagen"))
+    nombre = data.get("nombre")
+    descripcion = data.get("descripcion")
     autor = session.get("user_name") or "Administrador"
 
     if not nombre or not descripcion:
-        return None, ("Faltan campos: nombre y descripcion", 400)
+        return jsonify({"ok": False, "msg": "Faltan campos: nombre y descripcion"}), 400
+    if Mascota.query.filter_by(nombre=nombre, autor=autor).first():
+        return jsonify({"ok": False, "msg": "Mascota ya registrada"}), 409
 
-    # evitar duplicados simples
-    if Mascota.query.filter(Mascota.nombre == nombre, Mascota.autor == autor).first():
-        return None, ("Mascota ya registrada", 409)
-
-    m = Mascota(
-        nombre=nombre,
-        descripcion=descripcion,
-        imagen=imagen_filename,
-        autor=autor,
-        publicado_por_id=session.get("user_id"),
-    )
+    m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen, autor=autor,
+                publicado_por_id=session.get("user_id"))
     db.session.add(m)
     try:
         db.session.commit()
     except Exception:
         db.session.rollback()
         current_app.logger.exception("Error al guardar la mascota")
-        return None, ("Error al guardar en la BD", 500)
-    return m, None
-
-
-@Routes_adminC.route("/mascotas", methods=["POST"])
-def admin_create_mascota():
-    """API: acepta JSON o multipart/form-data y responde siempre JSON."""
-    m, error = _create_mascota()
-    if error:
-        msg, status = error
-        return jsonify({"ok": False, "msg": msg}), status
+        return jsonify({"ok": False, "msg": "Error al guardar en la BD"}), 500
     return jsonify({"ok": True, "mascota": mascota_schema.dump(m)}), 201
-
-
-@Routes_adminC.route("/mascotas/form", methods=["POST"])
-def admin_create_mascota_form():
-    """Envío tradicional del formulario de postularADM.html (fallback sin JavaScript)."""
-    _create_mascota()
-    return redirect("/postularADM")
 
 
 @Routes_adminC.route("/mascotas/<int:mid>", methods=["PUT"])

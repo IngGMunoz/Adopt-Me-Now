@@ -62,7 +62,7 @@ def test_decisiones_de_la_fundacion_llegan_al_historial(client, user, admin_user
     login(client, "root", "adminpass123")
     client.post(f"/api/admin/solicitudes/{solicitud.id}/confirmar")
     client.post(f"/api/admin/postulares/{canela.id}/aprobar")
-    client.delete(f"/postular/{bruno.id}")
+    client.delete(f"/api/admin/postulares/{bruno.id}")
 
     assert tipos(user.id)[-3:] == ["solicitud_aprobada", "postulacion_publicada", "postulacion_descartada"]
 
