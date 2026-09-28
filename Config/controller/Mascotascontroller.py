@@ -1,7 +1,8 @@
-from flask import Blueprint, current_app, request, jsonify, render_template
+from flask import Blueprint, current_app, request, jsonify, render_template, session
 from Config.auth import check_admin
 from Config.db import db
-from Models.mascotas import Mascota, MascotaSchema
+from Models.mascotas import Mascota
+from Models.schemas import MascotaSchema
 
 routes_MascotasC = Blueprint("routes_MascotasC", __name__, url_prefix="/mascotas")
 
@@ -48,7 +49,8 @@ def crear_mascota():
     if Mascota.query.filter(Mascota.nombre == nombre, Mascota.autor == autor).first():
         return jsonify({"ok": False, "msg": "Mascota ya registrada"}), 409
 
-    m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen, autor=autor)
+    m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen, autor=autor,
+                publicado_por_id=session.get("user_id"))
     db.session.add(m)
     try:
         db.session.commit()

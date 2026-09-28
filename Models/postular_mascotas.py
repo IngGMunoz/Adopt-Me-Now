@@ -1,17 +1,23 @@
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
-from Config.db import ma, db
+from Config.db import db
 
 
 class PostularMascotas(db.Model):
+    """Mascota propuesta por un usuario desde /postular. Un admin la revisa y, si la
+    aprueba, se crea la Mascota publicada y queda enlazada en `mascota_id`."""
+
     __tablename__ = "postular_mascotas"
 
     id = db.Column(db.Integer, primary_key=True)
 
-    # Campos legacy (opcional, para compatibilidad con API existente)
-    username = db.Column(db.String(80), unique=False, nullable=True)
-    email = db.Column(db.String(120), unique=False, nullable=True)
-    password_hash = db.Column(db.String(128), nullable=True)
+    # Usuario que propone la mascota
+    usuario_id = db.Column(
+        db.Integer, db.ForeignKey("usuarios.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    # Mascota publicada a partir de esta postulación (NULL mientras está pendiente)
+    mascota_id = db.Column(
+        db.Integer, db.ForeignKey("mascotas.id", ondelete="SET NULL"), nullable=True, unique=True
+    )
 
     # Campos del formulario de postular mascota
     nombre = db.Column(db.String(140), nullable=True, index=True)
@@ -28,39 +34,23 @@ class PostularMascotas(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
+    # Relaciones
+    usuario = db.relationship("usuario", back_populates="postulaciones")
+    mascota = db.relationship("Mascota", back_populates="postulacion")
+
+    @property
+    def aprobada(self):
+        return self.mascota_id is not None
+
     def __repr__(self):
-        return f"<PostularMascotas {self.id} {self.nombre or self.username}>"
+        return f"<PostularMascotas {self.id} {self.nombre}>"
 
-    def set_password(self, password: str):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password: str) -> bool:
-        if not self.password_hash:
-            return False
-        return check_password_hash(self.password_hash, password)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "username": self.username,
-            "email": self.email,
-            "nombre": self.nombre,
-            "especie": self.especie,
-            "raza": self.raza,
-            "edad": self.edad,
-            "sexo": self.sexo,
-            "tamanio": self.tamanio,
-            "color": self.color,
-            "ubicacion": self.ubicacion,
-            "imagen": self.imagen,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-        }
-
-
-# Schema de Marshmallow para serialización
-class PostularMascotasSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = PostularMascotas
-        load_instance = True
-        exclude = ("password_hash",)  # evita exponer el hash en las respuestas
+    def descripcion_publica(self):
+        """Arma la descripción de la mascota publicada a partir de los datos de la postulación."""
+        if self.descripcion:
+            return self.descripcion
+        detalles = [
+            ("Especie", self.especie), ("Raza", self.raza), ("Edad", self.edad), ("Sexo", self.sexo),
+            ("Tamaño", self.tamanio), ("Color", self.color), ("Ubicación", self.ubicacion),
+        ]
+        return ". ".join(f"{k}: {v}" for k, v in detalles if v) or "Sin descripción"

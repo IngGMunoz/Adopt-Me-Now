@@ -1,6 +1,6 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from Config.db import ma, db
+from Config.db import db
 
 class admin(db.Model):
     __tablename__ = "admins"
@@ -13,6 +13,9 @@ class admin(db.Model):
     active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    # Relaciones
+    mascotas_publicadas = db.relationship("Mascota", back_populates="publicado_por")
 
     def __repr__(self):
         return f"<admin {self.id} {self.username}>"
@@ -33,10 +36,3 @@ class admin(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
-
-class adminSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = admin
-        load_instance = True
-        exclude = ("password_hash",)
-        dump_only = ("id", "created_at", "updated_at")

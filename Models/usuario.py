@@ -1,6 +1,6 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from Config.db import ma, db
+from Config.db import db
 
 class usuario(db.Model):
     __tablename__ = "usuarios"
@@ -11,6 +11,10 @@ class usuario(db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    # Relaciones
+    solicitudes = db.relationship("adoptar_mascotas", back_populates="adoptante")
+    postulaciones = db.relationship("PostularMascotas", back_populates="usuario")
 
     def set_password(self, password: str):
         self.password_hash = generate_password_hash(password)
@@ -26,10 +30,3 @@ class usuario(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
-
-class usuarioSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = usuario
-        load_instance = True
-        exclude = ("password_hash",)
-        dump_only = ("id", "created_at", "updated_at")

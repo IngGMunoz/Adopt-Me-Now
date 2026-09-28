@@ -68,13 +68,12 @@ El proyecto sigue un patrón MVC:
 
 ```mermaid
 erDiagram
-    usuarios ||--o{ adoptar_mascotas : "envía"
-    usuarios {
-        int id PK
-        string username
-        string email
-        string password_hash
-    }
+    admins ||--o{ mascotas : "publica"
+    usuarios ||--o{ adoptar_mascotas : "solicita"
+    mascotas ||--o{ adoptar_mascotas : "recibe"
+    usuarios ||--o{ postular_mascotas : "propone"
+    postular_mascotas |o--o| mascotas : "al aprobarse se publica como"
+
     admins {
         int id PK
         string username
@@ -82,30 +81,48 @@ erDiagram
         string role
         bool active
     }
+    usuarios {
+        int id PK
+        string username
+        string email
+        string password_hash
+    }
     mascotas {
         int id PK
+        int publicado_por_id FK
         string nombre
         text descripcion
         string imagen
-        string autor
         bool is_adopted
     }
     adoptar_mascotas {
         int id PK
         int adopter_id FK
-        string pet_name
+        int mascota_id FK
+        string telefono
         string vivienda
         text motivo
         bool is_confirmed
+        datetime created_at
     }
     postular_mascotas {
         int id PK
+        int usuario_id FK
+        int mascota_id FK "UNIQUE"
         string nombre
         string especie
         string raza
         string ubicacion
     }
 ```
+
+**Flujo de datos:**
+
+1. Un **admin** publica una **mascota**, o aprueba la **postulación** que envió un **usuario**. En ese caso la postulación queda enlazada a la mascota creada.
+2. Un **usuario** envía una **solicitud de adopción** para una mascota.
+3. El admin **confirma** la solicitud y la mascota queda marcada como adoptada, así que sale del catálogo.
+
+Todas las llaves foráneas usan `ON DELETE SET NULL`: si se elimina un usuario o una mascota, el historial de solicitudes y postulaciones se conserva. Al iniciar, [`Config/schema.py`](Config/schema.py) migra automáticamente las bases MySQL de versiones anteriores. Agrega las columnas y las llaves foráneas que faltan, y enlaza los registros antiguos que guardaban nombres en texto.
 
 ## 🚀 Cómo ejecutarlo
 
@@ -158,13 +175,14 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
-Los tests usan una base SQLite temporal, así que no necesitan MySQL. Cubren:
+Los 36 tests usan una base SQLite temporal, así que no necesitan MySQL. Cubren:
 
 - Registro, inicio de sesión y redirección segura (protección contra *open redirect*).
 - Permisos por rol: acceso anónimo, de usuario y de administrador a cada endpoint protegido.
 - Registro de administradores con código de invitación.
 - Envío y validación de solicitudes de adopción.
 - Publicación de mascotas con imagen y ocultamiento de las ya adoptadas.
+- Relaciones del modelo: admin → mascota, usuario → solicitud → mascota, postulación → mascota aprobada, y conservación del historial al borrar registros.
 
 ## 🔌 API REST
 
@@ -181,6 +199,9 @@ Los tests usan una base SQLite temporal, así que no necesitan MySQL. Cubren:
 | `GET/POST` | `/api/admin/mascotas` | Admin | Listar o publicar mascotas (JSON o multipart) |
 | `POST` | `/api/admin/mascotas/<id>/adopt` | Admin | Marcar como adoptada |
 | `GET/DELETE` | `/postular/<id>` | Admin | Revisar las mascotas propuestas por usuarios |
+| `POST` | `/api/admin/postulares/<id>/aprobar` | Admin | Publicar la mascota propuesta y enlazarla a la postulación |
+| `GET` | `/api/admin/solicitudes?mascota_id=` | Admin | Solicitudes de adopción con adoptante y mascota |
+| `POST` | `/api/admin/solicitudes/<id>/confirmar` | Admin | Aprobar una solicitud (la mascota pasa a adoptada) |
 
 ## 🔒 Seguridad
 
@@ -212,7 +233,7 @@ Adopt-Me-Now/
 
 ## 🗺️ Próximos pasos
 
-- [ ] Panel para que el administrador revise y apruebe las solicitudes de adopción.
+- [ ] Pantallas en el panel de administración para las solicitudes y postulaciones (la API ya existe).
 - [ ] Notificaciones por correo al adoptante cuando cambie el estado de su solicitud.
 - [ ] Filtros del catálogo por especie, tamaño y ubicación.
 - [ ] Protección CSRF en formularios (Flask-WTF) y límite de intentos de inicio de sesión.

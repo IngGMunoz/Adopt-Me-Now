@@ -2,7 +2,8 @@ from flask import Blueprint, jsonify
 
 from Config.auth import check_admin
 from Config.db import db
-from Models.postular_mascotas import PostularMascotas, PostularMascotasSchema
+from Models.postular_mascotas import PostularMascotas
+from Models.schemas import PostularMascotasSchema
 
 # API de las mascotas propuestas por usuarios desde /postular (solo administradores).
 # El formulario HTML se procesa en la ruta /postular de app.py.

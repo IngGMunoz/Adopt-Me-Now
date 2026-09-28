@@ -214,17 +214,28 @@ def Formulario_Para_Adoptar():
 
     nombre = request.form.get("nombre") or request.form.get("username")
     email = request.form.get("email")
-    # El nombre de la mascota puede venir en la URL (?pet=Nombre) o como campo del formulario
+    # La mascota llega por id (?mascota=ID) desde el catálogo, o solo por nombre (?pet=Nombre)
+    # desde las páginas fijas como /michi, que no están en la tabla mascotas.
     pet_name = request.args.get("pet") or request.form.get("pet_name")
+    mascota_id = request.form.get("mascota_id", type=int) or request.args.get("mascota", type=int)
+    mascota = db.session.get(Mascota, mascota_id) if mascota_id else None
+    if not mascota and pet_name:
+        mascota = Mascota.query.filter_by(nombre=pet_name, is_adopted=False).first()
 
+    error = None
     if not nombre or not email:
-        msg = "Nombre y email son obligatorios"
+        error = ("Nombre y email son obligatorios", 400)
+    elif mascota and mascota.is_adopted:
+        error = ("Esta mascota ya fue adoptada", 409)
+    if error:
+        msg, status = error
         if _wants_json():
-            return jsonify({"ok": False, "msg": msg}), 400
+            return jsonify({"ok": False, "msg": msg}), status
         flash(msg, "error")
         return redirect("/formulario")
 
     solicitud = adoptar_mascotas(
+        mascota=mascota,
         username=nombre,
         email=email,
         telefono=request.form.get("telefono"),
@@ -233,7 +244,7 @@ def Formulario_Para_Adoptar():
         vivienda=request.form.get("vivienda"),
         tiene_mascotas=request.form.get("mascotas"),
         motivo=request.form.get("motivo"),
-        pet_name=pet_name,
+        pet_name=mascota.nombre if mascota else pet_name,
     )
     # Enlazar la solicitud con el usuario que la envía (los admins no están en 'usuarios')
     if not session.get("is_admin") and db.session.get(usuario, session["user_id"]):
@@ -270,7 +281,13 @@ def Postular_Admin():
         descripcion = request.form.get("descripcion") or ""
         imagen = save_uploaded_image(request.files.get("imagen"))
         try:
-            db.session.add(Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen, autor=session["user_name"]))
+            db.session.add(Mascota(
+                nombre=nombre,
+                descripcion=descripcion,
+                imagen=imagen,
+                autor=session["user_name"],
+                publicado_por_id=session["user_id"],
+            ))
             db.session.commit()
         except Exception:
             db.session.rollback()
@@ -298,8 +315,8 @@ def Postular_Mascotas():
             color=request.form.get("color"),
             ubicacion=request.form.get("ubicacion"),
             imagen=save_uploaded_image(request.files.get("imagen")),
-            username=session.get("user_name"),
-            email=session.get("user_email"),
+            # Los admins no están en 'usuarios'; su postulación queda sin usuario asociado
+            usuario_id=None if session.get("is_admin") else session["user_id"],
         )
         try:
             db.session.add(p)

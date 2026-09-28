@@ -2,7 +2,8 @@ from flask import Blueprint, jsonify, request, session
 
 from Config.auth import check_admin, check_login, is_admin
 from Config.db import db
-from Models.usuario import usuario, usuarioSchema
+from Models.usuario import usuario
+from Models.schemas import usuarioSchema
 from Models.admins import admin as AdminModel
 
 routes_UserC = Blueprint("routes_UserC", __name__, url_prefix="/api/users")

@@ -5,10 +5,12 @@ from flask import Blueprint, current_app, jsonify, redirect, request, session
 
 from Config.auth import check_admin, is_admin, save_uploaded_image
 from Config.db import db
-from Models.admins import admin, adminSchema
-from Models.usuario import usuario, usuarioSchema
-from Models.mascotas import Mascota, MascotaSchema
-from Models.postular_mascotas import PostularMascotas, PostularMascotasSchema
+from Models.admins import admin
+from Models.usuario import usuario
+from Models.mascotas import Mascota
+from Models.postular_mascotas import PostularMascotas
+from Models.schemas import MascotaSchema, PostularMascotasSchema, adminSchema, usuarioSchema
+from Models.adoptar_mascotas import adoptar_mascotas
 
 # Blueprint del admin (url_prefix organizado)
 Routes_adminC = Blueprint("routes_adminC", __name__, url_prefix="/api/admin")
@@ -135,7 +137,7 @@ def admin_get_mascota(mid):
 
 
 def _create_mascota():
-    """Crea una Mascota (y su entrada espejo en PostularMascotas) desde JSON o multipart/form-data.
+    """Crea una Mascota publicada por el admin en sesión, desde JSON o multipart/form-data.
 
     Devuelve (mascota, error): error es (mensaje, status) si algo falló.
     """
@@ -157,10 +159,14 @@ def _create_mascota():
     if Mascota.query.filter(Mascota.nombre == nombre, Mascota.autor == autor).first():
         return None, ("Mascota ya registrada", 409)
 
-    m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen_filename, autor=autor)
-    p = PostularMascotas(username=autor, nombre=nombre, descripcion=descripcion, imagen=imagen_filename)
+    m = Mascota(
+        nombre=nombre,
+        descripcion=descripcion,
+        imagen=imagen_filename,
+        autor=autor,
+        publicado_por_id=session.get("user_id"),
+    )
     db.session.add(m)
-    db.session.add(p)
     try:
         db.session.commit()
     except Exception:
@@ -232,6 +238,47 @@ def admin_delete_postular(pid):
     p = db.get_or_404(PostularMascotas, pid)
     db.session.delete(p); db.session.commit()
     return "", 204
+
+@Routes_adminC.route("/postulares/<int:pid>/aprobar", methods=["POST"])
+def admin_aprobar_postular(pid):
+    """Publica la mascota propuesta por un usuario y enlaza la postulación con ella."""
+    p = db.get_or_404(PostularMascotas, pid)
+    if p.aprobada:
+        return jsonify({"ok": False, "msg": "La postulación ya fue aprobada"}), 409
+    m = Mascota(
+        nombre=p.nombre or "Sin nombre",
+        descripcion=p.descripcion_publica(),
+        imagen=p.imagen or "",
+        autor=session.get("user_name") or "Administrador",
+        publicado_por_id=session.get("user_id"),
+    )
+    p.mascota = m
+    db.session.add(m)
+    db.session.commit()
+    return jsonify({"ok": True, "mascota": mascota_schema.dump(m), "postulacion": postular_schema.dump(p)}), 201
+
+
+# Solicitudes de adopción (admin)
+@Routes_adminC.route("/solicitudes", methods=["GET"])
+def admin_list_solicitudes():
+    query = adoptar_mascotas.query.order_by(adoptar_mascotas.id.desc())
+    if request.args.get("mascota_id", type=int):
+        query = query.filter_by(mascota_id=request.args.get("mascota_id", type=int))
+    return jsonify([s.to_dict() for s in query.all()]), 200
+
+@Routes_adminC.route("/solicitudes/<int:sid>/confirmar", methods=["POST"])
+def admin_confirmar_solicitud(sid):
+    """Aprueba una solicitud: la mascota queda adoptada y sale del catálogo."""
+    s = db.get_or_404(adoptar_mascotas, sid)
+    if s.is_confirmed:
+        return jsonify({"ok": False, "msg": "La solicitud ya estaba confirmada"}), 409
+    if s.mascota and s.mascota.is_adopted:
+        return jsonify({"ok": False, "msg": "La mascota ya fue adoptada"}), 409
+    s.is_confirmed = True
+    if s.mascota:
+        s.mascota.is_adopted = True
+    db.session.commit()
+    return jsonify({"ok": True, "solicitud": s.to_dict()}), 200
 
 
 # Operaciones de adopción (admin)
