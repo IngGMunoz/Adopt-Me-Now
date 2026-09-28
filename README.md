@@ -223,7 +223,7 @@ Adopt-Me-Now/
 **Daniel Utria**: diseño, frontend, backend e infraestructura.
 
 - GitHub: [@IngGMunoz](https://github.com/IngGMunoz)
-- LinkedIn: _agrega aquí tu perfil_
+- LinkedIn:  linkedin.com/in/georgy-daniel-muñoz-utria
 
 
 
