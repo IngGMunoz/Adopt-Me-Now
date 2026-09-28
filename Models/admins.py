@@ -1,6 +1,6 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from Config.db import ma, db, app
+from Config.db import ma, db
 
 class admin(db.Model):
     __tablename__ = "admins"
@@ -40,7 +40,3 @@ class adminSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         exclude = ("password_hash",)
         dump_only = ("id", "created_at", "updated_at")
-
-#  crear tablas en desarrollo 
-    with app.app_context():
-        db.create_all()

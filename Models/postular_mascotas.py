@@ -1,6 +1,6 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from Config.db import ma, db, app
+from Config.db import ma, db
 
 
 class PostularMascotas(db.Model):
@@ -64,8 +64,3 @@ class PostularMascotasSchema(ma.SQLAlchemyAutoSchema):
         model = PostularMascotas
         load_instance = True
         exclude = ("password_hash",)  # evita exponer el hash en las respuestas
-
-
-# Crear tablas automáticamente al importar el modelo (dev)
-with app.app_context():
-    db.create_all()

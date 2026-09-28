@@ -1,6 +1,6 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from Config.db import ma, db, app
+from Config.db import ma, db
 
 class usuario(db.Model):
     __tablename__ = "usuarios"
@@ -33,7 +33,3 @@ class usuarioSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         exclude = ("password_hash",)
         dump_only = ("id", "created_at", "updated_at")
-
-# Crear tablas automáticamente al importar el modelo 
-with app.app_context():
-    db.create_all()

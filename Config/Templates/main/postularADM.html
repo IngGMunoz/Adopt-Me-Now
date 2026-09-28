@@ -26,11 +26,11 @@
             <span class="by"><i class="fa-solid fa-user"></i> Creado por {{ mascota.autor }}</span>
             <p>{{ mascota.descripcion }}</p>
             {% if is_authenticated %}
-            <a class="cta" href="/formulario" data-animate="true">
+            <a class="cta" href="{{ url_for('Formulario_Para_Adoptar', pet=mascota.nombre) }}" data-animate="true">
                 <i class="fa-solid fa-envelope"></i> Contactar
             </a>
             {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal('{{ mascota.nombre|e }}', event)" data-animate="true">
+            <button class="cta cta-locked" onclick="showAuthModal({{ mascota.nombre|tojson|forceescape }}, event)" data-animate="true">
                 <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
             </button>
             {% endif %}
@@ -50,31 +50,49 @@
     const form = document.getElementById('mascotaForm');
     const list = document.querySelector('.mascotas-list');
 
+    // Crea un elemento y asigna su texto con textContent (nunca innerHTML con datos del usuario)
+    function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+    }
+
     // Helper to build card node
     function buildCard(m) {
-        const card = document.createElement('section');
-        card.className = 'card';
-        const imgSrc = m.imagen ? ( '/static/uploads/' + m.imagen ) : '';
+        const card = el('section', 'card');
+        const nombre = m.nombre || '';
 
-        // build action node depending on auth
-        let actionHTML = '';
+        const img = el('img');
+        if (m.imagen) img.src = '/static/uploads/' + encodeURIComponent(m.imagen);
+        img.alt = nombre;
+        card.appendChild(img);
+
+        const content = el('div', 'card-content');
+        content.appendChild(el('h2', 'title', nombre));
+        const by = el('span', 'by');
+        by.appendChild(el('i', 'fa-solid fa-user'));
+        by.appendChild(document.createTextNode(' Creado por ' + (m.autor || 'Administrador')));
+        content.appendChild(by);
+        content.appendChild(el('p', '', m.descripcion || ''));
+
+        // botón de acción según autenticación
+        let action;
         if (IS_AUTH) {
-            actionHTML = `<a class="cta" href="/formulario" data-animate="true"><i class="fa-solid fa-envelope"></i> Contactar</a>`;
+            action = el('a', 'cta');
+            action.href = '/formulario?pet=' + encodeURIComponent(nombre);
+            action.appendChild(el('i', 'fa-solid fa-envelope'));
+            action.appendChild(document.createTextNode(' Contactar'));
         } else {
-            // escape name lightly for insertion
-            const safeName = (m.nombre || '').replace(/'/g, "\'").replace(/"/g, '\\"');
-            actionHTML = `<button class="cta cta-locked" onclick="showAuthModal('${safeName}', event)" data-animate="true"><i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar</button>`;
+            action = el('button', 'cta cta-locked');
+            action.addEventListener('click', (e) => showAuthModal(nombre, e));
+            action.appendChild(el('i', 'fa-solid fa-lock'));
+            action.appendChild(document.createTextNode(' Iniciar Sesión para Contactar'));
         }
+        action.dataset.animate = 'true';
+        content.appendChild(action);
 
-        card.innerHTML = `
-            <img src="${imgSrc}" alt="${m.nombre || ''}" />
-            <div class="card-content">
-                <h2 class="title">${m.nombre || ''}</h2>
-                <span class="by"><i class="fa-solid fa-user"></i> Creado por ${m.autor || 'Administrador'}</span>
-                <p>${m.descripcion || ''}</p>
-                ${actionHTML}
-            </div>
-        `;
+        card.appendChild(content);
         return card;
     }
 

@@ -84,6 +84,15 @@
                 <div class="admin-validation-message" id="adminNitValidation"></div>
             </div>
 
+            <div class="admin-form-group">
+                <label for="admin_code" class="admin-form-label">Código de Registro</label>
+                <div style="position: relative;">
+                    <input type="password" id="admin_code" name="admin_code" class="admin-form-input"
+                        placeholder="Código entregado por la fundación" autocomplete="off" required />
+                    <i class="fas fa-key admin-input-icon"></i>
+                </div>
+            </div>
+
             <button type="submit" class="admin-register-btn" id="adminSubmitBtn">
                 <div class="admin-loading-spinner" id="adminLoadingSpinner"></div>
                 <span id="adminBtnText">🛡️ Crear Cuenta Administrativa</span>
@@ -314,13 +323,10 @@
                 username: userInput.value.trim(),
                 email: emailInput.value.trim(),
                 password: passwordInput.value,
-                nit: nitInput.value.trim()
+                nit: nitInput.value.trim(),
+                codigo: document.getElementById('admin_code').value
             };
 
-            // Log payload para depuración
-            console.log("POST /api/admin/admins payload:", adminData);
-
-            // CAMBIO: usar URL relativa y manejo de respuesta detallado
             fetch('/api/admin/admins', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -332,11 +338,9 @@
                 let body = {};
                 try { body = text ? JSON.parse(text) : {}; } catch(err) { body = { raw: text }; }
 
-                console.log("Response status:", res.status, "body:", body);
-
                 if (res.ok) {
-                    // éxito: redirigir
-                    window.location.href = '/postularADM';
+                    // éxito: iniciar sesión y continuar al panel de administración
+                    window.location.href = "{{ url_for('Iniciar_Sesion', next='/postularADM') }}";
                     return;
                 }
 

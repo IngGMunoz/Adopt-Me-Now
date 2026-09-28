@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, jsonify, request, session
+
+from Config.auth import check_admin, check_login, is_admin
 from Config.db import db
 from Models.usuario import usuario, usuarioSchema
 from Models.admins import admin as AdminModel
-from werkzeug.security import generate_password_hash, check_password_hash
 
 routes_UserC = Blueprint("routes_UserC", __name__, url_prefix="/api/users")
 
@@ -11,7 +12,7 @@ usuarios_schema = usuarioSchema(many=True)
 
 
 def find_user(identifier):
-    # intentar buscar en admins primero (permitir login de admin desde la misma pantalla)
+    # buscar primero en admins (permite el login de admin desde la misma pantalla)
     a = AdminModel.query.filter((AdminModel.username == identifier) | (AdminModel.email == identifier)).first()
     if a:
         return a
@@ -20,29 +21,39 @@ def find_user(identifier):
     ).first()
 
 
-@routes_UserC.route("/init-db", methods=["POST"])
-def init_db():
-    db.create_all()
-    return jsonify({"ok": True, "msg": "Tablas creadas/aseguradas"}), 201
+def _check_self_or_admin(user_id):
+    """Un usuario solo puede ver/editar/borrar su propia cuenta; un admin, cualquiera."""
+    denied = check_login()
+    if denied:
+        return denied
+    if not is_admin() and session.get("user_id") != user_id:
+        return jsonify({"ok": False, "msg": "No autorizado"}), 403
+    return None
 
 
 @routes_UserC.route("/", methods=["GET"])
 def list_users():
+    denied = check_admin()
+    if denied:
+        return denied
     users = usuario.query.order_by(usuario.id.desc()).all()
     return jsonify(usuarios_schema.dump(users)), 200
 
 
 @routes_UserC.route("/<int:user_id>", methods=["GET"])
 def get_user(user_id):
-    u = usuario.query.get_or_404(user_id)
+    denied = _check_self_or_admin(user_id)
+    if denied:
+        return denied
+    u = db.get_or_404(usuario, user_id)
     return jsonify(usuario_schema.dump(u)), 200
 
 
 @routes_UserC.route("/register", methods=["POST"])
 def register():
-    data = request.get_json() or {}
-    username = data.get("username")
-    email = data.get("email")
+    data = request.get_json(silent=True) or {}
+    username = (data.get("username") or "").strip()
+    email = (data.get("email") or "").strip()
     password = data.get("password")
 
     if not all([username, email, password]):
@@ -60,7 +71,7 @@ def register():
 
 @routes_UserC.route("/login", methods=["POST"])
 def login():
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     identifier = data.get("identifier") or data.get("username") or data.get("email")
     password = data.get("password")
     if not all([identifier, password]):
@@ -72,18 +83,19 @@ def login():
 
     session.clear()
     session["user_id"] = u.id
-    # si es instancia de admin, marcar la sesión
-    if isinstance(u, AdminModel):
-        session["is_admin"] = True
-        session["username"] = u.username
-        session["user_email"] = u.email
-        # serializar admin manualmente para evitar usar usuario schema
-        admin_data = {"id": u.id, "username": u.username, "email": u.email, "role": getattr(u, "role", "admin")}
-        return jsonify({"ok": True, "user": admin_data}), 200
-
-    session["username"] = u.username
+    session["user_name"] = u.username
     session["user_email"] = u.email
-    return jsonify({"ok": True, "user": usuario_schema.dump(u)}), 200
+
+    if isinstance(u, AdminModel):
+        if not u.active:
+            session.clear()
+            return jsonify({"ok": False, "msg": "Cuenta de administrador desactivada"}), 403
+        session["is_admin"] = True
+        session["role"] = u.role
+        admin_data = {"id": u.id, "username": u.username, "email": u.email, "role": u.role}
+        return jsonify({"ok": True, "user": admin_data, "redirect": "/postularADM"}), 200
+
+    return jsonify({"ok": True, "user": usuario_schema.dump(u), "redirect": "/"}), 200
 
 
 @routes_UserC.route("/logout", methods=["POST"])
@@ -94,8 +106,11 @@ def logout():
 
 @routes_UserC.route("/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
-    u = usuario.query.get_or_404(user_id)
-    data = request.get_json() or {}
+    denied = _check_self_or_admin(user_id)
+    if denied:
+        return denied
+    u = db.get_or_404(usuario, user_id)
+    data = request.get_json(silent=True) or {}
     u.username = data.get("username", u.username)
     u.email = data.get("email", u.email)
     if data.get("password"):
@@ -106,7 +121,12 @@ def update_user(user_id):
 
 @routes_UserC.route("/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
-    u = usuario.query.get_or_404(user_id)
+    denied = _check_self_or_admin(user_id)
+    if denied:
+        return denied
+    u = db.get_or_404(usuario, user_id)
     db.session.delete(u)
     db.session.commit()
-    return jsonify({"ok": True}), 204
+    if session.get("user_id") == user_id and not is_admin():
+        session.clear()
+    return "", 204

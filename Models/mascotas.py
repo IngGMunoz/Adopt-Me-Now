@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from Config.db import ma, db, app
+from Config.db import ma, db
 
 class Mascota(db.Model):
     __tablename__ = "mascotas"
@@ -16,7 +16,7 @@ class Mascota(db.Model):
 
     def __repr__(self):
         return f"<Mascota {self.id} {self.nombre}>"
-      #detalles de la mascota toda la informacion
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -28,13 +28,10 @@ class Mascota(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
-    
-            # Schema de Marshmallow para serialización
+
+
+# Schema de Marshmallow para serialización
 class MascotaSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Mascota
         load_instance = True
-
-# Crear tablas automáticamente al importar el modelo
-with app.app_context():
-    db.create_all()

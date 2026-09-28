@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, current_app, request, jsonify, render_template
+from Config.auth import check_admin
 from Config.db import db
 from Models.mascotas import Mascota, MascotaSchema
 
@@ -9,9 +10,16 @@ mascota_schema = MascotaSchema()
 mascotas_schema = MascotaSchema(many=True)
 
 
+@routes_MascotasC.before_request
+def require_admin_for_writes():
+    # Consultar es público; crear, editar y borrar solo lo hace un administrador
+    if request.method not in ("GET", "HEAD"):
+        return check_admin()
+
+
 @routes_MascotasC.route("/", methods=["GET"])
 def pagina_mascotas():
-    mascotas = Mascota.query.order_by(Mascota.id.desc()).all()
+    mascotas = Mascota.query.filter_by(is_adopted=False).order_by(Mascota.id.desc()).all()
     return render_template("main/Pagina1_Adopcion.html", mascotas=mascotas)
 
 
@@ -44,16 +52,17 @@ def crear_mascota():
     db.session.add(m)
     try:
         db.session.commit()
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({"ok": False, "msg": "Error al guardar en la base", "error": str(e)}), 500
+        current_app.logger.exception("Error al guardar la mascota")
+        return jsonify({"ok": False, "msg": "Error al guardar en la base"}), 500
 
     return jsonify({"ok": True, "msg": "Mascota creada", "mascota": mascota_schema.dump(m)}), 201
 
 
 @routes_MascotasC.route("/api/<int:mid>", methods=["PUT"])
 def actualizar_mascota(mid):
-    m = Mascota.query.get_or_404(mid)
+    m = db.get_or_404(Mascota, mid)
     data = request.get_json(silent=True) or request.form.to_dict()
     if "nombre" in data:
         m.nombre = data.get("nombre", m.nombre)
@@ -70,7 +79,7 @@ def actualizar_mascota(mid):
 
 @routes_MascotasC.route("/api/<int:mid>", methods=["DELETE"])
 def eliminar_mascota(mid):
-    m = Mascota.query.get_or_404(mid)
+    m = db.get_or_404(Mascota, mid)
     db.session.delete(m)
     db.session.commit()
-    return jsonify({"ok": True, "msg": "Mascota eliminada"}), 204
+    return "", 204

@@ -117,10 +117,11 @@
             .then(async res => {
                 const body = await res.json().catch(()=> ({}));
                 if (res.ok) {
-                    // login exitoso, redirigir al 'next' o al home
+                    // login exitoso: redirigir al 'next' (solo rutas internas) o a la página del rol
                     const params = new URLSearchParams(window.location.search);
-                    const next = params.get('next') || '/';
-                    window.location.href = next;
+                    const next = params.get('next') || '';
+                    const isInternal = next.startsWith('/') && !next.startsWith('//') && !next.includes('\\');
+                    window.location.href = isInternal ? next : (body.redirect || '/');
                 } else {
                     const msg = body.msg || body.error || JSON.stringify(body);
                     alert('Error: ' + msg);

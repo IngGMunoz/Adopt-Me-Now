@@ -1,25 +1,22 @@
-# Usar una imagen base ligera de Python 3.11
-FROM python:3.11-slim
+# Imagen base ligera de Python
+FROM python:3.12-slim
 
-# Establecer el directorio de trabajo dentro del contenedor
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-# Instalar dependencias del sistema necesarias
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    gcc \
-    libmariadb-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copiar el archivo de requerimientos e instalar dependencias de Python
+# Dependencias de Python (pymysql es puro Python: no requiere compiladores)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el resto de los archivos de la app al contenedor
+# Código de la aplicación
 COPY . .
 
-# Exponer el puerto que usará Flask
+# Ejecutar como usuario sin privilegios
+RUN useradd --create-home appuser && mkdir -p static/uploads && chown -R appuser /app/static/uploads
+USER appuser
+
 EXPOSE 5100
 
-# Comando por defecto para iniciar la aplicación
 CMD ["python", "app.py"]

@@ -59,11 +59,11 @@
             <span class="by"><i class="fa-solid fa-user"></i> Creado por {{ mascota.autor }}</span>
             <p>{{ mascota.descripcion }}</p>
             {% if is_authenticated %}
-            <a class="cta" href="/formulario" data-animate="true">
+            <a class="cta" href="{{ url_for('Formulario_Para_Adoptar', pet=mascota.nombre) }}" data-animate="true">
                 <i class="fa-solid fa-envelope"></i> Contactar
             </a>
             {% else %}
-            <button class="cta cta-locked" onclick="showAuthModal('{{ mascota.nombre|e }}', event)" data-animate="true">
+            <button class="cta cta-locked" onclick="showAuthModal({{ mascota.nombre|tojson|forceescape }}, event)" data-animate="true">
                 <i class="fa-solid fa-lock"></i> Iniciar Sesión para Contactar
             </button>
             {% endif %}

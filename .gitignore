@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Variables de entorno (nunca subir secretos)
+.env
+
+# Imágenes subidas por los usuarios en tiempo de ejecución
+static/uploads/*
+!static/uploads/.gitkeep
+Config/static/
+
+# Editor / SO
+.vscode/*
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db

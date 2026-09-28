@@ -39,6 +39,7 @@
         <p class="form-desc">Completa tus datos y cuéntanos por qué deseas adoptar. Nos pondremos en contacto contigo
             pronto.</p>
         <form method="POST" action="/formulario" novalidate>
+            <input type="hidden" name="pet_name" value="{{ request.args.get('pet', '') }}">
             <div class="form-row">
                 <div>
                     <label for="nombre">Nombre completo</label>

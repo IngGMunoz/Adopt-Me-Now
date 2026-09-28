@@ -1,34 +1,35 @@
-version: "3.9"
-
 services:
   app:
-    container_name: flask_app1
+    container_name: adoptme_app
     build:
       context: .
-      dockerfile: Dockerfile  
+      dockerfile: Dockerfile
     ports:
-      - "5100:5100"
+      - "${PORT:-5100}:5100"
     volumes:
-      - .:/app
+      - ./static/uploads:/app/static/uploads
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    env_file: .env
     environment:
       - DB_HOST=db
-      - DB_PORT=3306   # <-- puerto interno del contenedor MySQL antes (3307)
-      - DB_USER=root
-      - DB_PASSWORD=12345
-      - DB_NAME=mysql1
+      - DB_PORT=3306 # puerto interno del contenedor MySQL
 
   db:
-    container_name: mysql_db1
+    container_name: adoptme_db
     image: mysql:8.0
-    restart: always
+    restart: unless-stopped
     ports:
-      - "3307:3306"    #cambiado a 3307 para evitar conflictos con MySQL local
+      - "3307:3306" # 3307 en el host para no chocar con un MySQL local
     environment:
-      MYSQL_ROOT_PASSWORD: 12345
-      MYSQL_DATABASE: mysql1   # Nombre de la base de datos se le agrego 1 antes (mysql)
-      MYSQL_ROOT_HOST: '%'   # Permitir conexiones remotas al root se agrego esto tambien
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env}
+      MYSQL_DATABASE: ${DB_NAME:-adoptme}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     volumes:
       - mysql_data:/var/lib/mysql
 
