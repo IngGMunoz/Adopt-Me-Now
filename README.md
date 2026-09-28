@@ -403,8 +403,6 @@ Adopt-Me-Now/
 - GitHub: [@IngGMunoz](https://github.com/IngGMunoz)
 - LinkedIn: [georgy-daniel-muñoz-utria](https://www.linkedin.com/in/georgy-daniel-muñoz-utria)
 
-
-
 ## Licencia
 
 Distribuido bajo la licencia MIT. Ver [LICENSE](LICENSE).
