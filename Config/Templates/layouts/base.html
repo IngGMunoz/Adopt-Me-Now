@@ -39,6 +39,21 @@
     <script src="{{ url_for('static', filename='JS/app.js') }}"></script>
     {% block scripts %}{% endblock %}
     {% block chatbot %}
+    <section id="chatPanel" class="chat-panel" aria-label="Asistente de adopción" hidden>
+        <header class="chat-panel__header">
+            <span class="chat-panel__avatar" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
+            <div>
+                <strong>Asistente Adopt Me</strong>
+                <span>Dudas sobre la adopción</span>
+            </div>
+            <button type="button" class="chat-panel__close" aria-label="Cerrar el asistente"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </header>
+        <div id="chatBot" class="chat-panel__body"><p class="chat-panel__loading">Cargando asistente…</p></div>
+    </section>
+    <button type="button" id="chatLauncher" class="chat-launcher" aria-controls="chatPanel" aria-expanded="false"
+        aria-label="Abrir el asistente de adopción" title="¿Dudas? Habla con el asistente">
+        <i class="fa-solid fa-comment-dots" aria-hidden="true"></i>
+    </button>
     <script src="{{ url_for('static', filename='JS/IA_adoptme.js') }}" defer></script>
     {% endblock %}
 </body>

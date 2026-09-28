@@ -57,7 +57,7 @@ Entra con una de estas cuentas de prueba (no se pueden modificar ni eliminar):
 - **Catálogo de mascotas** con búsqueda, **filtros por especie, tamaño y ubicación** y ordenamiento, todo instantáneo. Las mascotas destacadas aparecen primero y las ya adoptadas se ocultan.
 - **Ficha de cada mascota** con sus datos (raza, edad, sexo, tamaño), ubicación y descripción.
 - **Página de la fundación aliada** con su información y enlace de contacto.
-- **Asistente conversacional** (Landbot) que orienta sobre el proceso de adopción. Se carga cuando el usuario interactúa con la página, para no retrasar la carga inicial.
+- **Asistente conversacional** (Landbot) que orienta sobre el proceso de adopción, dentro de un panel propio con la identidad de la app. Su script solo se descarga cuando el visitante abre el chat.
 
 ### Para usuarios registrados
 - **Registro e inicio de sesión** con correo o nombre de usuario. Tras iniciar sesión, el usuario vuelve a la página en la que estaba.
