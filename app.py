@@ -17,6 +17,7 @@ from Config.auth import (
     save_uploaded_image,
 )
 from Config.schema import init_db
+from Config.demo import proteger_cuentas_demo
 from Config.actividad import agrupar_por_dia, registrar
 import Config.filtros  # noqa: F401  (filtros de fecha para las plantillas)
 
@@ -39,6 +40,7 @@ app.register_blueprint(Routes_adminC)
 app.register_blueprint(routes_CuentaC)
 
 app.before_request(csrf_protect)
+app.before_request(proteger_cuentas_demo)
 
 # Crear tablas y ajustar el esquema al iniciar la app
 with app.app_context():

@@ -39,6 +39,14 @@ def _deny(status, msg):
     return redirect(url_for("Iniciar_Sesion", next=request.path))
 
 
+def rechazar(status, msg):
+    """Acción no permitida: JSON para la API, aviso y vuelta a la página anterior para el HTML."""
+    if _wants_json():
+        return jsonify({"ok": False, "msg": msg}), status
+    flash(msg, "error")
+    return redirect(request.referrer or "/")
+
+
 def _cuenta_vigente():
     """Comprueba que la cuenta de la sesión siga existiendo (y activa, si es de administrador).
 
@@ -135,11 +143,7 @@ def csrf_protect():
     token = request.form.get("csrf_token") or request.headers.get("X-CSRF-Token") or ""
     if token and hmac.compare_digest(token, session.get("csrf_token", "")):
         return None
-    msg = "El formulario expiró. Recarga la página e inténtalo de nuevo."
-    if _wants_json():
-        return jsonify({"ok": False, "msg": msg}), 400
-    flash(msg, "error")
-    return redirect(request.referrer or "/")
+    return rechazar(400, "El formulario expiró. Recarga la página e inténtalo de nuevo.")
 
 
 # ---------------------------------------------------------------------------

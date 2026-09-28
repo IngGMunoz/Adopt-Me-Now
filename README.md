@@ -24,8 +24,18 @@ Las fundaciones publican las mascotas que tienen en adopción y revisan las soli
   <img src="docs/screenshots/movil.png" alt="Catálogo en móvil" width="19%">
 </p>
 
+## Demo
+
+Entra con una de estas cuentas de prueba (no se pueden modificar ni eliminar):
+
+| Rol | Correo | Contraseña |
+| --- | --- | --- |
+| Fundación (panel de administración) | `fundacion@demo.com` | `DemoFundacion1` |
+| Adoptante | `adoptante@demo.com` | `DemoAdoptante1` |
+
 ## Contenido
 
+- [Demo](#demo)
 - [Funcionalidades](#funcionalidades)
 - [Stack](#stack)
 - [Arquitectura](#arquitectura)
@@ -68,7 +78,7 @@ Las fundaciones publican las mascotas que tienen en adopción y revisan las soli
 - **API REST** en JSON para usuarios, administradores, mascotas, postulaciones y solicitudes.
 - **Avisos por correo** (SMTP) cuando cambia el estado de una solicitud o postulación. Se envían en segundo plano para no demorar la respuesta.
 - **Entorno reproducible** con Docker Compose (Gunicorn + MySQL con *healthcheck*).
-- **66 tests automatizados** con pytest, ejecutados en GitHub Actions en cada *push*.
+- **68 tests automatizados** con pytest, ejecutados en GitHub Actions en cada *push*.
 
 ## Stack
 
@@ -220,6 +230,8 @@ SMTP_FROM=Adopt Me <tu-correo@gmail.com>
 | `SESSION_COOKIE_SECURE` | `true` cuando la aplicación se sirve por HTTPS |
 | `TZ_OFFSET_HOURS` | Desfase horario para mostrar fechas (por defecto `-5`, Colombia) |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Servidor de correo (STARTTLS). Sin `SMTP_HOST` no se envían correos |
+| `DEMO_MODE` | `true` crea cuentas de prueba con datos de ejemplo y las protege contra cambios ([`Config/demo.py`](Config/demo.py)) |
+| `BEHIND_PROXY` | `true` detrás del proxy de una plataforma, para usar la IP real del visitante |
 
 ### 2a. Con Docker (recomendado)
 
@@ -247,9 +259,25 @@ python app.py
 
 Las tablas se crean automáticamente al iniciar. `python app.py` usa el servidor de desarrollo de Flask; el contenedor usa Gunicorn.
 
-### 2c. En la nube
+### 2c. En la nube (Railway)
 
-El `Dockerfile` está listo para plataformas que construyen imágenes (Railway, Render, Fly.io): Gunicorn escucha en la variable `PORT` que asigna la plataforma, y la base se configura con `DATABASE_URL` (por ejemplo `mysql+pymysql://usuario:clave@host:3306/adoptme`). Define también `SECRET_KEY`, `ADMIN_REGISTRATION_CODE` y `SESSION_COOKIE_SECURE=true`.
+1. En [Railway](https://railway.com), crea un proyecto con **Deploy from GitHub repo** y elige este repositorio. Railway detecta el `Dockerfile`.
+2. En el mismo proyecto, agrega una base de datos **MySQL** (*+ New → Database → MySQL*).
+3. En las variables del servicio de la app, define:
+
+   | Variable | Valor |
+   | --- | --- |
+   | `DATABASE_URL` | `${{MySQL.MYSQL_URL}}` (referencia a la base de Railway) |
+   | `SECRET_KEY` | Una clave aleatoria larga |
+   | `ADMIN_REGISTRATION_CODE` | Un código secreto |
+   | `SESSION_COOKIE_SECURE` | `true` |
+   | `BEHIND_PROXY` | `true` |
+   | `DEMO_MODE` | `true` para crear las cuentas de prueba |
+
+4. En *Settings → Networking*, genera un dominio público.
+5. Opcional: para conservar las fotos subidas entre despliegues, agrega un **volumen** montado en `/app/static/uploads` y la variable `RAILWAY_RUN_UID=0` (los volúmenes de Railway pertenecen a root).
+
+Gunicorn escucha en el `PORT` que asigna la plataforma, y las tablas, las mascotas destacadas y las cuentas de prueba se crean en el primer arranque.
 
 ### 3. Crear la primera fundación
 
@@ -263,7 +291,7 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
-Los tests usan una base SQLite temporal, así que no necesitan MySQL ni Docker. Son 66 casos agrupados por área:
+Los tests usan una base SQLite temporal, así que no necesitan MySQL ni Docker. Son 68 casos agrupados por área:
 
 | Archivo | Qué verifica |
 | --- | --- |
@@ -274,7 +302,7 @@ Los tests usan una base SQLite temporal, así que no necesitan MySQL ni Docker. 
 | `test_cuenta.py` | Registro de actividad en cada acción, filtros, edición de perfil, cambio de contraseña y eliminación de cuenta |
 | `test_gestion.py` | Gestión de usuarios y administradores: ficha de usuario, alta de administradores y revocación inmediata del acceso |
 | `test_catalogo.py` | Carga única de las destacadas, destacar desde el panel, datos para los filtros y ficha de la mascota |
-| `test_seguridad.py` | CSRF en formularios y en `fetch`, bloqueo tras 5 intentos fallidos y correos de aviso |
+| `test_seguridad.py` | CSRF en formularios y en `fetch`, bloqueo tras 5 intentos fallidos, correos de aviso y protección de las cuentas de la demo |
 
 ## Rutas y API
 
@@ -341,6 +369,7 @@ Adopt-Me-Now/
 │   ├── schema.py             # Creación de tablas, migraciones y relleno del historial
 │   ├── actividad.py          # Historial de actividad y correos de aviso
 │   ├── catalogo.py           # Mascotas destacadas iniciales
+│   ├── demo.py               # Cuentas de prueba de la demo pública
 │   ├── filtros.py            # Filtros de fecha en español para Jinja2
 │   ├── controller/           # Blueprints: API REST y "Mi cuenta"
 │   └── Templates/            # layouts/, components/ y main/

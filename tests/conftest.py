@@ -22,7 +22,7 @@ from Models.usuario import usuario  # noqa: E402
 @pytest.fixture
 def app(tmp_path):
     # CSRF se prueba aparte (test_seguridad.py); aquí se desactiva para enviar formularios directo
-    flask_app.config.update(TESTING=True, CSRF_ENABLED=False)
+    flask_app.config.update(TESTING=True, CSRF_ENABLED=False, DEMO_MODE=False)
     auth._fallos.clear()
     # Las imágenes subidas en los tests van a una carpeta temporal, no a static/uploads
     original_static = flask_app.static_folder

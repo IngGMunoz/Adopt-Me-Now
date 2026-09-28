@@ -257,6 +257,10 @@ def init_db():
             app.logger.exception("No se pudo migrar el esquema de la base de datos")
     if sembrar:
         sembrar_destacadas()
+
+    if app.config["DEMO_MODE"]:
+        from Config.demo import sembrar_demo
+        sembrar_demo()
     try:
         backfill_actividad()
     except Exception:

@@ -99,3 +99,41 @@ def test_correo_al_aprobar_una_solicitud(monkeypatch, client, user, admin_user):
 def test_sin_smtp_no_se_envian_correos(monkeypatch):
     monkeypatch.delenv("SMTP_HOST", raising=False)
     assert actividad.enviar_correo("ana@example.com", "Asunto", "Texto") is None
+
+
+def test_demo_crea_cuentas_de_prueba_con_datos(client, destacadas):
+    from Config.demo import sembrar_demo
+    sembrar_demo()
+    sembrar_demo()  # idempotente
+    assert usuario.query.count() == 1
+    assert adoptar_mascotas.query.one().mascota.nombre == "Michi"
+    assert login(client, "fundacion@demo.com", "DemoFundacion1").status_code == 200
+    assert login(client, "adoptante@demo.com", "DemoAdoptante1").status_code == 200
+
+
+def test_demo_protege_las_cuentas_de_prueba(app, client, destacadas):
+    from Config.demo import sembrar_demo
+    from Models.admins import admin
+    sembrar_demo()
+    app.config["DEMO_MODE"] = True
+    fundacion = admin.query.filter_by(email="fundacion@demo.com").one()
+    adoptante = usuario.query.filter_by(email="adoptante@demo.com").one()
+
+    # Ni la fundación de prueba ni un admin creado por un visitante pueden tocarlas
+    login(client, "fundacion@demo.com", "DemoFundacion1")
+    client.post("/api/admin/admins", json={"username": "visitante", "email": "v@x.com", "password": "clave-visitante"})
+    login(client, "visitante", "clave-visitante")
+    assert client.put(f"/api/admin/admins/{fundacion.id}", json={"active": False}).status_code == 403
+    assert client.delete(f"/api/admin/users/{adoptante.id}").status_code == 403
+
+    # El adoptante de prueba no puede cambiar su contraseña ni borrar su cuenta
+    login(client, "adoptante@demo.com", "DemoAdoptante1")
+    client.post("/mi-cuenta/contrasena", data={"actual": "DemoAdoptante1", "nueva": "otra-clave-123", "confirmacion": "otra-clave-123"})
+    client.post("/mi-cuenta/eliminar", data={"password": "DemoAdoptante1"})
+    assert login(client, "adoptante@demo.com", "DemoAdoptante1").status_code == 200
+
+    # Una cuenta creada por un visitante sí se puede eliminar
+    client.post("/registro", data=REGISTRO)
+    luis = usuario.query.filter_by(username="luis").one()
+    login(client, "visitante", "clave-visitante")
+    assert client.delete(f"/api/admin/users/{luis.id}").status_code == 204

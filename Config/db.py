@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from dotenv import load_dotenv
@@ -34,6 +35,10 @@ if not DATABASE_URL:
     DB_PORT = os.getenv("DB_PORT", "3307")
     DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
 
+# Railway y otros servicios entregan la URL como mysql://; SQLAlchemy necesita el driver explícito
+if DATABASE_URL.startswith("mysql://"):
+    DATABASE_URL = "mysql+pymysql://" + DATABASE_URL[len("mysql://"):]
+
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 if DATABASE_URL.startswith("mysql"):
@@ -42,6 +47,9 @@ if DATABASE_URL.startswith("mysql"):
         "pool_recycle": 280,
     }
 
+# Demo pública: cuentas de prueba con datos de ejemplo (ver Config/demo.py)
+app.config["DEMO_MODE"] = os.getenv("DEMO_MODE", "false").lower() == "true"
+
 # Límite de tamaño de subida (imágenes de mascotas): 5 MB
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
@@ -49,6 +57,11 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
+
+# Detrás del proxy de la plataforma (Railway, Render…): toma la IP real del visitante de
+# X-Forwarded-For, para que el límite de intentos de login no trate a todos como una sola IP
+if os.getenv("BEHIND_PROXY", "false").lower() == "true":
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
