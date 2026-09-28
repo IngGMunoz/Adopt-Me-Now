@@ -2,6 +2,8 @@
 
 **Plataforma web de adopción de mascotas que conecta fundaciones de rescate animal con personas que quieren adoptar.**
 
+### 🔗 [Ver demo en vivo](https://adopt-me-now-production.up.railway.app)
+
 [![Tests](https://github.com/IngGMunoz/Adopt-Me-Now/actions/workflows/tests.yml/badge.svg)](https://github.com/IngGMunoz/Adopt-Me-Now/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.1-000000?logo=flask&logoColor=white)
@@ -25,6 +27,8 @@ Las fundaciones publican las mascotas que tienen en adopción y revisan las soli
 </p>
 
 ## Demo
+
+La aplicación está desplegada en **[adopt-me-now-production.up.railway.app](https://adopt-me-now-production.up.railway.app)** (Railway: Docker + Gunicorn + MySQL).
 
 Entra con una de estas cuentas de prueba (no se pueden modificar ni eliminar):
 
@@ -393,7 +397,7 @@ Adopt-Me-Now/
 - [x] Notificaciones por correo cuando cambia el estado de una solicitud o postulación.
 - [x] Filtros del catálogo por especie, tamaño y ubicación.
 - [x] Gestión de las mascotas destacadas desde el panel.
-- [ ] **Despliegue público** con demo en vivo.
+- [x] Despliegue público con demo en vivo.
 - [ ] El límite de intentos vive en la memoria del proceso (Gunicorn corre con un solo *worker*). Para escalar a varios *workers* habría que moverlo a Redis o a la base de datos.
 
 ## Autor
