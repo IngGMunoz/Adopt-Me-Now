@@ -2,6 +2,7 @@ from conftest import login
 from Config.db import db
 from Models.actividad import Actividad
 from Models.adoptar_mascotas import adoptar_mascotas
+from Models.mascotas import Mascota
 from Models.postular_mascotas import PostularMascotas
 from Models.usuario import usuario
 
@@ -34,7 +35,7 @@ def test_registro_e_inicio_de_sesion_quedan_en_la_actividad(client):
     assert "Iniciaste sesión" in pagina
 
 
-def test_solicitud_y_postulacion_quedan_en_la_actividad(client, user):
+def test_solicitud_y_postulacion_quedan_en_la_actividad(client, user, destacadas):
     login(client, "ana", "secreta123")
     client.post("/formulario?pet=Michi", data={"nombre": "Ana", "email": "ana@example.com"},
                 headers={"X-Requested-With": "XMLHttpRequest"})
@@ -43,7 +44,8 @@ def test_solicitud_y_postulacion_quedan_en_la_actividad(client, user):
     assert tipos(user.id)[-2:] == ["solicitud_enviada", "postulacion_enviada"]
     solicitud = Actividad.query.filter_by(usuario_id=user.id, tipo="solicitud_enviada").one()
     assert solicitud.descripcion == "Enviaste una solicitud para adoptar a Michi"
-    assert solicitud.enlace == "/michi"
+    michi = Mascota.query.filter_by(nombre="Michi").one()
+    assert solicitud.enlace == f"/mascota/{michi.id}"
 
     pagina = client.get("/mi-cuenta/").get_data(as_text=True)
     assert "Postulaste a Canela para darla en adopción" in pagina

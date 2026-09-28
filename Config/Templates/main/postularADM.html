@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% from "components/forms.html" import field, submit %}
+{% from "components/forms.html" import field, select, submit %}
 
 {% block title %}Panel de administración{% endblock %}
 
@@ -55,30 +55,43 @@
             <section class="tab-panel" id="panel-mascotas" role="tabpanel" aria-labelledby="tab-mascotas">
             <div class="admin-layout">
             <form class="form-card" method="post" action="{{ url_for('Postular_Admin') }}" enctype="multipart/form-data" data-validate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <h2><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> Publicar mascota</h2>
                 {{ field('nombre', 'Nombre', 'text', None, 'Nombre de la mascota') }}
-                {{ field('descripcion', 'Descripción', 'textarea', None, 'Edad, carácter, salud y lo que necesita en su nuevo hogar', attrs={'minlength': 10}) }}
+                <div class="form-grid">
+                    {{ select('especie', 'Especie', [('perro', 'Perro'), ('gato', 'Gato'), ('otro', 'Otro')], placeholder='Elegir') }}
+                    {{ select('tamanio', 'Tamaño', [('pequeño', 'Pequeño'), ('mediano', 'Mediano'), ('grande', 'Grande')], placeholder='Elegir') }}
+                    {{ field('raza', 'Raza', 'text', None, 'Criollo, labrador…', required=False) }}
+                    {{ field('edad', 'Edad', 'text', None, '2 años, 6 meses…', required=False) }}
+                    {{ select('sexo', 'Sexo', [('macho', 'Macho'), ('hembra', 'Hembra')], required=False, placeholder='Elegir') }}
+                    {{ field('ubicacion', 'Ubicación', 'text', None, 'Barranquilla, Atlántico', required=False) }}
+                </div>
+                {{ field('descripcion', 'Descripción', 'textarea', None, 'Carácter, salud y lo que necesita en su nuevo hogar. Separa los párrafos con una línea en blanco.', attrs={'minlength': 10}) }}
                 {{ field('imagen', 'Foto', 'file', None, hint='JPG, PNG o WEBP, máximo 5 MB.', attrs={'accept': 'image/png,image/jpeg,image/webp,image/gif'}) }}
+                <label class="check"><input type="checkbox" name="destacada" value="1"> Destacarla en el inicio y el catálogo</label>
                 {{ submit('Publicar en el catálogo', 'fa-paw', 'Publicando…', 'btn btn--primary btn--block') }}
             </form>
             <div class="list">
                 {% for m in mascotas %}
                 <article class="list-item">
-                    {% if m.imagen %}
-                    <img class="list-item__thumb" src="{{ url_for('static', filename='uploads/' ~ m.imagen) }}" alt="">
-                    {% else %}
-                    <span class="list-item__thumb" aria-hidden="true"><i class="fa-solid fa-paw"></i></span>
-                    {% endif %}
+                    <img class="list-item__thumb" src="{{ m.imagen_url }}" alt="">
                     <div class="list-item__body">
                         <div class="list-item__title">
                             {{ m.nombre }}
                             {% if m.is_adopted %}<span class="badge badge--success">Adoptada</span>
                             {% else %}<span class="badge">En adopción</span>{% endif %}
+                            {% if m.destacada %}<span class="badge"><i class="fa-solid fa-star" aria-hidden="true"></i> Destacada</span>{% endif %}
                             {% if m.solicitudes %}<span class="badge badge--muted">{{ m.solicitudes|length }} solicitud{{ 'es' if m.solicitudes|length != 1 }}</span>{% endif %}
                         </div>
-                        <p class="list-item__text">{{ m.descripcion }}</p>
+                        <p class="list-item__text">{{ [m.especie|capitalize if m.especie, m.tamanio|capitalize if m.tamanio, m.ubicacion]|select|join(' · ') or m.descripcion }}</p>
                     </div>
                     <div class="list-item__actions">
+                        <button class="btn btn--ghost btn--sm" data-action="PUT" data-url="/api/admin/mascotas/{{ m.id }}"
+                            data-body='{"destacada": {{ 'false' if m.destacada else 'true' }}}'
+                            data-success="{{ m.nombre }} {{ 'ya no está destacada' if m.destacada else 'ahora está destacada' }}."
+                            aria-label="{{ 'Quitar de destacadas' if m.destacada else 'Destacar' }} a {{ m.nombre }}">
+                            <i class="fa-{{ 'solid' if m.destacada else 'regular' }} fa-star" aria-hidden="true"></i> {{ 'Quitar' if m.destacada else 'Destacar' }}
+                        </button>
                         {% if not m.is_adopted %}
                         <button class="btn btn--secondary btn--sm" data-action="POST" data-url="/api/admin/mascotas/{{ m.id }}/adopt"
                             data-success="{{ m.nombre }} quedó marcada como adoptada.">

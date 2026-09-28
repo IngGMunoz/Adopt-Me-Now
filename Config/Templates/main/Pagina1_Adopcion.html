@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% from "components/pet_card.html" import pet_card, featured_card %}
+{% from "components/pet_card.html" import pet_card %}
 
 {% block title %}Mascotas en adopción{% endblock %}
 
@@ -16,7 +16,7 @@
 
     <div class="toolbar">
         <p class="toolbar__count">
-            <strong id="petCount">{{ mascotas|length + destacadas|length }}</strong> mascotas disponibles
+            <strong id="petCount">{{ mascotas|length }}</strong> mascotas disponibles
         </p>
         <div class="toolbar__controls">
             <div class="field__control">
@@ -24,6 +24,25 @@
                 <label for="petSearch" class="visually-hidden">Buscar mascota</label>
                 <input id="petSearch" type="search" class="input" placeholder="Buscar por nombre, especie…" autocomplete="off">
             </div>
+            <label for="filtroEspecie" class="visually-hidden">Especie</label>
+            <select id="filtroEspecie" class="input" data-filter="especie">
+                <option value="">Especie</option>
+                <option value="perro">Perros</option>
+                <option value="gato">Gatos</option>
+                <option value="otro">Otras</option>
+            </select>
+            <label for="filtroTamanio" class="visually-hidden">Tamaño</label>
+            <select id="filtroTamanio" class="input" data-filter="tamanio">
+                <option value="">Tamaño</option>
+                <option value="pequeño">Pequeño</option>
+                <option value="mediano">Mediano</option>
+                <option value="grande">Grande</option>
+            </select>
+            <label for="filtroUbicacion" class="visually-hidden">Ubicación</label>
+            <select id="filtroUbicacion" class="input" data-filter="ubicacion">
+                <option value="">Ubicación</option>
+                {% for u in ubicaciones %}<option value="{{ u }}">{{ u }}</option>{% endfor %}
+            </select>
             <label for="petSort" class="visually-hidden">Ordenar</label>
             <select id="petSort" class="input">
                 <option value="default">Más recientes</option>
@@ -35,14 +54,11 @@
 
     <div class="pet-grid" data-catalog>
         {% for mascota in mascotas %}
-            {{ pet_card(mascota, current_user) }}
-        {% endfor %}
-        {% for slug, mascota in destacadas.items() %}
-            {{ featured_card(slug, mascota) }}
+            {{ pet_card(mascota) }}
         {% endfor %}
         <div id="petEmpty" class="empty-state" hidden>
             <i class="fa-solid fa-paw" aria-hidden="true"></i>
-            <p>No encontramos mascotas con esa búsqueda.</p>
+            <p>No encontramos mascotas con esa búsqueda o filtros.</p>
         </div>
     </div>
 

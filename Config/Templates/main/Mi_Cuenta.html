@@ -145,6 +145,7 @@
         {# ---------------- Configuración ---------------- #}
         <section class="tab-panel settings" id="panel-configuracion" role="tabpanel" aria-labelledby="tab-configuracion" hidden>
             <form class="form-card settings__card" method="post" action="{{ url_for('routes_CuentaC.actualizar_perfil') }}" data-validate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <h2 class="settings__title"><i class="fa-solid fa-user-pen" aria-hidden="true"></i> Perfil</h2>
                 <p class="settings__text">Este es el nombre y el correo que verán las fundaciones en tus solicitudes.</p>
                 {{ field('username', 'Nombre de usuario', 'text', 'fa-user', value=u.username, attrs={'minlength': 3, 'autocomplete': 'username'}) }}
@@ -153,6 +154,7 @@
             </form>
 
             <form class="form-card settings__card" method="post" action="{{ url_for('routes_CuentaC.cambiar_contrasena') }}" data-validate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <h2 class="settings__title"><i class="fa-solid fa-key" aria-hidden="true"></i> Contraseña</h2>
                 <p class="settings__text">Usa una contraseña de al menos 8 caracteres que no uses en otros sitios.</p>
                 {{ field('actual', 'Contraseña actual', 'password', 'fa-lock', attrs={'autocomplete': 'current-password'}) }}
@@ -167,6 +169,7 @@
 
             <form class="form-card settings__card settings__card--danger" method="post" action="{{ url_for('routes_CuentaC.eliminar_cuenta') }}"
                 data-validate data-confirm="¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <h2 class="settings__title"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Eliminar cuenta</h2>
                 <p class="settings__text">
                     Se borrarán tu cuenta y tu historial de actividad. Las solicitudes que enviaste se conservan para que la

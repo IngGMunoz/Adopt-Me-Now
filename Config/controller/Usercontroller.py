@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request, session
 
 from Config.actividad import registrar
-from Config.auth import check_admin, check_login, is_admin
+from Config.auth import (check_admin, check_login, is_admin, limpiar_fallos_login, login_bloqueado,
+                         registrar_fallo_login)
 from Config.db import db
 from Models.usuario import usuario
 from Models.schemas import usuarioSchema
@@ -70,12 +71,16 @@ def login():
     password = data.get("password")
     if not all([identifier, password]):
         return jsonify({"ok": False, "msg": "Faltan credenciales"}), 400
+    if login_bloqueado(identifier):
+        return jsonify({"ok": False, "msg": "Demasiados intentos fallidos. Espera 15 minutos."}), 429
 
     # Primero administradores (mismo login para ambos) y luego usuarios
     u = (AdminModel.query.filter((AdminModel.username == identifier) | (AdminModel.email == identifier)).first()
          or usuario.query.filter((usuario.username == identifier) | (usuario.email == identifier)).first())
     if not u or not u.check_password(password):
+        registrar_fallo_login(identifier)
         return jsonify({"ok": False, "msg": "Credenciales inválidas"}), 401
+    limpiar_fallos_login(identifier)
 
     session.clear()
     session["user_id"] = u.id

@@ -13,6 +13,7 @@ os.environ["ADMIN_REGISTRATION_CODE"] = "codigo-test"
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app import app as flask_app  # noqa: E402
+from Config import auth  # noqa: E402
 from Config.db import db  # noqa: E402
 from Models.admins import admin  # noqa: E402
 from Models.usuario import usuario  # noqa: E402
@@ -20,7 +21,9 @@ from Models.usuario import usuario  # noqa: E402
 
 @pytest.fixture
 def app(tmp_path):
-    flask_app.config.update(TESTING=True)
+    # CSRF se prueba aparte (test_seguridad.py); aquí se desactiva para enviar formularios directo
+    flask_app.config.update(TESTING=True, CSRF_ENABLED=False)
+    auth._fallos.clear()
     # Las imágenes subidas en los tests van a una carpeta temporal, no a static/uploads
     original_static = flask_app.static_folder
     flask_app.static_folder = str(tmp_path)
@@ -35,6 +38,13 @@ def app(tmp_path):
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture
+def destacadas(app):
+    """Las mascotas iniciales (Cachorro, Michi, Rocky), como en una base recién creada."""
+    from Config.schema import sembrar_destacadas
+    sembrar_destacadas()
 
 
 @pytest.fixture

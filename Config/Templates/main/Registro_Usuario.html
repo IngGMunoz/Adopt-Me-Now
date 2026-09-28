@@ -12,6 +12,7 @@
         <p class="auth__subtitle">Regístrate para enviar solicitudes de adopción y seguir su estado.</p>
 
         <form method="post" action="{{ url_for('Registro_Usuario') }}" data-validate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
             {{ field('nombre', 'Nombre de usuario', 'text', 'fa-user', 'Cómo quieres que te llamemos',
                      value=request.form.get('nombre', ''), attrs={'autocomplete': 'username', 'minlength': 3}) }}

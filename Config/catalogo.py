@@ -1,65 +1,58 @@
-"""Mascotas destacadas con página de perfil propia (/cachorro, /michi, /rocky).
+"""Mascotas destacadas con las que arranca el catálogo.
 
-Se muestran junto a las mascotas publicadas por los administradores en /adopcion.
+Se cargan una sola vez en la base (al crearla o al migrarla); después el administrador
+las gestiona desde el panel como cualquier otra mascota.
 """
 
-MASCOTAS_DESTACADAS = {
-    "cachorro": {
+MASCOTAS_INICIALES = [
+    {
         "nombre": "Cachorro",
         "imagen": "images/Cachorro.png",
-        "especie": "Perro",
         "autor": "Daniel",
-        "resumen": "Cachorra schnauzer juguetona e inteligente que busca una familia con tiempo para jugar y pasear.",
-        "datos": [
-            ("Raza", "Schnauzer miniatura"),
-            ("Edad", "3–6 meses"),
-            ("Sexo", "Hembra"),
-            ("Tamaño adulto", "Pequeño (7–9 kg aprox.)"),
-        ],
-        "salud": "Vacunada, desparasitada y en buen estado.",
-        "caracter": "Juguetona, activa, inteligente y muy leal.",
-        "requisitos": "Espacio seguro dentro de casa, tiempo para juegos y paseos diarios, y compromiso con su "
-                      "educación y sus cuidados veterinarios.",
-        "ubicacion": "Barranquilla, Atlántico · barrio San José",
-        "contacto": "+57 302 216 3398",
+        "especie": "perro",
+        "raza": "Schnauzer miniatura",
+        "edad": "3–6 meses",
+        "sexo": "hembra",
+        "tamanio": "pequeño",
+        "ubicacion": "Barranquilla, Atlántico",
+        "descripcion": "Cachorra schnauzer juguetona e inteligente que busca una familia con tiempo para jugar y pasear.\n\n"
+                       "Salud: vacunada, desparasitada y en buen estado.\n\n"
+                       "Carácter: juguetona, activa, inteligente y muy leal.\n\n"
+                       "Requisitos: espacio seguro dentro de casa, tiempo para juegos y paseos diarios, y compromiso "
+                       "con su educación y sus cuidados veterinarios.",
     },
-    "michi": {
+    {
         "nombre": "Michi",
         "imagen": "images/michi.jpg",
-        "especie": "Gato",
         "autor": "Ana",
-        "resumen": "Gatita cariñosa y sociable. Le encanta jugar y recibir mimos: ideal para una familia que "
-                   "busca compañía tierna.",
-        "datos": [
-            ("Raza", "Criolla"),
-            ("Edad", "8 meses"),
-            ("Sexo", "Hembra"),
-            ("Esterilizada", "Sí"),
-        ],
-        "salud": "Vacunada, desparasitada y esterilizada.",
-        "caracter": "Muy cariñosa, juguetona y sociable con otros gatos.",
-        "requisitos": "Hogar responsable, protección en ventanas, compromiso con su bienestar y controles "
-                      "veterinarios.",
+        "especie": "gato",
+        "raza": "Criolla",
+        "edad": "8 meses",
+        "sexo": "hembra",
+        "tamanio": "pequeño",
         "ubicacion": "Barranquilla, Atlántico",
-        "contacto": "+57 300 123 4567",
+        "descripcion": "Gatita cariñosa y sociable. Le encanta jugar y recibir mimos: ideal para una familia que busca "
+                       "compañía tierna.\n\n"
+                       "Salud: vacunada, desparasitada y esterilizada.\n\n"
+                       "Carácter: muy cariñosa, juguetona y sociable con otros gatos.\n\n"
+                       "Requisitos: hogar responsable, protección en ventanas, compromiso con su bienestar y controles "
+                       "veterinarios.",
     },
-    "rocky": {
+    {
         "nombre": "Rocky",
         "imagen": "images/chiki.jpg",
-        "especie": "Perro",
         "autor": "Andrea",
-        "resumen": "Perrito mestizo de tamaño mini, noble y protector. Disfruta el aire libre y convive bien con "
-                   "personas y otros animales.",
-        "datos": [
-            ("Raza", "Mestizo"),
-            ("Edad", "2 años"),
-            ("Sexo", "Macho"),
-            ("Tamaño", "Miniatura (4 kg aprox.)"),
-        ],
-        "salud": "Vacunado, desparasitado y en excelente estado.",
-        "caracter": "Noble, protector, juguetón y sociable con personas y otros animales.",
-        "requisitos": "Espacio para jugar, paseos diarios, compromiso con su bienestar y controles veterinarios.",
+        "especie": "perro",
+        "raza": "Mestizo",
+        "edad": "2 años",
+        "sexo": "macho",
+        "tamanio": "pequeño",
         "ubicacion": "Barranquilla, Atlántico",
-        "contacto": "+57 301 234 5678",
+        "descripcion": "Perrito mestizo de tamaño mini, noble y protector. Disfruta el aire libre y convive bien con "
+                       "personas y otros animales.\n\n"
+                       "Salud: vacunado, desparasitado y en excelente estado.\n\n"
+                       "Carácter: noble, protector, juguetón y sociable con personas y otros animales.\n\n"
+                       "Requisitos: espacio para jugar, paseos diarios, compromiso con su bienestar y controles "
+                       "veterinarios.",
     },
-}
+]

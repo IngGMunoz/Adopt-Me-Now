@@ -1,6 +1,10 @@
-"""Registro del historial de actividad de los usuarios."""
+"""Historial de actividad de los usuarios y avisos por correo."""
 
+import os
+import smtplib
+import threading
 from datetime import datetime
+from email.message import EmailMessage
 from itertools import groupby
 
 from Config.db import app, db
@@ -36,8 +40,39 @@ def agrupar_por_dia(actividades):
     return grupos
 
 
+def enviar_correo(destino, asunto, texto):
+    """Envía un correo en segundo plano por SMTP (STARTTLS). Sin SMTP_HOST en .env no hace nada.
+
+    Devuelve el hilo del envío (o None) para poder esperarlo en los tests.
+    """
+    host = os.getenv("SMTP_HOST")
+    if not host or not destino:
+        return None
+    usuario, clave = os.getenv("SMTP_USER"), os.getenv("SMTP_PASSWORD", "")
+    msg = EmailMessage()
+    msg["From"] = os.getenv("SMTP_FROM") or usuario
+    msg["To"] = destino
+    msg["Subject"] = asunto
+    msg.set_content(f"{texto}\n\nEquipo de Adopt Me")
+
+    def enviar():
+        try:
+            with smtplib.SMTP(host, int(os.getenv("SMTP_PORT", "587")), timeout=10) as smtp:
+                smtp.starttls()
+                if usuario:
+                    smtp.login(usuario, clave)
+                smtp.send_message(msg)
+        except Exception:
+            app.logger.exception("No se pudo enviar el correo a %s", destino)
+
+    hilo = threading.Thread(target=enviar, daemon=True)
+    hilo.start()
+    return hilo
+
+
 def notificar_postulacion_descartada(p):
-    """Avisa al usuario en su historial cuando la fundación descarta su postulación pendiente."""
+    """Avisa al usuario (historial y correo) cuando la fundación descarta su postulación pendiente."""
     if p.usuario_id and not p.aprobada:
-        registrar(p.usuario_id, "postulacion_descartada",
-                  f"La fundación revisó y descartó tu postulación de {p.nombre or 'una mascota'}", commit=False)
+        texto = f"La fundación revisó y descartó tu postulación de {p.nombre or 'una mascota'}"
+        registrar(p.usuario_id, "postulacion_descartada", texto, commit=False)
+        enviar_correo(p.usuario.email, "Tu postulación fue revisada", texto + ".")

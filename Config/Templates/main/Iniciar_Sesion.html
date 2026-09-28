@@ -12,6 +12,7 @@
         <p class="auth__subtitle">Qué bueno verte de nuevo. Tu próximo mejor amigo te espera.</p>
 
         <form method="post" action="{{ url_for('Iniciar_Sesion', next=request.args.get('next')) }}" data-validate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
             {{ field('email', 'Correo o usuario', 'text', 'fa-envelope', 'ejemplo@correo.com',
                      attrs={'autocomplete': 'username', 'autofocus': 'autofocus'}) }}

@@ -5,6 +5,16 @@
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+    // Token CSRF en toda petición fetch que modifica datos (ver Config/auth.py)
+    const csrf = $('meta[name="csrf-token"]')?.content;
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = (url, opts = {}) => {
+        if (csrf && !['GET', 'HEAD'].includes((opts.method || 'GET').toUpperCase())) {
+            opts.headers = { ...opts.headers, 'X-CSRF-Token': csrf };
+        }
+        return nativeFetch(url, opts);
+    };
+
     /* ---------- Menú móvil ---------- */
     function initNav() {
         const toggle = $('.nav-toggle');
@@ -325,7 +335,7 @@
         });
     }
 
-    /* ---------- Catálogo: búsqueda y orden ---------- */
+    /* ---------- Catálogo: búsqueda, filtros y orden ---------- */
     function initCatalog() {
         const grid = $('[data-catalog]');
         if (!grid) return;
@@ -333,6 +343,7 @@
         const sort = $('#petSort');
         const count = $('#petCount');
         const empty = $('#petEmpty');
+        const filters = $$('[data-filter]');
         const cards = $$('.pet-card', grid);
         const original = cards.slice();
 
@@ -340,7 +351,8 @@
             const q = (search?.value || '').trim().toLowerCase();
             let visible = 0;
             cards.forEach((card) => {
-                const match = !q || card.dataset.search.includes(q);
+                const match = (!q || card.dataset.search.includes(q))
+                    && filters.every((f) => !f.value || card.dataset[f.dataset.filter] === f.value);
                 card.hidden = !match;
                 if (match) visible++;
             });
@@ -354,6 +366,7 @@
         };
         search?.addEventListener('input', apply);
         sort?.addEventListener('change', apply);
+        filters.forEach((f) => f.addEventListener('change', apply));
     }
 
     document.addEventListener('DOMContentLoaded', () => {

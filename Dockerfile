@@ -19,4 +19,6 @@ USER appuser
 
 EXPOSE 5100
 
-CMD ["python", "app.py"]
+# Servidor WSGI de producción. Un solo worker con hilos: el límite de intentos de login
+# vive en memoria del proceso. PORT lo fija la plataforma de despliegue (5100 por defecto).
+CMD exec gunicorn --bind 0.0.0.0:${PORT:-5100} --workers 1 --threads 8 --access-logfile - app:app

@@ -15,6 +15,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_PORT=3306 # puerto interno del contenedor MySQL
+      - PORT=5100 # dentro del contenedor siempre 5100; PORT del .env solo cambia el puerto del host
 
   db:
     container_name: adoptme_db

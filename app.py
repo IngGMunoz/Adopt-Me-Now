@@ -1,18 +1,22 @@
 import os
 from datetime import date
 
-from flask import abort, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import flash, jsonify, redirect, render_template, request, session, url_for
 
 from Config.db import app, db
 from Config.auth import (
     admin_required,
+    csrf_protect,
+    csrf_token,
     is_authenticated,
+    limpiar_fallos_login,
+    login_bloqueado,
     login_required,
+    registrar_fallo_login,
     safe_next_url,
     save_uploaded_image,
 )
 from Config.schema import init_db
-from Config.catalogo import MASCOTAS_DESTACADAS
 from Config.actividad import agrupar_por_dia, registrar
 import Config.filtros  # noqa: F401  (filtros de fecha para las plantillas)
 
@@ -34,6 +38,8 @@ app.register_blueprint(routes_UserC)
 app.register_blueprint(Routes_adminC)
 app.register_blueprint(routes_CuentaC)
 
+app.before_request(csrf_protect)
+
 # Crear tablas y ajustar el esquema al iniciar la app
 with app.app_context():
     init_db()
@@ -46,12 +52,6 @@ def _wants_json():
         return True
     best = request.accept_mimetypes.best_match(["text/html", "application/json"])
     return best == "application/json"
-
-
-def _enlace_mascota(nombre):
-    """Perfil de una mascota destacada a partir de su nombre, si tiene uno."""
-    slug = next((s for s, m in MASCOTAS_DESTACADAS.items() if m["nombre"] == nombre), None)
-    return url_for("Detalle_Mascota", slug=slug) if slug else None
 
 
 def get_current_user():
@@ -77,6 +77,7 @@ def inject_auth():
         "is_authenticated": is_authenticated(),
         "current_user": get_current_user(),
         "now_year": date.today().year,
+        "csrf_token": csrf_token,
     }
 
 
@@ -92,18 +93,18 @@ def file_too_large(_error):
 
 @app.route("/")
 def Pagina_Principal():
-    # Últimas mascotas publicadas para la sección "Recién llegados"
+    # Tres mascotas para el inicio: primero las destacadas y luego las más recientes
     try:
-        recientes = Mascota.query.filter_by(is_adopted=False).order_by(Mascota.id.desc()).limit(3).all()
-        total = Mascota.query.filter_by(is_adopted=False).count() + len(MASCOTAS_DESTACADAS)
+        disponibles = Mascota.query.filter_by(is_adopted=False)
+        inicio = disponibles.order_by(Mascota.destacada.desc(), Mascota.id.desc()).limit(3).all()
+        total = disponibles.count()
         adoptadas = Mascota.query.filter_by(is_adopted=True).count()
     except Exception:
         app.logger.exception("No se pudieron cargar las mascotas")
-        recientes, total, adoptadas = [], len(MASCOTAS_DESTACADAS), 0
+        inicio, total, adoptadas = [], 0, 0
     return render_template(
         "main/Pagina_Principal.html",
-        recientes=recientes,
-        destacadas=MASCOTAS_DESTACADAS,
+        mascotas=inicio,
         total_disponibles=total,
         total_adoptadas=adoptadas,
     )
@@ -111,24 +112,20 @@ def Pagina_Principal():
 
 @app.route("/adopcion")
 def Pagina_Adopcion():
-    # Mascotas publicadas por los administradores que aún no han sido adoptadas
+    # Mascotas que aún no han sido adoptadas; las destacadas primero
     try:
-        mascotas_db = Mascota.query.filter_by(is_adopted=False).order_by(Mascota.id.desc()).all()
+        mascotas_db = (Mascota.query.filter_by(is_adopted=False)
+                       .order_by(Mascota.destacada.desc(), Mascota.id.desc()).all())
     except Exception:
         app.logger.exception("No se pudieron cargar las mascotas")
         mascotas_db = []
-    return render_template("main/Pagina1_Adopcion.html", mascotas=mascotas_db, destacadas=MASCOTAS_DESTACADAS)
+    ubicaciones = sorted({m.ubicacion for m in mascotas_db if m.ubicacion})
+    return render_template("main/Pagina1_Adopcion.html", mascotas=mascotas_db, ubicaciones=ubicaciones)
 
 
-# Perfil de las mascotas destacadas: /cachorro, /michi, /rocky
-@app.route("/cachorro", defaults={"slug": "cachorro"})
-@app.route("/michi", defaults={"slug": "michi"})
-@app.route("/rocky", defaults={"slug": "rocky"})
-def Detalle_Mascota(slug):
-    mascota = MASCOTAS_DESTACADAS.get(slug)
-    if not mascota:
-        abort(404)
-    return render_template("main/Detalle_Mascota.html", mascota=mascota, slug=slug)
+@app.route("/mascota/<int:mid>")
+def Detalle_Mascota(mid):
+    return render_template("main/Detalle_Mascota.html", mascota=db.get_or_404(Mascota, mid))
 
 
 @app.route("/fundaciones")
@@ -180,9 +177,14 @@ def Iniciar_Sesion():
             flash("Email y contraseña son obligatorios", "error")
             return render_template("main/Iniciar_Sesion.html")
 
+        if login_bloqueado(email):
+            flash("Demasiados intentos fallidos. Espera 15 minutos e inténtalo de nuevo.", "error")
+            return render_template("main/Iniciar_Sesion.html"), 429
+
         # Primero se busca en administradores y luego en usuarios normales
         admin_user = AdminModel.query.filter((AdminModel.email == email) | (AdminModel.username == email)).first()
         if admin_user and admin_user.active and admin_user.check_password(password):
+            limpiar_fallos_login(email)
             session.clear()
             session["user_id"] = admin_user.id
             session["user_email"] = admin_user.email
@@ -193,6 +195,7 @@ def Iniciar_Sesion():
 
         user = usuario.query.filter((usuario.email == email) | (usuario.username == email)).first()
         if user and user.check_password(password):
+            limpiar_fallos_login(email)
             session.clear()
             session["user_id"] = user.id
             session["user_email"] = user.email
@@ -201,6 +204,7 @@ def Iniciar_Sesion():
             flash(f"¡Bienvenido, {user.username}!", "success")
             return redirect(next_url or "/")
 
+        registrar_fallo_login(email)
         flash("Email o contraseña incorrectos", "error")
 
     return render_template("main/Iniciar_Sesion.html")
@@ -228,23 +232,18 @@ def Registro_Administrador():
 def Formulario_Para_Adoptar():
     if request.method == "GET":
         # Datos de la mascota elegida para mostrarla en el encabezado del formulario
-        pet = None
         mascota_id = request.args.get("mascota", type=int)
         pet_name = request.args.get("pet")
         mascota = db.session.get(Mascota, mascota_id) if mascota_id else None
         if mascota:
-            imagen = url_for("static", filename="uploads/" + mascota.imagen) if mascota.imagen else None
-            pet = {"nombre": mascota.nombre, "imagen": imagen}
-        elif pet_name:
-            destacada = next((m for m in MASCOTAS_DESTACADAS.values() if m["nombre"] == pet_name), None)
-            imagen = url_for("static", filename=destacada["imagen"]) if destacada else None
-            pet = {"nombre": pet_name, "imagen": imagen}
+            pet = {"nombre": mascota.nombre, "imagen": mascota.imagen_url}
+        else:
+            pet = {"nombre": pet_name, "imagen": None} if pet_name else None
         return render_template("main/Formulario_Para_Adoptar.html", pet=pet)
 
     nombre = request.form.get("nombre") or request.form.get("username")
     email = request.form.get("email")
-    # La mascota llega por id (?mascota=ID) desde el catálogo, o solo por nombre (?pet=Nombre)
-    # desde las páginas fijas como /michi, que no están en la tabla mascotas.
+    # La mascota llega por id (?mascota=ID) desde su ficha, o solo por nombre (?pet=Nombre)
     pet_name = request.args.get("pet") or request.form.get("pet_name")
     mascota_id = request.form.get("mascota_id", type=int) or request.args.get("mascota", type=int)
     mascota = db.session.get(Mascota, mascota_id) if mascota_id else None
@@ -285,7 +284,7 @@ def Formulario_Para_Adoptar():
             registrar(
                 solicitud.adopter_id, "solicitud_enviada",
                 f"Enviaste una solicitud para adoptar a {solicitud.pet_name or 'una mascota'}",
-                enlace=_enlace_mascota(solicitud.pet_name), commit=False,
+                enlace=url_for("Detalle_Mascota", mid=mascota.id) if mascota else None, commit=False,
             )
         db.session.commit()
     except Exception:
@@ -325,6 +324,8 @@ def Postular_Admin():
                 imagen=imagen,
                 autor=session["user_name"],
                 publicado_por_id=session["user_id"],
+                destacada=bool(request.form.get("destacada")),
+                **{c: request.form.get(c) or None for c in Mascota.CAMPOS},
             ))
             db.session.commit()
             flash(f"¡{nombre} ya aparece en el catálogo de adopción!", "success")
@@ -334,7 +335,7 @@ def Postular_Admin():
             flash("No se pudo publicar la mascota", "error")
         return redirect(url_for("Postular_Admin"))
 
-    mascotas_db = Mascota.query.order_by(Mascota.id.desc()).all()
+    mascotas_db = Mascota.query.order_by(Mascota.destacada.desc(), Mascota.id.desc()).all()
     solicitudes = adoptar_mascotas.query.order_by(adoptar_mascotas.is_confirmed, adoptar_mascotas.id.desc()).all()
     postulaciones = PostularMascotas.query.order_by(PostularMascotas.id.desc()).all()
     return render_template(

@@ -130,7 +130,15 @@ def migrate_adoptar_mascotas():
 
 
 def migrate_mascotas():
-    """Mascotas -> admins (quién la publicó)."""
+    """Mascotas -> admins (quién la publicó), destacadas y datos para los filtros.
+
+    Devuelve True si la columna 'destacada' no existía (hay que cargar las mascotas iniciales).
+    """
+    sin_destacadas = "destacada" not in _columns("mascotas")
+    _add_column("mascotas", "destacada", "TINYINT(1) NOT NULL DEFAULT 0")
+    for column, ddl in [("especie", "VARCHAR(60)"), ("raza", "VARCHAR(120)"), ("edad", "VARCHAR(60)"),
+                        ("sexo", "VARCHAR(20)"), ("tamanio", "VARCHAR(40)"), ("ubicacion", "VARCHAR(200)")]:
+        _add_column("mascotas", column, f"{ddl} NULL")
     _add_column("mascotas", "publicado_por_id", "INT NULL")
     _add_index("mascotas", "idx_mascotas_publicado_por", "publicado_por_id")
     _add_fk("mascotas", "fk_mascotas_admins", "publicado_por_id", "admins")
@@ -144,6 +152,7 @@ def migrate_mascotas():
         WHERE m.publicado_por_id IS NULL
         """
     )
+    return sin_destacadas
 
 
 def migrate_postular_mascotas():
@@ -186,14 +195,24 @@ def migrate_postular_mascotas():
 
 
 def migrate_mysql():
+    """Devuelve True si hay que cargar las mascotas iniciales (ver migrate_mascotas)."""
     insp = inspect(db.engine)
     # El orden importa: las FK necesitan que las tablas referenciadas existan
-    if insp.has_table("mascotas"):
-        migrate_mascotas()
+    sembrar = insp.has_table("mascotas") and migrate_mascotas()
     if insp.has_table("adoptar_mascotas"):
         migrate_adoptar_mascotas()
     if insp.has_table("postular_mascotas"):
         migrate_postular_mascotas()
+    return sembrar
+
+
+def sembrar_destacadas():
+    """Carga las mascotas destacadas iniciales (Config/catalogo.py). Solo se llama una vez por base."""
+    from Config.catalogo import MASCOTAS_INICIALES
+    from Models.mascotas import Mascota
+
+    db.session.add_all(Mascota(destacada=True, **datos) for datos in MASCOTAS_INICIALES)
+    db.session.commit()
 
 
 def backfill_actividad():
@@ -226,13 +245,18 @@ def backfill_actividad():
 
 def init_db():
     """Crea las tablas que falten y, en MySQL, migra el esquema heredado."""
+    # Las destacadas iniciales se cargan en una base nueva o al agregar la columna 'destacada';
+    # así no reaparecen si el administrador las elimina después.
+    sembrar = not inspect(db.engine).has_table("mascotas")
     db.create_all()
     if db.engine.dialect.name == "mysql":
         try:
-            migrate_mysql()
+            sembrar = migrate_mysql() or sembrar
         except Exception:
             db.session.rollback()
             app.logger.exception("No se pudo migrar el esquema de la base de datos")
+    if sembrar:
+        sembrar_destacadas()
     try:
         backfill_actividad()
     except Exception:

@@ -14,6 +14,7 @@
     </header>
 
     <form class="form-card" method="post" action="{{ url_for('Formulario_Para_Adoptar') }}" data-validate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="pet_name" value="{{ request.args.get('pet', '') }}">
         <input type="hidden" name="mascota_id" value="{{ request.args.get('mascota', '') }}">
 

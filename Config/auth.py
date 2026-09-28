@@ -1,6 +1,10 @@
 """Helpers de autenticación y autorización compartidos por app.py y los blueprints."""
 
+import hmac
 import os
+import secrets
+import threading
+import time
 import uuid
 from functools import wraps
 from urllib.parse import urlparse
@@ -112,3 +116,62 @@ def save_uploaded_image(file_storage):
     filename = f"{uuid.uuid4().hex}_{safe_name}"
     file_storage.save(os.path.join(uploads_dir, filename))
     return filename
+
+
+# ---------------------------------------------------------------------------
+# CSRF: token por sesión, exigido en todo envío que no sea JSON.
+# Un sitio ajeno no puede enviar JSON a esta app: el navegador lo bloquea sin CORS.
+# ---------------------------------------------------------------------------
+
+def csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_urlsafe(32)
+    return session["csrf_token"]
+
+
+def csrf_protect():
+    if request.method in ("GET", "HEAD", "OPTIONS") or request.is_json or not current_app.config.get("CSRF_ENABLED", True):
+        return None
+    token = request.form.get("csrf_token") or request.headers.get("X-CSRF-Token") or ""
+    if token and hmac.compare_digest(token, session.get("csrf_token", "")):
+        return None
+    msg = "El formulario expiró. Recarga la página e inténtalo de nuevo."
+    if _wants_json():
+        return jsonify({"ok": False, "msg": msg}), 400
+    flash(msg, "error")
+    return redirect(request.referrer or "/")
+
+
+# ---------------------------------------------------------------------------
+# Límite de intentos de inicio de sesión: 5 fallos en 15 minutos por IP y cuenta.
+# En memoria del proceso (Gunicorn corre con un solo worker, ver Dockerfile).
+# ---------------------------------------------------------------------------
+
+MAX_INTENTOS = 5
+VENTANA_SEGUNDOS = 15 * 60
+_fallos = {}
+_fallos_lock = threading.Lock()
+
+
+def _clave_login(identificador):
+    return f"{request.remote_addr}|{(identificador or '').strip().lower()}"
+
+
+def login_bloqueado(identificador):
+    ahora = time.monotonic()
+    with _fallos_lock:
+        if len(_fallos) > 10000:  # evita que crezca sin límite
+            for k in [k for k, v in _fallos.items() if ahora - v[-1] > VENTANA_SEGUNDOS]:
+                del _fallos[k]
+        recientes = [t for t in _fallos.get(_clave_login(identificador), []) if ahora - t < VENTANA_SEGUNDOS]
+        return len(recientes) >= MAX_INTENTOS
+
+
+def registrar_fallo_login(identificador):
+    with _fallos_lock:
+        _fallos.setdefault(_clave_login(identificador), []).append(time.monotonic())
+
+
+def limpiar_fallos_login(identificador):
+    with _fallos_lock:
+        _fallos.pop(_clave_login(identificador), None)

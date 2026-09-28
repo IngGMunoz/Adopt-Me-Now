@@ -203,11 +203,13 @@
 .toolbar__controls {
     position: relative;
     display: flex;
+    flex: 1 1 100%;
     gap: 12px;
     flex-wrap: wrap;
 }
 
 .toolbar__controls .field__control {
+    flex: 1;
     min-width: 240px;
 }
 
@@ -601,6 +603,21 @@
 
 .admin-panels .tab-panel {
     margin-top: 22px;
+}
+
+.check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--brand);
 }
 
 .admin-panels .toolbar {
@@ -1158,7 +1175,8 @@
     }
 
     .toolbar__controls select.input {
-        width: 100%;
+        flex: 1 1 calc(50% - 6px);
+        min-width: 0;
     }
 
     .cta-band {
@@ -1177,6 +1195,7 @@
     }
 
     .toolbar__controls .field__control {
+        flex-basis: 100%;
         min-width: 0;
     }
 

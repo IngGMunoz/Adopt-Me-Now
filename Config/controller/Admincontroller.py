@@ -3,7 +3,7 @@ import os
 
 from flask import Blueprint, current_app, jsonify, request, session
 
-from Config.actividad import notificar_postulacion_descartada, registrar
+from Config.actividad import enviar_correo, notificar_postulacion_descartada, registrar
 from Config.auth import check_admin, is_admin, save_uploaded_image
 from Config.db import db
 from Models.admins import admin
@@ -167,7 +167,8 @@ def admin_create_mascota():
         return jsonify({"ok": False, "msg": "Mascota ya registrada"}), 409
 
     m = Mascota(nombre=nombre, descripcion=descripcion, imagen=imagen, autor=autor,
-                publicado_por_id=session.get("user_id"))
+                publicado_por_id=session.get("user_id"), destacada=_as_bool(data.get("destacada")),
+                **{c: data.get(c) or None for c in Mascota.CAMPOS})
     db.session.add(m)
     try:
         db.session.commit()
@@ -182,11 +183,12 @@ def admin_create_mascota():
 def admin_update_mascota(mid):
     m = db.get_or_404(Mascota, mid)
     data = request.get_json(silent=True) or {}
-    m.nombre = data.get("nombre", m.nombre)
-    m.descripcion = data.get("descripcion", m.descripcion)
-    m.imagen = data.get("imagen", m.imagen)
-    m.autor = data.get("autor", m.autor)
-    m.is_adopted = data.get("is_adopted", m.is_adopted)
+    for campo in ("nombre", "descripcion", "imagen", "autor") + Mascota.CAMPOS:
+        if campo in data:
+            setattr(m, campo, data[campo])
+    for campo in ("is_adopted", "destacada"):
+        if campo in data:
+            setattr(m, campo, _as_bool(data[campo]))
     db.session.commit()
     return jsonify(mascota_schema.dump(m)), 200
 
@@ -237,12 +239,16 @@ def admin_aprobar_postular(pid):
         imagen=p.imagen or "",
         autor=session.get("user_name") or "Administrador",
         publicado_por_id=session.get("user_id"),
+        **{c: getattr(p, c) for c in Mascota.CAMPOS},
     )
     p.mascota = m
     db.session.add(m)
-    registrar(p.usuario_id, "postulacion_publicada",
-              f"¡{m.nombre} ya está publicada en el catálogo gracias a tu postulación!", enlace="/adopcion", commit=False)
+    db.session.flush()  # m.id para el enlace a su ficha
+    texto = f"¡{m.nombre} ya está publicada en el catálogo gracias a tu postulación!"
+    registrar(p.usuario_id, "postulacion_publicada", texto, enlace=f"/mascota/{m.id}", commit=False)
     db.session.commit()
+    if p.usuario:
+        enviar_correo(p.usuario.email, "Tu postulación fue publicada", texto)
     return jsonify({"ok": True, "mascota": mascota_schema.dump(m), "postulacion": postular_schema.dump(p)}), 201
 
 
@@ -266,9 +272,10 @@ def admin_confirmar_solicitud(sid):
     if s.mascota:
         s.mascota.is_adopted = True
     nombre = s.mascota.nombre if s.mascota else (s.pet_name or "la mascota")
-    registrar(s.adopter_id, "solicitud_aprobada",
-              f"¡La fundación aprobó tu solicitud para adoptar a {nombre}! Pronto te contactarán.", commit=False)
+    texto = f"¡La fundación aprobó tu solicitud para adoptar a {nombre}! Pronto te contactarán."
+    registrar(s.adopter_id, "solicitud_aprobada", texto, commit=False)
     db.session.commit()
+    enviar_correo(s.email, "Tu solicitud de adopción fue aprobada", texto)
     return jsonify({"ok": True, "solicitud": s.to_dict()}), 200
 
 

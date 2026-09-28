@@ -4,12 +4,15 @@ from conftest import login
 from Models.adoptar_mascotas import adoptar_mascotas
 from Models.mascotas import Mascota
 
-PAGINAS_PUBLICAS = ["/", "/adopcion", "/fundaciones", "/cachorro", "/michi", "/rocky", "/iniciar-sesion", "/registro"]
+PAGINAS_PUBLICAS = ["/", "/adopcion", "/fundaciones", "/iniciar-sesion", "/registro"]
 
 
-def test_paginas_publicas_cargan(client):
-    for url in PAGINAS_PUBLICAS:
+def test_paginas_publicas_cargan(client, destacadas):
+    fichas = [f"/mascota/{m.id}" for m in Mascota.query.all()]
+    assert len(fichas) == 3
+    for url in PAGINAS_PUBLICAS + fichas:
         assert client.get(url).status_code == 200, url
+    assert client.get("/mascota/999").status_code == 404
 
 
 def test_formulario_requiere_sesion(client):

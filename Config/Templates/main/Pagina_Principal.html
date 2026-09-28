@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% from "components/pet_card.html" import pet_card, featured_card %}
+{% from "components/pet_card.html" import pet_card %}
 
 {% block title %}Adopta, no compres{% endblock %}
 
@@ -64,18 +64,15 @@
         <div class="section-head">
             <div>
                 <span class="eyebrow">Buscan familia</span>
-                <h2 class="section-title">Recién llegados</h2>
+                <h2 class="section-title">Te están esperando</h2>
             </div>
             <a href="{{ url_for('Pagina_Adopcion') }}" class="btn btn--ghost">
                 Ver todas <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
             </a>
         </div>
         <div class="pet-grid" style="margin-top: 28px;">
-            {% for mascota in recientes %}
-                {{ pet_card(mascota, current_user) }}
-            {% endfor %}
-            {% for slug, mascota in (destacadas.items()|list)[:3 - recientes|length] %}
-                {{ featured_card(slug, mascota) }}
+            {% for mascota in mascotas %}
+                {{ pet_card(mascota) }}
             {% endfor %}
         </div>
     </div>
