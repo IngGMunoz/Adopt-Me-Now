@@ -13,7 +13,7 @@ from Config.auth import (
 )
 from Config.schema import init_db
 from Config.catalogo import MASCOTAS_DESTACADAS
-from Config.actividad import registrar
+from Config.actividad import agrupar_por_dia, registrar
 import Config.filtros  # noqa: F401  (filtros de fecha para las plantillas)
 
 # Modelos
@@ -22,7 +22,8 @@ from Models.postular_mascotas import PostularMascotas
 from Models.admins import admin as AdminModel
 from Models.adoptar_mascotas import adoptar_mascotas
 from Models.usuario import usuario
-from Models.actividad import Actividad  # noqa: F401
+from Models.actividad import Actividad
+from sqlalchemy import func
 
 # Blueprints (API)
 from Config.controller.Mascotascontroller import routes_MascotasC
@@ -360,6 +361,43 @@ def Postular_Admin():
         mascotas=mascotas_db,
         solicitudes=solicitudes,
         postulaciones=postulaciones,
+        usuarios=_resumen_usuarios(),
+        admins=AdminModel.query.order_by(AdminModel.active.desc(), AdminModel.username).all(),
+    )
+
+
+def _resumen_usuarios():
+    """Usuarios con sus totales y su última actividad (tres consultas agregadas, sin N+1)."""
+    def por_usuario(columna, agregado):
+        return dict(db.session.query(columna, agregado).filter(columna.isnot(None)).group_by(columna).all())
+
+    solicitudes = por_usuario(adoptar_mascotas.adopter_id, func.count(adoptar_mascotas.id))
+    postulaciones = por_usuario(PostularMascotas.usuario_id, func.count(PostularMascotas.id))
+    ultima = por_usuario(Actividad.usuario_id, func.max(Actividad.created_at))
+    return [
+        {
+            "u": u,
+            "solicitudes": solicitudes.get(u.id, 0),
+            "postulaciones": postulaciones.get(u.id, 0),
+            "ultima_actividad": ultima.get(u.id),
+        }
+        for u in usuario.query.order_by(usuario.created_at.desc(), usuario.id.desc()).all()
+    ]
+
+
+# Ficha de un usuario para la fundación: datos, solicitudes, postulaciones y actividad
+@app.route("/postularADM/usuarios/<int:uid>")
+@admin_required
+def Admin_Usuario(uid):
+    u = db.get_or_404(usuario, uid)
+    actividades = (Actividad.query.filter_by(usuario_id=u.id)
+                   .order_by(Actividad.created_at.desc(), Actividad.id.desc()).limit(100).all())
+    return render_template(
+        "main/Admin_Usuario.html",
+        u=u,
+        grupos=agrupar_por_dia(actividades),
+        solicitudes=sorted(u.solicitudes, key=lambda s: s.id, reverse=True),
+        postulaciones=sorted(u.postulaciones, key=lambda p: p.id, reverse=True),
     )
 
 

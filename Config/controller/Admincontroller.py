@@ -74,14 +74,25 @@ def admin_create_admin():
     db.session.add(a); db.session.commit()
     return jsonify(admin_schema.dump(a)), 201
 
+def _as_bool(value):
+    """Interpreta true/false aunque llegue como texto ("false" no debe contar como verdadero)."""
+    if isinstance(value, str):
+        return value.strip().lower() in ("1", "true", "si", "sí", "yes", "on")
+    return bool(value)
+
+
 @Routes_adminC.route("/admins/<int:aid>", methods=["PUT"])
 def admin_update_admin(aid):
     a = db.get_or_404(admin, aid)
     data = request.get_json(silent=True) or {}
+    if "active" in data:
+        active = _as_bool(data["active"])
+        if not active and aid == session.get("user_id"):
+            return jsonify({"ok": False, "msg": "No puedes desactivar tu propia cuenta"}), 400
+        a.active = active
     a.username = data.get("username", a.username)
     a.email = data.get("email", a.email)
     a.role = data.get("role", a.role)
-    a.active = data.get("active", a.active)
     if data.get("password"):
         a.set_password(data["password"])
     db.session.commit()
@@ -89,6 +100,7 @@ def admin_update_admin(aid):
 
 @Routes_adminC.route("/admins/<int:aid>", methods=["DELETE"])
 def admin_delete_admin(aid):
+    # Quien elimina es otro admin activo, así que el sistema nunca se queda sin administradores
     if aid == session.get("user_id"):
         return jsonify({"ok": False, "msg": "No puedes eliminar tu propia cuenta"}), 400
     a = db.get_or_404(admin, aid)

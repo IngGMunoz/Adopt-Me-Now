@@ -593,7 +593,79 @@
     grid-template-columns: 380px 1fr;
     gap: 28px;
     align-items: start;
+}
+
+.admin-tabs {
     margin-top: 28px;
+}
+
+.admin-panels .tab-panel {
+    margin-top: 22px;
+}
+
+.admin-panels .toolbar {
+    margin-top: 0;
+}
+
+/* Avatar con la inicial (usuarios y administradores), igual al de la barra superior */
+.list-item__thumb.list-item__thumb--avatar {
+    background: var(--accent-light);
+    color: var(--brand-strong);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.list-item--inactive .list-item__thumb.list-item__thumb--avatar {
+    background: #ebe3de;
+    color: var(--text-muted);
+}
+
+.list-item--inactive .list-item__title {
+    color: var(--text-muted);
+}
+
+.list-item__text--wrap {
+    white-space: normal;
+}
+
+/* Ficha de usuario (vista de la fundación) */
+.user-detail {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    align-items: start;
+    margin-top: 32px;
+}
+
+.user-detail__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.user-detail__title i {
+    color: var(--brand);
+}
+
+.user-detail aside .user-detail__title {
+    margin-bottom: 14px;
+}
+
+.user-detail aside .list+.user-detail__title {
+    margin-top: 32px;
+}
+
+.account-hero__meta a {
+    color: inherit;
+}
+
+.account-hero__meta a:hover {
+    color: var(--brand-strong);
+    text-decoration: underline;
 }
 
 .admin-layout>* {
@@ -1041,7 +1113,8 @@
         position: static;
     }
 
-    .settings {
+    .settings,
+    .user-detail {
         grid-template-columns: 1fr;
     }
 

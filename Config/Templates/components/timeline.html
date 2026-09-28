@@ -1,0 +1,26 @@
+{# Historial de actividad agrupado por día (grupos = Config/actividad.agrupar_por_dia) #}
+{% macro timeline(grupos, vacio='Aún no hay actividad registrada.') -%}
+{% for titulo, items in grupos %}
+<h2 class="timeline-day">{{ titulo }}</h2>
+<ol class="timeline">
+    {% for a in items %}
+    <li class="timeline__item timeline__item--{{ a.tipo }}">
+        <span class="timeline__icon" aria-hidden="true"><i class="fa-solid {{ a.icono }}"></i></span>
+        <div class="timeline__body">
+            <p class="timeline__text">{{ a.descripcion }}</p>
+            <p class="timeline__meta">
+                <span>{{ a.etiqueta }}</span> ·
+                <time datetime="{{ a.created_at.isoformat() }}Z" title="{{ a.created_at|fecha }}">{{ a.created_at|hace }}</time>
+                {% if a.enlace %} · <a href="{{ a.enlace }}">Ver</a>{% endif %}
+            </p>
+        </div>
+    </li>
+    {% endfor %}
+</ol>
+{% else %}
+<div class="empty-state">
+    <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+    <p>{{ vacio }}</p>
+</div>
+{% endfor %}
+{%- endmacro %}

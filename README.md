@@ -1,77 +1,105 @@
 # 🐾 Adopt Me Now
 
-**Plataforma web para conectar fundaciones de rescate animal con personas que quieren adoptar.**
+**Plataforma web de adopción de mascotas que conecta fundaciones de rescate animal con personas que quieren adoptar.**
 
 [![Tests](https://github.com/IngGMunoz/Adopt-Me-Now/actions/workflows/tests.yml/badge.svg)](https://github.com/IngGMunoz/Adopt-Me-Now/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-3-000000?logo=flask&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-3.1-000000?logo=flask&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2-D71F00?logo=sqlalchemy&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![Licencia](https://img.shields.io/badge/licencia-MIT-green)
 
-Las fundaciones publican las mascotas que tienen en adopción. Los usuarios las exploran, crean una cuenta y envían una solicitud de adopción que queda registrada para que la fundación la revise. Incluye un panel de administración con roles, una API REST y un asistente conversacional para resolver dudas sobre el proceso.
+Las fundaciones publican las mascotas que tienen en adopción y revisan las solicitudes desde un panel propio. Los usuarios exploran el catálogo, envían solicitudes de adopción, proponen mascotas que necesitan hogar y siguen el estado de todo desde su cuenta, con un historial de actividad.
 
 <p align="center">
   <img src="docs/screenshots/inicio.png" alt="Página de inicio" width="49%">
   <img src="docs/screenshots/adopcion.png" alt="Catálogo de mascotas con búsqueda" width="49%">
-  <img src="docs/screenshots/detalle.png" alt="Perfil de una mascota" width="49%">
-  <img src="docs/screenshots/panel.png" alt="Panel de administración" width="49%">
+  <img src="docs/screenshots/cuenta.png" alt="Mi cuenta con historial de actividad" width="49%">
+  <img src="docs/screenshots/panel.png" alt="Panel de administración de la fundación" width="49%">
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/login.png" alt="Inicio de sesión" width="60%">
-  <img src="docs/screenshots/movil.png" alt="Vista móvil del catálogo" width="19%">
+  <img src="docs/screenshots/detalle.png" alt="Perfil de una mascota" width="60%">
+  <img src="docs/screenshots/movil.png" alt="Catálogo en móvil" width="19%">
 </p>
 
----
+## Contenido
 
-## ✨ Funcionalidades
+- [Funcionalidades](#funcionalidades)
+- [Stack](#stack)
+- [Arquitectura](#arquitectura)
+- [Modelo de datos](#modelo-de-datos)
+- [Instalación](#instalación)
+- [Tests](#tests)
+- [Rutas y API](#rutas-y-api)
+- [Seguridad](#seguridad)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Limitaciones y próximos pasos](#limitaciones-y-próximos-pasos)
 
-- **Catálogo de mascotas en adopción**, con búsqueda y orden instantáneos y un perfil por mascota. Las ya adoptadas se ocultan.
-- **Registro e inicio de sesión** con contraseñas cifradas (hash PBKDF2 de Werkzeug) y sesiones firmadas.
-- **Solicitud de adopción.** Es un formulario con validación en cliente y servidor. Queda asociado al usuario y a la mascota elegida, y se envía sin recargar la página.
-- **Mi cuenta.** Cada usuario tiene su historial de actividad agrupado por día (registro, inicios de sesión, solicitudes, postulaciones, y las decisiones de la fundación sobre ellas), el estado de sus solicitudes y postulaciones, y la configuración de su perfil y contraseña, además de la opción de eliminar su cuenta.
-- **Panel de administración** con métricas, publicación de mascotas con foto, aprobación de solicitudes de adopción y revisión de las mascotas que proponen los usuarios.
-- **Roles y permisos.** Usuario, administrador y superadministrador. La API de administración está protegida, y el registro de nuevos administradores exige un código de invitación.
-- **Postulación de mascotas.** Un usuario puede proponer una mascota (especie, raza, edad, tamaño y ubicación) para que la fundación la revise.
-- **API REST** para gestionar usuarios, administradores, mascotas y postulaciones, con serialización mediante Marshmallow.
-- **Diseño responsive y accesible.** Es un sistema de diseño propio (tokens, componentes y una macro de formularios), con navegación por teclado, validación en línea y avisos no intrusivos.
-- **Chatbot** (Landbot) integrado para orientar a los adoptantes; se carga de forma diferida.
-- **Entorno reproducible** con Docker Compose (app + MySQL con healthcheck).
-- **Tests automatizados** con pytest, ejecutados en GitHub Actions en cada push.
+## Funcionalidades
 
-## 🛠️ Stack
+### Para cualquier visitante
+- **Catálogo de mascotas** con búsqueda y ordenamiento instantáneos. Reúne las mascotas publicadas por las fundaciones y tres mascotas destacadas con perfil propio (ficha de salud, carácter, requisitos y contacto). Las ya adoptadas se ocultan.
+- **Página de la fundación aliada** con su información y enlace de contacto.
+- **Asistente conversacional** (Landbot) que orienta sobre el proceso de adopción. Se carga cuando el usuario interactúa con la página, para no retrasar la carga inicial.
+
+### Para usuarios registrados
+- **Registro e inicio de sesión** con correo o nombre de usuario. Tras iniciar sesión, el usuario vuelve a la página en la que estaba.
+- **Solicitud de adopción.** Es un formulario asociado a la mascota elegida, con los datos del usuario precargados y validación en el cliente y en el servidor.
+- **Dar en adopción.** El usuario puede proponer una mascota (especie, raza, edad, sexo, tamaño, ubicación y foto) para que una fundación la revise y la publique.
+- **Mi cuenta**, con cuatro secciones:
+  - **Actividad:** historial agrupado por día y filtrable por tipo. Registra las acciones del usuario (registro, inicios de sesión, solicitudes, postulaciones, cambios de perfil y contraseña) y las decisiones de la fundación sobre ellas (solicitud aprobada, mascota publicada, postulación descartada).
+  - **Mis solicitudes** y **Mis postulaciones**, cada una con su estado.
+  - **Configuración:** editar el nombre de usuario y el correo, cambiar la contraseña y eliminar la cuenta.
+
+### Para fundaciones (administradores)
+- **Registro protegido.** Crear una cuenta de administrador exige un código de invitación definido en el servidor.
+- **Panel de administración** con métricas (mascotas en adopción, adoptadas, solicitudes pendientes y postulaciones por revisar) y cinco pestañas:
+  - **Mascotas:** publicar con foto, marcar como adoptada o eliminar.
+  - **Solicitudes:** ver los datos del adoptante y aprobarlas. Al aprobar una, la mascota pasa a adoptada y sale del catálogo.
+  - **Postulaciones:** publicar en el catálogo las mascotas que proponen los usuarios, o descartarlas.
+  - **Usuarios:** listado con buscador, totales de solicitudes y postulaciones, y última actividad de cada usuario. Cada uno tiene una **ficha** con su historial, sus solicitudes y sus postulaciones, y desde ella se puede eliminar la cuenta.
+  - **Administradores:** crear cuentas para otros miembros de la fundación, y desactivarlas, reactivarlas o eliminarlas. Ningún administrador puede desactivar ni eliminar su propia cuenta.
+
+### Transversales
+- **Interfaz responsive y accesible**, construida sobre un sistema de diseño propio (tokens de color y tipografía, componentes y macros de formulario Jinja2), sin frameworks de CSS ni de JavaScript. Incluye menú de usuario desplegable, pestañas con navegación por teclado, validación en línea y avisos no intrusivos.
+- **API REST** en JSON para usuarios, administradores, mascotas, postulaciones y solicitudes.
+- **Entorno reproducible** con Docker Compose (aplicación + MySQL con *healthcheck*).
+- **55 tests automatizados** con pytest, ejecutados en GitHub Actions en cada *push*.
+
+## Stack
 
 | Capa | Tecnologías |
 | --- | --- |
-| Backend | Python 3.12, Flask 3, Blueprints |
-| Datos | MySQL 8, SQLAlchemy (ORM), Marshmallow |
-| Frontend | Jinja2 (macros y componentes), HTML5 semántico, CSS3 (custom properties, grid), JavaScript sin frameworks, Font Awesome |
-| Infraestructura | Docker, Docker Compose, variables de entorno (`.env`) |
+| Backend | Python 3.12, Flask 3.1 (Blueprints), Jinja2 |
+| Datos | MySQL 8, SQLAlchemy 2 (ORM), Flask-SQLAlchemy, Marshmallow |
+| Frontend | HTML5 semántico, CSS3 (custom properties, grid, flexbox), JavaScript sin dependencias, Font Awesome |
+| Infraestructura | Docker, Docker Compose, configuración por variables de entorno (`.env`) |
 | Calidad | pytest, GitHub Actions |
 
-## 🧱 Arquitectura
+## Arquitectura
 
 ```mermaid
 flowchart LR
-    U[Navegador] -->|HTML / Fetch| F[Flask app.py]
-    F --> BP1[Blueprint /api/users]
-    F --> BP2[Blueprint /api/admin]
-    F --> BP3[Blueprint /mascotas]
-    F --> BP4[Blueprint /postular]
-    F -.-> AUTH[Config/auth.py<br/>login_required / admin_required]
-    BP1 & BP2 & BP3 & BP4 --> ORM[SQLAlchemy + Marshmallow]
+    U[Navegador] -->|HTML y formularios| P[app.py<br/>páginas públicas, adopción,<br/>panel de administración]
+    U -->|HTML| C[Blueprint /mi-cuenta]
+    U -->|JSON| A[Blueprints de API<br/>/api/users · /api/admin<br/>/mascotas · /postular]
+    P & C & A -.-> AUTH[Config/auth.py<br/>login_required · admin_required]
+    P & C & A --> ACT[Config/actividad.py<br/>historial de usuario]
+    P & C & A --> ORM[SQLAlchemy + Marshmallow]
+    ACT --> ORM
     ORM --> DB[(MySQL 8)]
-    F --> UP[/static/uploads/]
+    P & A --> UP[/static/uploads/]
 ```
 
 El proyecto sigue un patrón MVC:
 
-- **Modelos** (`Models/`): usuarios, administradores, mascotas, solicitudes de adopción y postulaciones.
-- **Controladores** (`Config/controller/`): la API REST, organizada en Blueprints.
-- **Vistas** (`Config/Templates/`): plantillas Jinja2 con un layout base y componentes reutilizables (navbar, footer, modales, notificaciones).
+- **Modelos** (`Models/`): usuarios, administradores, mascotas, solicitudes de adopción, postulaciones y actividad. Los schemas de Marshmallow están en un módulo aparte (`Models/schemas.py`) para que todas las relaciones entre modelos estén resueltas al serializar.
+- **Controladores**: `app.py` atiende las páginas; `Config/controller/` contiene los Blueprints de la API y el área "Mi cuenta".
+- **Vistas** (`Config/Templates/`): un layout base, componentes reutilizables (navbar, footer, tarjetas, avisos, modal) y macros de formulario.
 
-### Modelo de datos
+## Modelo de datos
 
 ```mermaid
 erDiagram
@@ -131,20 +159,24 @@ erDiagram
     }
 ```
 
-**Flujo de datos:**
+**Flujo principal:**
 
-1. Un **admin** publica una **mascota**, o aprueba la **postulación** que envió un **usuario**. En ese caso la postulación queda enlazada a la mascota creada.
+1. Una **fundación** publica una **mascota**, o aprueba la **postulación** de un **usuario**. En ese caso la postulación queda enlazada a la mascota creada.
 2. Un **usuario** envía una **solicitud de adopción** para una mascota.
-3. El admin **confirma** la solicitud y la mascota queda marcada como adoptada, así que sale del catálogo.
-4. Cada paso queda en la **actividad** del usuario, que la consulta en `/mi-cuenta`.
+3. La fundación **aprueba** la solicitud y la mascota pasa a adoptada.
+4. Cada paso queda en la **actividad** del usuario involucrado.
 
-Las llaves foráneas de solicitudes y postulaciones usan `ON DELETE SET NULL`: si se elimina un usuario o una mascota, ese historial se conserva para la fundación. La actividad personal (`actividad_usuario`) sí se borra junto con la cuenta. Al iniciar, [`Config/schema.py`](Config/schema.py) migra automáticamente las bases MySQL de versiones anteriores. Agrega las columnas y las llaves foráneas que faltan, y enlaza los registros antiguos que guardaban nombres en texto.
+**Integridad de los datos:**
 
-## 🚀 Cómo ejecutarlo
+- Las llaves foráneas de mascotas, solicitudes y postulaciones usan `ON DELETE SET NULL`. Si se elimina un usuario o una mascota, la fundación conserva el registro de sus procesos.
+- La actividad pertenece al usuario y se elimina junto con su cuenta.
+- Al iniciar, [`Config/schema.py`](Config/schema.py) crea las tablas que falten y migra de forma idempotente las bases MySQL de versiones anteriores. Agrega columnas, índices y llaves foráneas, y enlaza registros antiguos que guardaban nombres en texto. También genera el historial de los usuarios creados antes de que existiera la tabla de actividad.
 
-### 1. Crear el archivo `.env`
+## Instalación
 
-La configuración vive en un archivo `.env` en la raíz del proyecto. Git no lo sube, para no publicar secretos. Créalo con este contenido y cambia los valores:
+### 1. Configurar el entorno
+
+La configuración se lee de un archivo `.env` en la raíz del proyecto, que Git no versiona. Créalo con este contenido y cambia los valores:
 
 ```ini
 SECRET_KEY=una-clave-larga-y-aleatoria
@@ -160,8 +192,19 @@ PORT=5100
 FLASK_DEBUG=false
 ```
 
-> Usa solo letras, números y guiones en `DB_PASSWORD`: PyMySQL falla con tildes o con la letra ñ en la contraseña.
-> Para generar una `SECRET_KEY`, ejecuta: `python -c "import secrets; print(secrets.token_hex(32))"`
+> - Usa solo letras, números y guiones en `DB_PASSWORD`: PyMySQL no autentica contraseñas con tildes o con la letra ñ.
+> - Para generar una `SECRET_KEY`: `python -c "import secrets; print(secrets.token_hex(32))"`
+
+| Variable | Descripción |
+| --- | --- |
+| `SECRET_KEY` | Clave con la que se firman las cookies de sesión |
+| `ADMIN_REGISTRATION_CODE` | Código de invitación para registrar fundaciones |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Conexión a MySQL |
+| `DATABASE_URL` | URL completa de la base de datos; tiene prioridad sobre `DB_*` |
+| `PORT` | Puerto de la aplicación (por defecto `5100`) |
+| `FLASK_DEBUG` | `true` solo en desarrollo |
+| `SESSION_COOKIE_SECURE` | `true` cuando la aplicación se sirve por HTTPS |
+| `TZ_OFFSET_HOURS` | Desfase horario para mostrar fechas (por defecto `-5`, Colombia) |
 
 ### 2a. Con Docker (recomendado)
 
@@ -169,14 +212,16 @@ FLASK_DEBUG=false
 git clone https://github.com/IngGMunoz/Adopt-Me-Now.git
 cd Adopt-Me-Now
 # crea el .env del paso 1
-docker compose up --build
+docker compose up --build -d
 ```
 
-La app queda en **http://localhost:5100**. MySQL se expone en el puerto `3307` del host.
+La aplicación queda en **http://localhost:5100**. MySQL se expone en el puerto `3307` del host; dentro de la red de Docker, la aplicación se conecta a `db:3306`. Las imágenes subidas se guardan en `static/uploads/`, montada como volumen.
 
-### 2b. Local
+Después de cambiar el código hay que reconstruir la imagen con `docker compose up --build -d`.
 
-Requiere Python 3.10+ y un servidor MySQL. En el `.env` apunta `DB_HOST`, `DB_PORT` y `DB_PASSWORD` a tu MySQL.
+### 2b. En local
+
+Requiere Python 3.10 o superior y un servidor MySQL. En el `.env`, apunta `DB_HOST`, `DB_PORT` y `DB_PASSWORD` a tu servidor.
 
 ```bash
 python -m venv .venv
@@ -185,111 +230,133 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Las tablas se crean solas al iniciar la aplicación.
+Las tablas se crean automáticamente al iniciar.
 
-### Crear el primer administrador
+### 3. Crear la primera fundación
 
-1. Define `ADMIN_REGISTRATION_CODE` en tu `.env`.
-2. Entra a `/registro-administrador` y completa el formulario con ese código.
-3. Inicia sesión: llegarás al panel `/postularADM` para publicar mascotas.
+1. Entra a `/registro-administrador` y completa el formulario con el `ADMIN_REGISTRATION_CODE` de tu `.env`.
+2. Inicia sesión con esa cuenta y llegarás al panel de administración.
 
-### Variables de entorno
-
-| Variable | Descripción |
-| --- | --- |
-| `SECRET_KEY` | Clave para firmar las cookies de sesión |
-| `ADMIN_REGISTRATION_CODE` | Código exigido para registrar administradores |
-| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Conexión a MySQL |
-| `DATABASE_URL` | URL completa de la base de datos (tiene prioridad sobre `DB_*`) |
-| `FLASK_DEBUG` | `true` solo en desarrollo |
-| `SESSION_COOKIE_SECURE` | `true` cuando la app se sirve por HTTPS |
-
-## 🧪 Tests
+## Tests
 
 ```bash
 pip install -r requirements-dev.txt
 pytest -v
 ```
 
-Los 47 tests usan una base SQLite temporal, así que no necesitan MySQL. Cubren:
+Los tests usan una base SQLite temporal, así que no necesitan MySQL ni Docker. Son 55 casos agrupados por área:
 
-- Registro, inicio de sesión y redirección segura (protección contra *open redirect*).
-- Permisos por rol: acceso anónimo, de usuario y de administrador a cada endpoint protegido.
-- Registro de administradores con código de invitación.
-- Envío y validación de solicitudes de adopción.
-- Publicación de mascotas con imagen y ocultamiento de las ya adoptadas.
-- Mi cuenta: registro de la actividad en cada acción, filtros, edición del perfil, cambio de contraseña y eliminación de la cuenta.
-- Relaciones del modelo: admin → mascota, usuario → solicitud → mascota, postulación → mascota aprobada, y conservación del historial al borrar registros.
+| Archivo | Qué verifica |
+| --- | --- |
+| `test_auth.py` | Registro, inicio de sesión, protección contra *open redirect* y código de registro de administradores |
+| `test_permisos.py` | Acceso anónimo, de usuario y de administrador a cada endpoint protegido |
+| `test_adopcion.py` | Páginas públicas, envío y validación de solicitudes, publicación de mascotas con imagen |
+| `test_relaciones.py` | Relaciones entre modelos, aprobación de solicitudes y postulaciones, conservación de datos al borrar |
+| `test_cuenta.py` | Registro de actividad en cada acción, filtros, edición de perfil, cambio de contraseña y eliminación de cuenta |
+| `test_gestion.py` | Gestión de usuarios y administradores: ficha de usuario, alta de administradores y revocación inmediata del acceso |
 
-## 🔌 API REST
+## Rutas y API
+
+### Páginas
+
+| Ruta | Acceso | Descripción |
+| --- | --- | --- |
+| `/` | Público | Inicio: presentación, cómo funciona y mascotas recién llegadas |
+| `/adopcion` | Público | Catálogo con búsqueda y ordenamiento |
+| `/cachorro`, `/michi`, `/rocky` | Público | Perfil de las mascotas destacadas |
+| `/fundaciones` | Público | Fundación aliada |
+| `/registro`, `/iniciar-sesion`, `/logout` | Público | Cuenta de usuario |
+| `/registro-administrador` | Público (requiere código) | Registro de fundaciones |
+| `/formulario?mascota=<id>` | Usuario | Solicitud de adopción |
+| `/postular` | Usuario | Proponer una mascota para adopción |
+| `/mi-cuenta/` | Usuario | Actividad, solicitudes, postulaciones y configuración |
+| `/postularADM` | Administrador | Panel de la fundación |
+| `/postularADM/usuarios/<id>` | Administrador | Ficha de un usuario |
+
+### API REST (JSON)
+
+Los endpoints protegidos responden `401` sin sesión y `403` sin permisos.
 
 | Método | Endpoint | Acceso | Descripción |
 | --- | --- | --- | --- |
 | `POST` | `/api/users/register` | Público | Crear cuenta |
-| `POST` | `/api/users/login` | Público | Iniciar sesión |
-| `POST` | `/api/users/logout` | Público | Cerrar sesión |
-| `GET/PUT/DELETE` | `/api/users/<id>` | El propio usuario o un admin | Ver, editar o eliminar la cuenta |
+| `POST` | `/api/users/login` · `/api/users/logout` | Público | Iniciar o cerrar sesión |
+| `GET` | `/api/users/` | Administrador | Listar usuarios |
+| `GET` `PUT` `DELETE` | `/api/users/<id>` | El propio usuario o un administrador | Ver, editar o eliminar una cuenta |
 | `GET` | `/mascotas/api` | Público | Listar mascotas |
-| `POST` | `/api/admin/admins` | Admin o código de registro | Crear administrador |
-| `GET/PUT/DELETE` | `/api/admin/admins/<id>` | Admin | Gestionar administradores |
-| `GET/PUT/DELETE` | `/api/admin/users/<id>` | Admin | Gestionar usuarios |
-| `GET/POST` | `/api/admin/mascotas` | Admin | Listar o publicar mascotas (JSON o multipart) |
-| `POST` | `/api/admin/mascotas/<id>/adopt` | Admin | Marcar como adoptada |
-| `GET/DELETE` | `/postular/<id>` | Admin | Revisar las mascotas propuestas por usuarios |
-| `POST` | `/api/admin/postulares/<id>/aprobar` | Admin | Publicar la mascota propuesta y enlazarla a la postulación |
-| `GET` | `/api/admin/solicitudes?mascota_id=` | Admin | Solicitudes de adopción con adoptante y mascota |
-| `POST` | `/api/admin/solicitudes/<id>/confirmar` | Admin | Aprobar una solicitud (la mascota pasa a adoptada) |
-| `GET` | `/mi-cuenta/?tipo=` | Usuario | Actividad, solicitudes, postulaciones y configuración (HTML) |
-| `POST` | `/mi-cuenta/perfil` · `/contrasena` · `/eliminar` | Usuario | Editar el perfil, cambiar la contraseña o eliminar la cuenta |
+| `POST` `PUT` `DELETE` | `/mascotas/api[/<id>]` | Administrador | Crear, editar o eliminar mascotas |
+| `POST` | `/api/admin/admins` | Administrador o código de registro | Crear administrador |
+| `GET` `PUT` `DELETE` | `/api/admin/admins[/<id>]` | Administrador | Gestionar administradores |
+| `GET` `PUT` `DELETE` | `/api/admin/users[/<id>]` | Administrador | Gestionar usuarios |
+| `GET` `POST` | `/api/admin/mascotas` | Administrador | Listar o publicar mascotas (JSON o multipart) |
+| `GET` `PUT` `DELETE` | `/api/admin/mascotas/<id>` | Administrador | Gestionar una mascota |
+| `POST` | `/api/admin/mascotas/<id>/adopt` · `/unadopt` | Administrador | Marcar o desmarcar como adoptada |
+| `GET` | `/api/admin/solicitudes?mascota_id=` | Administrador | Solicitudes con adoptante y mascota |
+| `POST` | `/api/admin/solicitudes/<id>/confirmar` | Administrador | Aprobar una solicitud |
+| `GET` `PUT` `DELETE` | `/api/admin/postulares[/<id>]` | Administrador | Gestionar postulaciones |
+| `POST` | `/api/admin/postulares/<id>/aprobar` | Administrador | Publicar la mascota propuesta |
+| `GET` `DELETE` | `/postular/[<id>]` | Administrador | Consultar o descartar postulaciones |
 
-## 🔒 Seguridad
+## Seguridad
 
-- Contraseñas guardadas con hash, nunca en texto plano. Los schemas de la API excluyen `password_hash`.
-- Decoradores `login_required` y `admin_required`. La API responde `401` o `403` en JSON y las páginas redirigen al login.
-- Cambiar la contraseña o eliminar la cuenta exige la contraseña actual.
-- Validación del parámetro `next` para evitar redirecciones a sitios externos.
-- Las imágenes subidas se validan por extensión, se guardan con nombre único (UUID) y tienen un límite de 5 MB.
-- El contenido que viene de usuarios se inserta en el DOM con `textContent`, nunca con `innerHTML`, para evitar XSS.
-- Los secretos se leen de variables de entorno. `.env` está en `.gitignore`.
-- Cookies de sesión `HttpOnly` y `SameSite=Lax`. El contenedor se ejecuta con un usuario sin privilegios.
+- **Contraseñas** almacenadas con hash **scrypt** (Werkzeug); los schemas de la API nunca exponen `password_hash`.
+- **Control de acceso** con los decoradores `login_required` y `admin_required`. Además, cada usuario solo puede ver o modificar su propia cuenta.
+- **Revocación inmediata:** cada petición protegida verifica que la cuenta siga existiendo y, si es de administrador, que siga activa. Eliminar un usuario o desactivar un administrador le quita el acceso aunque tenga la sesión abierta.
+- **Registro de administradores** protegido por un código de invitación, comparado en tiempo constante (`hmac.compare_digest`).
+- Cambiar la contraseña o eliminar la cuenta **exige la contraseña actual**.
+- **Redirecciones seguras:** el parámetro `next` solo acepta rutas internas, para evitar *open redirect*.
+- **Subida de archivos** validada por extensión, con nombre único (UUID) y límite de 5 MB.
+- **Prevención de XSS:** Jinja2 escapa el contenido, y el JavaScript inserta los datos de usuario con `textContent`, nunca con `innerHTML`.
+- **Cookies de sesión** firmadas, `HttpOnly` y `SameSite=Lax`, con `Secure` configurable.
+- **Secretos** fuera del código, en variables de entorno. El contenedor se ejecuta con un usuario sin privilegios.
 
-## 📁 Estructura
+## Estructura del proyecto
 
 ```
 Adopt-Me-Now/
-├── app.py                  # Rutas de páginas y arranque de la app
+├── app.py                    # Páginas, adopción, panel de administración y arranque
 ├── Config/
-│   ├── db.py               # Configuración de Flask, SQLAlchemy y variables de entorno
-│   ├── auth.py             # Decoradores de permisos, redirección segura y subida de imágenes
-│   ├── schema.py           # Creación y migración del esquema
-│   ├── actividad.py        # Registro del historial de actividad de los usuarios
-│   ├── catalogo.py         # Mascotas destacadas con perfil propio
-│   ├── filtros.py          # Filtros de fecha en español para las plantillas
-│   ├── controller/         # Blueprints: API REST y área "Mi cuenta"
-│   └── Templates/          # Vistas Jinja2 (layouts, components, main)
-├── Models/                 # Modelos SQLAlchemy y schemas Marshmallow
-├── static/                 # CSS, JS, imágenes y uploads
-├── tests/                  # Suite de pytest
+│   ├── db.py                 # Flask, SQLAlchemy y lectura del .env
+│   ├── auth.py               # Permisos, redirección segura y subida de imágenes
+│   ├── schema.py             # Creación de tablas, migraciones y relleno del historial
+│   ├── actividad.py          # Registro del historial de actividad
+│   ├── catalogo.py           # Datos de las mascotas destacadas
+│   ├── filtros.py            # Filtros de fecha en español para Jinja2
+│   ├── controller/           # Blueprints: API REST y "Mi cuenta"
+│   └── Templates/            # layouts/, components/ y main/
+├── Models/                   # Modelos SQLAlchemy y schemas Marshmallow
+├── static/
+│   ├── css/                  # base.css (sistema de diseño) y pages.css
+│   ├── JS/                   # app.js (interacciones) e IA_adoptme.js (chatbot)
+│   ├── images/
+│   └── uploads/              # Fotos subidas (no versionadas)
+├── tests/                    # Suite de pytest
+├── docs/screenshots/
+├── .github/workflows/        # Integración continua
 ├── Dockerfile
 └── docker-compose.yaml
 ```
 
-## 🗺️ Próximos pasos
+## Limitaciones y próximos pasos
 
-- [ ] Notificaciones por correo al adoptante cuando cambie el estado de su solicitud.
-- [ ] Filtros del catálogo por especie, tamaño y ubicación.
-- [ ] Protección CSRF en formularios (Flask-WTF) y límite de intentos de inicio de sesión.
-- [ ] Despliegue público con demo en vivo.
+Estas limitaciones son conocidas y están priorizadas para próximas versiones:
 
-## 👤 Autor
+- [ ] **Protección CSRF** en los formularios (Flask-WTF) y **límite de intentos** de inicio de sesión.
+- [ ] **Servidor WSGI de producción** (Gunicorn). Hoy el contenedor usa el servidor de Flask.
+- [ ] **Notificaciones por correo** cuando cambia el estado de una solicitud o postulación.
+- [ ] **Filtros del catálogo** por especie, tamaño y ubicación.
+- [ ] Gestionar desde el panel las mascotas destacadas, que hoy se definen en `Config/catalogo.py`.
+- [ ] **Despliegue público** con demo en vivo.
+
+## Autor
 
 **Daniel Utria**: diseño, frontend, backend e infraestructura.
 
 - GitHub: [@IngGMunoz](https://github.com/IngGMunoz)
-- LinkedIn:  linkedin.com/in/georgy-daniel-muñoz-utria
+- LinkedIn: [georgy-daniel-muñoz-utria](https://www.linkedin.com/in/georgy-daniel-muñoz-utria)
 
 
 
-## 📄 Licencia
+## Licencia
 
 Distribuido bajo la licencia MIT. Ver [LICENSE](LICENSE).

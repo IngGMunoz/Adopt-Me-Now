@@ -32,30 +32,36 @@
         </div>
     </section>
 
-    <div class="admin-layout">
-        <form class="form-card" method="post" action="{{ url_for('Postular_Admin') }}" enctype="multipart/form-data" data-validate>
-            <h2><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> Publicar mascota</h2>
-            {{ field('nombre', 'Nombre', 'text', None, 'Nombre de la mascota') }}
-            {{ field('descripcion', 'Descripción', 'textarea', None, 'Edad, carácter, salud y lo que necesita en su nuevo hogar', attrs={'minlength': 10}) }}
-            {{ field('imagen', 'Foto', 'file', None, hint='JPG, PNG o WEBP, máximo 5 MB.', attrs={'accept': 'image/png,image/jpeg,image/webp,image/gif'}) }}
-            {{ submit('Publicar en el catálogo', 'fa-paw', 'Publicando…', 'btn btn--primary btn--block') }}
-        </form>
+    <div class="tabs admin-tabs" role="tablist" aria-label="Gestión">
+        <button class="tab" role="tab" id="tab-mascotas" aria-controls="panel-mascotas" aria-selected="true">
+            <i class="fa-solid fa-dog" aria-hidden="true"></i> Mascotas <span class="badge">{{ mascotas|length }}</span>
+        </button>
+        <button class="tab" role="tab" id="tab-solicitudes" aria-controls="panel-solicitudes" aria-selected="false" tabindex="-1">
+            <i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Solicitudes <span class="badge">{{ solicitudes_pendientes|length }}</span>
+        </button>
+        <button class="tab" role="tab" id="tab-postulaciones" aria-controls="panel-postulaciones" aria-selected="false" tabindex="-1">
+            <i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Postulaciones <span class="badge">{{ postulaciones_pendientes|length }}</span>
+        </button>
+        <button class="tab" role="tab" id="tab-usuarios" aria-controls="panel-usuarios" aria-selected="false" tabindex="-1">
+            <i class="fa-solid fa-users" aria-hidden="true"></i> Usuarios <span class="badge">{{ usuarios|length }}</span>
+        </button>
+        <button class="tab" role="tab" id="tab-administradores" aria-controls="panel-administradores" aria-selected="false" tabindex="-1">
+            <i class="fa-solid fa-user-shield" aria-hidden="true"></i> Administradores <span class="badge">{{ admins|length }}</span>
+        </button>
+    </div>
 
-        <div>
-            <div class="tabs" role="tablist" aria-label="Gestión">
-                <button class="tab" role="tab" id="tab-mascotas" aria-controls="panel-mascotas" aria-selected="true">
-                    <i class="fa-solid fa-dog" aria-hidden="true"></i> Mascotas <span class="badge">{{ mascotas|length }}</span>
-                </button>
-                <button class="tab" role="tab" id="tab-solicitudes" aria-controls="panel-solicitudes" aria-selected="false" tabindex="-1">
-                    <i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Solicitudes <span class="badge">{{ solicitudes_pendientes|length }}</span>
-                </button>
-                <button class="tab" role="tab" id="tab-postulaciones" aria-controls="panel-postulaciones" aria-selected="false" tabindex="-1">
-                    <i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Postulaciones <span class="badge">{{ postulaciones_pendientes|length }}</span>
-                </button>
-            </div>
-
-            {# Mascotas publicadas #}
-            <section class="tab-panel list" id="panel-mascotas" role="tabpanel" aria-labelledby="tab-mascotas">
+    <div class="admin-panels">
+            {# Mascotas publicadas: formulario de publicación + listado #}
+            <section class="tab-panel" id="panel-mascotas" role="tabpanel" aria-labelledby="tab-mascotas">
+            <div class="admin-layout">
+            <form class="form-card" method="post" action="{{ url_for('Postular_Admin') }}" enctype="multipart/form-data" data-validate>
+                <h2><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> Publicar mascota</h2>
+                {{ field('nombre', 'Nombre', 'text', None, 'Nombre de la mascota') }}
+                {{ field('descripcion', 'Descripción', 'textarea', None, 'Edad, carácter, salud y lo que necesita en su nuevo hogar', attrs={'minlength': 10}) }}
+                {{ field('imagen', 'Foto', 'file', None, hint='JPG, PNG o WEBP, máximo 5 MB.', attrs={'accept': 'image/png,image/jpeg,image/webp,image/gif'}) }}
+                {{ submit('Publicar en el catálogo', 'fa-paw', 'Publicando…', 'btn btn--primary btn--block') }}
+            </form>
+            <div class="list">
                 {% for m in mascotas %}
                 <article class="list-item">
                     {% if m.imagen %}
@@ -89,6 +95,8 @@
                 {% else %}
                 <div class="empty-state"><i class="fa-solid fa-paw" aria-hidden="true"></i><p>Aún no has publicado mascotas. Usa el formulario para publicar la primera.</p></div>
                 {% endfor %}
+            </div>
+            </div>
             </section>
 
             {# Solicitudes de adopción #}
@@ -163,7 +171,109 @@
                 <div class="empty-state"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i><p>Nadie ha propuesto mascotas todavía.</p></div>
                 {% endfor %}
             </section>
-        </div>
+
+            {# Usuarios registrados #}
+            <section class="tab-panel" id="panel-usuarios" role="tabpanel" aria-labelledby="tab-usuarios" hidden>
+                <div class="toolbar">
+                    <p class="toolbar__count"><strong id="userCount">{{ usuarios|length }}</strong> usuarios registrados</p>
+                    <div class="toolbar__controls">
+                        <div class="field__control">
+                            <i class="field__icon fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            <label for="userSearch" class="visually-hidden">Buscar usuario</label>
+                            <input id="userSearch" type="search" class="input" placeholder="Buscar por nombre o correo…" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                <div class="list" id="userList">
+                    {% for r in usuarios %}
+                    {% set u = r.u %}
+                    <article class="list-item" data-search="{{ (u.username ~ ' ' ~ u.email)|lower }}">
+                        <span class="list-item__thumb list-item__thumb--avatar" aria-hidden="true">{{ u.username[0] }}</span>
+                        <div class="list-item__body">
+                            <div class="list-item__title">
+                                {{ u.username }}
+                                {% if r.solicitudes %}<span class="badge">{{ r.solicitudes }} solicitud{{ 'es' if r.solicitudes != 1 }}</span>{% endif %}
+                                {% if r.postulaciones %}<span class="badge badge--muted">{{ r.postulaciones }} {{ 'postulaciones' if r.postulaciones != 1 else 'postulación' }}</span>{% endif %}
+                            </div>
+                            <p class="list-item__text">
+                                {{ u.email }} · Miembro desde {{ u.created_at|fecha(false) }}
+                                · {% if r.ultima_actividad %}Última actividad {{ r.ultima_actividad|hace }}{% else %}Sin actividad{% endif %}
+                            </p>
+                        </div>
+                        <div class="list-item__actions">
+                            <a class="btn btn--secondary btn--sm" href="{{ url_for('Admin_Usuario', uid=u.id) }}">
+                                <i class="fa-solid fa-id-card" aria-hidden="true"></i> Ver ficha
+                            </a>
+                            <button class="btn btn--danger btn--sm" data-action="DELETE" data-url="/api/admin/users/{{ u.id }}"
+                                data-confirm="¿Eliminar la cuenta de {{ u.username }}? Sus solicitudes y postulaciones se conservan sin usuario asociado. Esta acción no se puede deshacer."
+                                data-success="La cuenta de {{ u.username }} fue eliminada." aria-label="Eliminar a {{ u.username }}">
+                                <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </article>
+                    {% else %}
+                    <div class="empty-state"><i class="fa-solid fa-users" aria-hidden="true"></i><p>Todavía no hay usuarios registrados.</p></div>
+                    {% endfor %}
+                    <div id="userEmpty" class="empty-state" hidden>
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><p>Ningún usuario coincide con la búsqueda.</p>
+                    </div>
+                </div>
+            </section>
+
+            {# Administradores #}
+            <section class="tab-panel" id="panel-administradores" role="tabpanel" aria-labelledby="tab-administradores" hidden>
+                <div class="admin-layout">
+                    <form id="adminCreateForm" class="form-card" data-validate data-ajax="true">
+                        <h2><i class="fa-solid fa-user-plus" aria-hidden="true"></i> Agregar administrador</h2>
+                        <p class="settings__text">La nueva cuenta podrá entrar a este panel. Compártele la contraseña por un canal seguro.</p>
+                        {{ field('nuevo_admin_usuario', 'Usuario', 'text', 'fa-user-shield', 'nombre.fundacion', attrs={'minlength': 3, 'autocomplete': 'off'}) }}
+                        {{ field('nuevo_admin_email', 'Correo', 'email', 'fa-envelope', 'persona@fundacion.org', attrs={'autocomplete': 'off'}) }}
+                        {{ field('nuevo_admin_password', 'Contraseña inicial', 'password', 'fa-lock', 'Mínimo 8 caracteres', attrs={'minlength': 8, 'autocomplete': 'new-password'}) }}
+                        {{ submit('Crear administrador', 'fa-user-plus', 'Creando…', 'btn btn--primary btn--block') }}
+                    </form>
+                    <div class="list">
+                        {% for a in admins %}
+                        {% set es_yo = a.id == current_user.id %}
+                        <article class="list-item{% if not a.active %} list-item--inactive{% endif %}">
+                            <span class="list-item__thumb list-item__thumb--avatar" aria-hidden="true">{{ a.username[0] }}</span>
+                            <div class="list-item__body">
+                                <div class="list-item__title">
+                                    {{ a.username }}
+                                    {% if es_yo %}<span class="badge">Tú</span>{% endif %}
+                                    {% if a.active %}<span class="badge badge--success">Activo</span>
+                                    {% else %}<span class="badge badge--muted">Desactivado</span>{% endif %}
+                                </div>
+                                {% set n = a.mascotas_publicadas|length %}
+                                <p class="list-item__text">
+                                    {{ a.email }} · Desde {{ a.created_at|fecha(false) }} · {{ n }} {{ 'mascota publicada' if n == 1 else 'mascotas publicadas' }}
+                                </p>
+                            </div>
+                            {% if not es_yo %}
+                            <div class="list-item__actions">
+                                {% if a.active %}
+                                <button class="btn btn--secondary btn--sm" data-action="PUT" data-url="/api/admin/admins/{{ a.id }}" data-body='{"active": false}'
+                                    data-confirm="¿Desactivar a {{ a.username }}? No podrá entrar al panel hasta que lo reactives."
+                                    data-success="{{ a.username }} fue desactivado.">
+                                    <i class="fa-solid fa-user-slash" aria-hidden="true"></i> Desactivar
+                                </button>
+                                {% else %}
+                                <button class="btn btn--secondary btn--sm" data-action="PUT" data-url="/api/admin/admins/{{ a.id }}" data-body='{"active": true}'
+                                    data-success="{{ a.username }} fue reactivado.">
+                                    <i class="fa-solid fa-user-check" aria-hidden="true"></i> Activar
+                                </button>
+                                {% endif %}
+                                <button class="btn btn--danger btn--sm" data-action="DELETE" data-url="/api/admin/admins/{{ a.id }}"
+                                    data-confirm="¿Eliminar la cuenta de administrador de {{ a.username }}? Esta acción no se puede deshacer."
+                                    data-success="{{ a.username }} fue eliminado." aria-label="Eliminar a {{ a.username }}">
+                                    <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </article>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
     </div>
 </div>
 {% endblock %}
@@ -180,10 +290,13 @@
             if (btn.dataset.confirm && !window.confirm(btn.dataset.confirm)) return;
             btn.disabled = true;
             try {
+                const headers = { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+                if (btn.dataset.body) headers['Content-Type'] = 'application/json';
                 const res = await fetch(btn.dataset.url, {
                     method: btn.dataset.action,
                     credentials: 'same-origin',
-                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    headers,
+                    body: btn.dataset.body || undefined,
                 });
                 if (!res.ok) {
                     const body = await res.json().catch(() => ({}));
@@ -195,6 +308,49 @@
                 AdoptMe.toast(err.message, 'error');
                 btn.disabled = false;
             }
+        });
+
+        // Crear administrador (la sesión de administrador autoriza sin código de registro)
+        const adminForm = document.getElementById('adminCreateForm');
+        adminForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!AdoptMe.validateForm(adminForm)) return;
+            const button = adminForm.querySelector('[type="submit"]');
+            const value = (id) => document.getElementById(id).value.trim();
+            AdoptMe.setLoading(button, true, button.dataset.loadingText);
+            try {
+                const res = await fetch('/api/admin/admins', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: JSON.stringify({
+                        username: value('nuevo_admin_usuario'),
+                        email: value('nuevo_admin_email'),
+                        password: document.getElementById('nuevo_admin_password').value,
+                    }),
+                });
+                const body = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(body.msg || 'No se pudo crear el administrador.');
+                sessionStorage.setItem('adoptme:toast', JSON.stringify({ message: body.username + ' ya puede entrar al panel.', category: 'success' }));
+                location.reload();
+            } catch (err) {
+                AdoptMe.toast(err.message, 'error');
+                AdoptMe.setLoading(button, false);
+            }
+        });
+
+        // Buscador de usuarios
+        const search = document.getElementById('userSearch');
+        const rows = Array.from(document.querySelectorAll('#userList .list-item'));
+        search.addEventListener('input', () => {
+            const q = search.value.trim().toLowerCase();
+            let visibles = 0;
+            rows.forEach((row) => {
+                row.hidden = Boolean(q) && !row.dataset.search.includes(q);
+                if (!row.hidden) visibles++;
+            });
+            document.getElementById('userCount').textContent = visibles;
+            document.getElementById('userEmpty').hidden = visibles > 0 || rows.length === 0;
         });
     })();
 </script>

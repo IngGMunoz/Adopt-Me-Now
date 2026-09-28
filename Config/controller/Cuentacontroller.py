@@ -1,15 +1,12 @@
 """Área personal del usuario: actividad, solicitudes, postulaciones y configuración."""
 
-from datetime import datetime
 from functools import wraps
-from itertools import groupby
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 
-from Config.actividad import registrar
+from Config.actividad import agrupar_por_dia, registrar
 from Config.auth import check_login, is_admin
 from Config.db import db
-from Config.filtros import TZ_OFFSET, fecha
 from Models.actividad import Actividad
 from Models.admins import admin as AdminModel
 from Models.usuario import usuario
@@ -36,17 +33,6 @@ def usuario_requerido(f):
     return decorated
 
 
-def _agrupar_por_dia(actividades):
-    """[("Hoy", [...]), ("Ayer", [...]), ("25 sep 2026", [...])] en hora local."""
-    hoy = (datetime.utcnow() + TZ_OFFSET).date()
-    grupos = []
-    for dia, items in groupby(actividades, key=lambda a: (a.created_at + TZ_OFFSET).date()):
-        dias = (hoy - dia).days
-        titulo = "Hoy" if dias == 0 else "Ayer" if dias == 1 else fecha(datetime.combine(dia, datetime.min.time()) - TZ_OFFSET, con_hora=False)
-        grupos.append((titulo, list(items)))
-    return grupos
-
-
 def _volver(seccion):
     return redirect(url_for("routes_CuentaC.mi_cuenta") + "#" + seccion)
 
@@ -65,7 +51,7 @@ def mi_cuenta(u):
     return render_template(
         "main/Mi_Cuenta.html",
         u=u,
-        grupos=_agrupar_por_dia(actividades),
+        grupos=agrupar_por_dia(actividades),
         total_actividades=len(actividades),
         tipo_actual=tipo if tipo in Actividad.TIPOS else None,
         tipos=Actividad.TIPOS,

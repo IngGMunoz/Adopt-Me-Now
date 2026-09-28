@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% from "components/forms.html" import field, submit %}
+{% from "components/timeline.html" import timeline %}
 
 {% block title %}Mi cuenta{% endblock %}
 
@@ -72,29 +73,7 @@
                 <span class="timeline-filter__count">{{ total_actividades }} evento{{ 's' if total_actividades != 1 }}</span>
             </form>
 
-            {% for titulo, items in grupos %}
-            <h2 class="timeline-day">{{ titulo }}</h2>
-            <ol class="timeline">
-                {% for a in items %}
-                <li class="timeline__item timeline__item--{{ a.tipo }}">
-                    <span class="timeline__icon" aria-hidden="true"><i class="fa-solid {{ a.icono }}"></i></span>
-                    <div class="timeline__body">
-                        <p class="timeline__text">{{ a.descripcion }}</p>
-                        <p class="timeline__meta">
-                            <span>{{ a.etiqueta }}</span> ·
-                            <time datetime="{{ a.created_at.isoformat() }}Z" title="{{ a.created_at|fecha }}">{{ a.created_at|hace }}</time>
-                            {% if a.enlace %} · <a href="{{ a.enlace }}">Ver</a>{% endif %}
-                        </p>
-                    </div>
-                </li>
-                {% endfor %}
-            </ol>
-            {% else %}
-            <div class="empty-state">
-                <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
-                <p>{% if tipo_actual %}No hay actividad de este tipo.{% else %}Aún no tienes actividad registrada.{% endif %}</p>
-            </div>
-            {% endfor %}
+            {{ timeline(grupos, 'No hay actividad de este tipo.' if tipo_actual else 'Aún no tienes actividad registrada.') }}
         </section>
 
         {# ---------------- Solicitudes ---------------- #}

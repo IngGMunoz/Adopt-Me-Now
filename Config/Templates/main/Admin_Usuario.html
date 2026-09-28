@@ -1,0 +1,135 @@
+{% extends "layouts/base.html" %}
+{% from "components/timeline.html" import timeline %}
+
+{% block title %}{{ u.username }} · Usuarios{% endblock %}
+
+{% block content %}
+{% set aprobadas = solicitudes|selectattr('is_confirmed')|list %}
+{% set publicadas = postulaciones|selectattr('mascota_id')|list %}
+<div class="container">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <a href="{{ url_for('Postular_Admin') }}">Panel</a>
+        <span aria-hidden="true">/</span>
+        <a href="{{ url_for('Postular_Admin') }}#usuarios">Usuarios</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ u.username }}</span>
+    </nav>
+
+    <header class="account-hero card animate-in">
+        <div class="account-hero__avatar" aria-hidden="true">{{ u.username[0] }}</div>
+        <div class="account-hero__info">
+            <span class="eyebrow">Ficha de usuario</span>
+            <h1 class="account-hero__name">{{ u.username }}</h1>
+            <p class="account-hero__meta">
+                <span><i class="fa-solid fa-envelope" aria-hidden="true"></i> <a href="mailto:{{ u.email }}">{{ u.email }}</a></span>
+                <span><i class="fa-solid fa-calendar" aria-hidden="true"></i> Miembro desde {{ u.created_at|fecha(false) }}</span>
+                {% if grupos %}<span><i class="fa-solid fa-clock" aria-hidden="true"></i> Última actividad {{ grupos[0][1][0].created_at|hace }}</span>{% endif %}
+            </p>
+        </div>
+        <div class="account-hero__actions">
+            <a href="{{ url_for('Postular_Admin') }}#usuarios" class="btn btn--secondary">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver a usuarios
+            </a>
+            <button class="btn btn--danger" id="deleteUser" data-url="/api/admin/users/{{ u.id }}"
+                data-confirm="¿Eliminar la cuenta de {{ u.username }}? Sus solicitudes y postulaciones se conservan sin usuario asociado. Esta acción no se puede deshacer.">
+                <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Eliminar cuenta
+            </button>
+        </div>
+    </header>
+
+    <section class="stats" aria-label="Resumen del usuario">
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Solicitudes enviadas</span>
+            <div class="stat__value">{{ solicitudes|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Solicitudes aprobadas</span>
+            <div class="stat__value">{{ aprobadas|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Mascotas postuladas</span>
+            <div class="stat__value">{{ postulaciones|length }}</div>
+        </div>
+        <div class="stat">
+            <span class="stat__label"><i class="fa-solid fa-paw" aria-hidden="true"></i> Ya publicadas</span>
+            <div class="stat__value">{{ publicadas|length }}</div>
+        </div>
+    </section>
+
+    <div class="user-detail">
+        <section>
+            <h2 class="user-detail__title"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Actividad</h2>
+            <p class="settings__text">Historial tal como lo ve el usuario en su cuenta.</p>
+            {{ timeline(grupos, 'Este usuario todavía no tiene actividad.') }}
+        </section>
+
+        <aside>
+            <h2 class="user-detail__title"><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Solicitudes</h2>
+            <div class="list">
+                {% for s in solicitudes %}
+                <article class="list-item">
+                    <div class="list-item__body">
+                        <div class="list-item__title">
+                            {{ s.mascota.nombre if s.mascota else (s.pet_name or 'Mascota') }}
+                            {% if s.is_confirmed %}<span class="badge badge--success">Aprobada</span>
+                            {% else %}<span class="badge">Pendiente</span>{% endif %}
+                        </div>
+                        <p class="list-item__text">
+                            {{ s.created_at|fecha }}{% if s.telefono %} · Tel. {{ s.telefono }}{% endif %}{% if s.vivienda %} · {{ s.vivienda|capitalize }}{% endif %}
+                        </p>
+                        {% if s.motivo %}<p class="list-item__text list-item__text--wrap">“{{ s.motivo }}”</p>{% endif %}
+                    </div>
+                </article>
+                {% else %}
+                <div class="empty-state"><p>Sin solicitudes de adopción.</p></div>
+                {% endfor %}
+            </div>
+
+            <h2 class="user-detail__title"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Postulaciones</h2>
+            <div class="list">
+                {% for p in postulaciones %}
+                <article class="list-item">
+                    <div class="list-item__body">
+                        <div class="list-item__title">
+                            {{ p.nombre or 'Sin nombre' }}
+                            {% if p.aprobada %}<span class="badge badge--success">Publicada</span>
+                            {% else %}<span class="badge">Por revisar</span>{% endif %}
+                        </div>
+                        <p class="list-item__text">
+                            {{ [p.especie|capitalize if p.especie, p.raza, p.edad, p.ubicacion]|select|join(' · ') }} · {{ p.created_at|fecha(false) }}
+                        </p>
+                    </div>
+                </article>
+                {% else %}
+                <div class="empty-state"><p>Sin postulaciones.</p></div>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        const btn = document.getElementById('deleteUser');
+        btn.addEventListener('click', async () => {
+            if (!window.confirm(btn.dataset.confirm)) return;
+            btn.disabled = true;
+            try {
+                const res = await fetch(btn.dataset.url, {
+                    method: 'DELETE',
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                if (!res.ok) throw new Error('No se pudo eliminar la cuenta.');
+                sessionStorage.setItem('adoptme:toast', JSON.stringify({ message: 'La cuenta fue eliminada.', category: 'success' }));
+                window.location.href = "{{ url_for('Postular_Admin') }}#usuarios";
+            } catch (err) {
+                AdoptMe.toast(err.message, 'error');
+                btn.disabled = false;
+            }
+        });
+    })();
+</script>
+{% endblock %}

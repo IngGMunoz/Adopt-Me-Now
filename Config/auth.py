@@ -35,10 +35,29 @@ def _deny(status, msg):
     return redirect(url_for("Iniciar_Sesion", next=request.path))
 
 
+def _cuenta_vigente():
+    """Comprueba que la cuenta de la sesión siga existiendo (y activa, si es de administrador).
+
+    Así, eliminar un usuario o desactivar un administrador le quita el acceso de inmediato,
+    aunque ya tuviera la sesión abierta.
+    """
+    from Config.db import db
+    from Models.admins import admin
+    from Models.usuario import usuario
+
+    if is_admin():
+        cuenta = db.session.get(admin, session.get("user_id"))
+        return bool(cuenta and cuenta.active)
+    return db.session.get(usuario, session.get("user_id")) is not None
+
+
 def check_login():
     """Devuelve una respuesta de error si no hay sesión, o None si todo está bien."""
     if not is_authenticated():
         return _deny(401, "Debes iniciar sesión para acceder a esta página")
+    if not _cuenta_vigente():
+        session.clear()
+        return _deny(401, "Tu sesión ya no es válida. Inicia sesión de nuevo.")
     return None
 
 
