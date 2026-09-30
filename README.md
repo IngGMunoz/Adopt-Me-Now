@@ -2,11 +2,7 @@
 
 **Plataforma web de adopción de mascotas que conecta fundaciones de rescate animal con personas que quieren adoptar.**
 
-<<<<<<< HEAD
 ### 🔗 [Ver demo en vivo](https://adopt-me-now.up.railway.app)
-=======
-### 🔗 [Ver demo en vivo](adopt-me-now.up.railway.app)
->>>>>>> 21cb751c098036920a14142857d25abb18266a02
 
 [![Tests](https://github.com/IngGMunoz/Adopt-Me-Now/actions/workflows/tests.yml/badge.svg)](https://github.com/IngGMunoz/Adopt-Me-Now/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
@@ -281,8 +277,9 @@ Las tablas se crean automáticamente al iniciar. `python app.py` usa el servidor
    | `SESSION_COOKIE_SECURE` | `true` |
    | `BEHIND_PROXY` | `true` |
    | `DEMO_MODE` | `true` para crear las cuentas de prueba |
+   | `PORT` | `5100` (el mismo puerto que indiques al generar el dominio) |
 
-4. En *Settings → Networking*, genera un dominio público.
+4. En *Settings → Networking*, genera un dominio público con el puerto `5100`.
 5. Opcional: para conservar las fotos subidas entre despliegues, agrega un **volumen** montado en `/app/static/uploads` y la variable `RAILWAY_RUN_UID=0` (los volúmenes de Railway pertenecen a root).
 
 Gunicorn escucha en el `PORT` que asigna la plataforma, y las tablas, las mascotas destacadas y las cuentas de prueba se crean en el primer arranque.
