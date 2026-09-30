@@ -2,7 +2,11 @@
 
 **Plataforma web de adopción de mascotas que conecta fundaciones de rescate animal con personas que quieren adoptar.**
 
+<<<<<<< HEAD
 ### 🔗 [Ver demo en vivo](https://adopt-me-now.up.railway.app)
+=======
+### 🔗 [Ver demo en vivo](adopt-me-now.up.railway.app)
+>>>>>>> 21cb751c098036920a14142857d25abb18266a02
 
 [![Tests](https://github.com/IngGMunoz/Adopt-Me-Now/actions/workflows/tests.yml/badge.svg)](https://github.com/IngGMunoz/Adopt-Me-Now/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
