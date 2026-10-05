@@ -404,12 +404,13 @@ Adopt-Me-Now/
 ## Autores
 
 **Daniel Utria**: diseño, frontend, backend e infraestructura.
+
 **David Escamilla**: Backend, Bases de datos.
 
 - GitHub: [@IngGMunoz](https://github.com/IngGMunoz)
 - GitHub: [davidescamilla0912)](https://github.com/davidescamilla0912)
 - LinkedIn: [georgy-daniel-muñoz-utria](https://www.linkedin.com/in/georgy-daniel-muñoz-utria)
-- LinkedIn: [David escamilla](https://www.linkedin.com/in/david-escamilla-06b74037a/))
+- LinkedIn: [David escamilla](https://www.linkedin.com/in/david-escamilla-06b74037a/)
 
 ## Licencia
 
