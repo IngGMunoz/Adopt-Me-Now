@@ -401,12 +401,15 @@ Adopt-Me-Now/
 - [x] Despliegue público con demo en vivo.
 - [ ] El límite de intentos vive en la memoria del proceso (Gunicorn corre con un solo *worker*). Para escalar a varios *workers* habría que moverlo a Redis o a la base de datos.
 
-## Autor
+## Autores
 
 **Daniel Utria**: diseño, frontend, backend e infraestructura.
+**David Escamilla**: Backend, Bases de datos.
 
 - GitHub: [@IngGMunoz](https://github.com/IngGMunoz)
+- GitHub: [davidescamilla0912)](https://github.com/davidescamilla0912)
 - LinkedIn: [georgy-daniel-muñoz-utria](https://www.linkedin.com/in/georgy-daniel-muñoz-utria)
+- LinkedIn: [David escamilla](https://www.linkedin.com/in/david-escamilla-06b74037a/))
 
 ## Licencia
 
